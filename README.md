@@ -86,5 +86,5 @@ You can directly see the pop up display window of this show case as below snapsh
 
 
 
-*All the detail installation modification could be reference to the EVA Portal here: <Under Construction>
+*All the detail installation modification could be reference to the EVA Portal here: < Under Construction >
 
