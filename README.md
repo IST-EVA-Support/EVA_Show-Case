@@ -56,7 +56,7 @@ After installation, execute the run.sh for pipeline command:
 
 You can directly see the pop up display window of this show case as below snapshot:
 
-![image-20210513133423420](C:\Users\User\AppData\Roaming\Typora\typora-user-images\image-20210513133423420.png)
+![image-showcase1](figures/image-showcase1.png)
 
 ### Show Case 2:
 
@@ -82,7 +82,7 @@ After installation, execute the run.sh for pipeline command:
 
 You can directly see the pop up display window of this show case as below snapshot:
 
-![image-20210513133912802](C:\Users\User\AppData\Roaming\Typora\typora-user-images\image-20210513133912802.png)
+![image-showcase2](figures/image-showcase2.png)
 
 
 
