@@ -46,15 +46,15 @@ The training materials can be downloaded here:
 
 training images: <  >
 
-training notation for mobilenetSSDv2: <  >
+training notation for mobilenetSSDv2: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-mobilenetSSDv2.zip
 
 training notation for yolov3: <  >
 
 Training architecture site list below: 
 
-yolov3: https://github.com/AlexeyAB/darknet/tree/Yolo_v3
+mobilenetSSDv2: https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1_detection_zoo.md , ssd_mobilenet_v2_coco
 
-mobilenetSSDv2:  <  >
+yolov3: https://github.com/AlexeyAB/darknet/tree/Yolo_v3
 
 Note: Show case 1 and show case 2 use the same training materials.
 
