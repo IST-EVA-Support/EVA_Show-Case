@@ -20,5 +20,5 @@ Currently we provide show cases below:
 
 Each show case contains the way to install and run. Just path to each demo show case you are interested and run it simply. 
 
-Visit our EVA portal for more advanced and detailed description: < >
+Visit our EVA portal for more advanced and detailed description: < Under Construction >
 
