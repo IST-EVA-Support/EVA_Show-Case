@@ -44,11 +44,11 @@ You can directly see the pop up display window of this show case as below snapsh
 
 The training materials can be downloaded here:
 
-training images: <  >
+training images: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-training-images.zip
 
 training notation for mobilenetSSDv2: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-mobilenetSSDv2.zip
 
-training notation for yolov3: <  >
+training notation for yolov3: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-yolov3.zip
 
 Training architecture site list below: 
 
