@@ -1,6 +1,6 @@
-# Welcome to ADLINK EVA Show Case!
+# Welcome to ADLINK EVA Showcase!
 
-In this git repository, you can download the source code of the plug-ins we designed for the scenes. And each show case demonstrate the combination of  the pipeline elements we are going to present for you. EVASDK can help you to quick establish and realize the application for the scenarios you are going to apply. We are glad to help you speeding up the implementation!
+In this git repository, you can download the source code of the plug-ins we designed for the showcases. Each showcase demonstrates the pipeline elements you will need. EVASDK can help you to quickly set up and build the applications for your specific implementation.
 
 ## Clone the Source Code
 
@@ -11,14 +11,14 @@ Use the following command to clone the source code from GitHub:
 > cd EVA_Show-Case
 ```
 
-Currently we provide show cases below:
+Showcases currently available:
 
-|             | Description                                                  | Path to demo                                     | Categories               |
-| ----------- | ------------------------------------------------------------ | ------------------------------------------------ | ------------------------ |
-| Show Case 1 | In this case scene, you will know how EVA used to play the role in prepare the pipeline for detecting people break into the specific area. In real world, some of the area is restricted to prevent people to get in to prevent some operation, human life or equipment safe. In this Scene, you will see the corridor is treated as the imaginary area to prevent people break through. If the break in disclosed, the region will turn red if the display is set to true for visualizing and alert event will recorded in user defined alert-type into meta data for downstream element to active. | [src/demo/geofence](src/demo/geofence)           | Geo-Fence                |
-| Show Case 2 | In this case scene, you will know how EVA used to play the role in prepare the pipeline for detecting people break into the specific area and if the person does not wear the clean room suit. While manufacturing, the clean suit is required to wear on. In this scene, geo-fence is also used to detect the people cross the entrance gate. And the downstream element clean suit detection then will also active to detect if the employees who does not follow the SOP to wear clean suit then enter the FAB. | [src/demo/weardetection](src/demo/weardetection) | Geo-Fence/Wear-Detection |
+|            | Description                                                  | Path to demo                                     | Categories                |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------ | ------------------------- |
+| Showcase 1 | In this showcase you will see how EVA is used to prepare the pipeline for detecting people entering a specific area. Factories commonly have restricted areas to keep workers safe from moving automation or robots. In this showcase you will see how a corridor is designated as a restricted area to prevent people from entering it. If someone enters the restricted area, the region will turn red if the display is set to true, and an alert event will be recorded as metadata for a downstream element to activate. | [src/demo/geofence](src/demo/geofence)           | Geofencing                |
+| Showcase 2 | In this showcase you will see how EVA is used to prepare the pipeline for detecting people entering a specific area and checking if the person is wearing a clean room suit. For certain manufacturing processes, a clean room suit is required when entering an environmentally controlled space. In this showcase, geofencing is also used to detect when someone crosses the entrance. The downstream element for clean room suit detection will then be activated to detect if the person is wearing the appropriate clothes before entering the FAB. | [src/demo/weardetection](src/demo/weardetection) | Geofencing/Wear Detection |
 
-Each show case contains the way to install and run. Just path to each demo show case you are interested and run it simply. 
+Each showcase describes how to install and run the demo. Simply enter the path to each demo showcase you are interested in and run it.
 
-Visit our EVA portal for more advanced and detailed description: < Under Construction >
+Visit our EVA portal for more information: < Under Construction >
 
