@@ -1,62 +1,62 @@
-# Show Case 2 : Wear Detection
+# Showcase 2: Wear Detection
 
-## Pre-request of The show cases
+## Showcase Requirements
 
-Before installing each show case to the device, please install ADLINK EVASDK and set the EVA environment respectively.
+Before installing this showcase case to the device, please install ADLINK EVASDK and set the EVA environment as necessary.
 
-## Installation of The Show Case 2
+## Showcase 2 Installation
 
-Path to the demo folder you are interested and will see the install.sh and run.sh for each show case.
+The path to the respective demo folder includes install.sh and run.sh for each showcase.
 
-The install.sh will do the following steps:
+Install.sh will perform the following steps:
 
-1. Build each show case required plug-ins and install them into ADLINK EVASDK.
-2. Download the inference intermediate model file and convert it to the TensorRT based on the local device.
-3. Download each show case demo videos and plug-in required setup files.
+1. Build the required plug-ins for each showcase and install them into ADLINK EVASDK.
+2. Download the inference intermediate model file and convert it to TensorRT format on the local device.
+3. Download the required showcase demo videos and plug-in setup files.
 
-### For this show case: 
+### For this showcase: 
 
-Path to the path:
+Use the path:
 
 ```
 > cd src/demo/weardetection
 ```
 
-Run the install.sh with root privilege:
+Run install.sh with root privileges:
 
 ```
 > sudo ./install.sh
 ```
 
-This required to modify the path to OpenCV library in advance, if you install EVA on non-ADLINK device please check the modification in our EVA portal
+This is required to modify the path to the OpenCV library. If you have installed EVA on a non-ADLINK device, please check the requirements in our EVA portal.
 
-After installation, execute the run.sh for pipeline command:
+After installation, execute run.sh for the pipeline command:
 
 ```
 > ./run.sh
 ```
 
-You can directly see the pop up display window of this show case as below snapshot:
+You will see the pop-up display window of this showcase as in the example below.
 
 ![image-showcase2](../../../figures/image-showcase2.png)
 
 ## Training Materials
 
-The training materials can be downloaded here:
+The training materials can be downloaded with the following links.
 
-training images: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-training-images.zip
+Training images: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-training-images.zip
 
-training notation for mobilenetSSDv2: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-mobilenetSSDv2.zip
+Training notation for mobilenetSSDv2: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-mobilenetSSDv2.zip
 
-training notation for yolov3: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-yolov3.zip
+Training notation for yolov3: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-yolov3.zip
 
-Training architecture site list below: 
+Training architecture sites listed below:
 
-mobilenetSSDv2: https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1_detection_zoo.md , ssd_mobilenet_v2_coco
+mobilenetSSDv2: https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1_detection_zoo.md, ssd_mobilenet_v2_coco
 
 yolov3: https://github.com/AlexeyAB/darknet/tree/Yolo_v3
 
-Note: Show case 1 and show case 2 use the same training materials.
+Note: Showcases 1 and 2 use the same training materials.
 
-*All the detail installation modification could be reference to the EVA Portal here: < Under Construction >
+*Modified installation details can be found at the EVA Portal: < Under Construction >
 
