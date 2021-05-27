@@ -38,9 +38,9 @@ After installation, execute run.sh for the pipeline command:
 > ./run.sh
 ```
 
-Or you can open EVA_IDE and load pygraph then execute, please see the section, [Run This Showcase Through EVA IDE](#Run-This-Showcase-Through-EVA-IDE),  below.
+Or you can open EVA_IDE and load pygraph then execute, please see the section, [Run This Showcase Through EVA IDE](#Run-This-Showcase-Through-EVA-IDE).
 
-You will see the pop-up display window of this showcase as in the example below.
+Then you will see the pop-up display window of this showcase as in the example below.
 
 ![image-showcase1](../../../figures/image-showcase1.png)
 
@@ -84,11 +84,13 @@ And you will see the IDE show up as below:
 
 Then select showcase1.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
 
+![showcase1-file-load](../../../figures/showcase1-file-load.png)
+
 ![showcase1-pipeline](../../../figures/showcase1-pipeline.png)
 
 The settings are default set relevant to this scenario and one alert require to be set. Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
 
-![emailalert-node](../../../figures/emailalert-node.png) ![emailalert-node-property](../../../figures/emailalert-node-property.png)
+![emailalert-node](../../../figures/emailalert-node.png) ![emailalert-node-property](../../../figures/emailalert-node-property-showcase1.png)
 
 Provide an email address you want to receive from the alert for this show case in "receiver-address". Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
 
