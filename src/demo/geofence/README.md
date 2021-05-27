@@ -64,16 +64,29 @@ Note: Showcases 1 and 2 use the same training materials.
 
 ## Run This Showcase Through EVA IDE
 
-In this showcase, you can run the pipeline by execute run.sh but also EVA IDE. In this showcase 
+In this showcase, you can run the pipeline by execute [run.sh](#./run.sh) but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/geofence as root:
 
 ```
 > EVA_ROOT/bin/EVA_IDE
 ```
 
-EVA_ROOT is the path where the EVA installed, the default installed path is /opt/adlink/eva/. So directly call EVA_IDE:
+EVA_ROOT is the path where the EVA is installed, the default installed path is /opt/adlink/eva/. So directly call EVA_IDE:
 
 ```
 > /opt/adlink/eva/bin/EVA_IDE
 ```
 
-After 
+And you will see the IDE show up as below:
+
+![EVAIDE](../../../figures/EVAIDE.png)
+
+Then select showcase1.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
+
+![showcase1-pipeline](README.assets/showcase1-pipeline.png)
+
+The settings are default set relevant to this scenario and one alert require to be set. Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
+
+![emailalert-node](../../../figures/emailalert-node.png) ![emailalert-node-property](../../../figures/emailalert-node-property.png)
+
+Provide a email address you want to receive the alert mail from this show case in "receiver-address". Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
+
