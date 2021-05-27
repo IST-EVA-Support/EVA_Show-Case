@@ -36,6 +36,8 @@ After installation, execute run.sh for the pipeline command:
 > ./run.sh
 ```
 
+Or you can open EVA_IDE and load pygraph then execute, please see the section, [Run This Showcase Through EVA IDE](#Run-This-Showcase-Through-EVA-IDE),  below.
+
 You will see the pop-up display window of this showcase as in the example below.
 
 ![image-showcase1](../../../figures/image-showcase1.png)
@@ -59,3 +61,19 @@ yolov3: https://github.com/AlexeyAB/darknet/tree/Yolo_v3
 Note: Showcases 1 and 2 use the same training materials.
 
 *Modified installation details can be found at the EVA Portal: < Under Construction >
+
+## Run This Showcase Through EVA IDE
+
+In this showcase, you can run the pipeline by execute run.sh but also EVA IDE. In this showcase 
+
+```
+> EVA_ROOT/bin/EVA_IDE
+```
+
+EVA_ROOT is the path where the EVA installed, the default installed path is /opt/adlink/eva/. So directly call EVA_IDE:
+
+```
+> /opt/adlink/eva/bin/EVA_IDE
+```
+
+After 
