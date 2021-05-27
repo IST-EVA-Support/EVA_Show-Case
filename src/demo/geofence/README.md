@@ -64,7 +64,7 @@ Note: Showcases 1 and 2 use the same training materials.
 
 ## Run This Showcase Through EVA IDE
 
-In this showcase, you can run the pipeline by execute [run.sh](#./run.sh) but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/geofence as root:
+In this showcase, you can run the pipeline by execute [run.sh](#execute-run.sh-for-the-pipeline-command) but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/geofence as root:
 
 ```
 > EVA_ROOT/bin/EVA_IDE
