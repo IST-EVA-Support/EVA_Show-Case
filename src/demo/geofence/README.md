@@ -82,7 +82,7 @@ And you will see the IDE show up as below:
 
 Then select showcase1.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
 
-![showcase1-pipeline](README.assets/showcase1-pipeline.png)
+![showcase1-pipeline](../../../figures/showcase1-pipeline.png)
 
 The settings are default set relevant to this scenario and one alert require to be set. Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
 
