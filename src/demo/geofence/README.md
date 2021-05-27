@@ -30,6 +30,8 @@ Run install.sh with root privileges:
 
 This is required to modify the path to the OpenCV library. If you have installed EVA on a non-ADLINK device, please check the requirements in our EVA portal.
 
+<a id="runsh"></a>
+
 After installation, execute run.sh for the pipeline command:
 
 ```
@@ -64,7 +66,7 @@ Note: Showcases 1 and 2 use the same training materials.
 
 ## Run This Showcase Through EVA IDE
 
-In this showcase, you can run the pipeline by execute [run.sh](#execute-run.sh-for-the-pipeline-command) but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/geofence as root:
+In this showcase, you can run the pipeline by execute <a href="#runsh">run.sh</a> but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/geofence as root:
 
 ```
 > EVA_ROOT/bin/EVA_IDE
@@ -88,5 +90,5 @@ The settings are default set relevant to this scenario and one alert require to 
 
 ![emailalert-node](../../../figures/emailalert-node.png) ![emailalert-node-property](../../../figures/emailalert-node-property.png)
 
-Provide a email address you want to receive the alert mail from this show case in "receiver-address". Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
+Provide an email address you want to receive from the alert for this show case in "receiver-address". Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
 
