@@ -92,5 +92,5 @@ The settings are default set relevant to this scenario and one alert require to 
 
 ![emailalert-node](../../../figures/emailalert-node.png) ![emailalert-node-property](../../../figures/emailalert-node-property-showcase2.png)
 
-Provide an email address you want to receive from the alert for this show case in "receiver-address". Then press the play button ![play-button](README.assets/play-button.png) and you will see the scenario video start to play.
+Provide an email address you want to receive from the alert for this show case in "receiver-address". Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
 
