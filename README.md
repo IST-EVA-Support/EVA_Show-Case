@@ -7,7 +7,7 @@ In this git repository, you can download the source code of the plug-ins we desi
 Use the following command to clone the source code from GitHub:
 
 ```
-> git clone git@github.com:IST-EVA-Support/EVA_Show-Case.git
+> git clone https://github.com/IST-EVA-Support/EVA_Show-Case.git
 > cd EVA_Show-Case
 ```
 
