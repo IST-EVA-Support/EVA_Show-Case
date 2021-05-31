@@ -30,13 +30,17 @@ Run install.sh with root privileges:
 
 This is required to modify the path to the OpenCV library. If you have installed EVA on a non-ADLINK device, please check the requirements in our EVA portal.
 
+<a id="runsh"></a>
+
 After installation, execute run.sh for the pipeline command:
 
 ```
 > ./run.sh
 ```
 
-You will see the pop-up display window of this showcase as in the example below.
+Or you can open EVA_IDE and load pygraph then execute, please see the section, [Run This Showcase Through EVA IDE](#Run-This-Showcase-Through-EVA-IDE).
+
+Then you will see the pop-up display window of this showcase as in the example below.
 
 ![image-showcase1](../../../figures/image-showcase1.png)
 
@@ -59,3 +63,34 @@ yolov3: https://github.com/AlexeyAB/darknet/tree/Yolo_v3
 Note: Showcases 1 and 2 use the same training materials.
 
 *Modified installation details can be found at the EVA Portal: < Under Construction >
+
+## Run This Showcase Through EVA IDE
+
+In this showcase, you can run the pipeline by execute <a href="#runsh">run.sh</a> but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/geofence as root:
+
+```
+> EVA_ROOT/bin/EVA_IDE
+```
+
+EVA_ROOT is the path where the EVA is installed, the default installed path is /opt/adlink/eva/. So directly call EVA_IDE:
+
+```
+> /opt/adlink/eva/bin/EVA_IDE
+```
+
+And you will see the IDE show up as below:
+
+![EVAIDE](../../../figures/EVAIDE.png)
+
+Then select showcase1.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
+
+![showcase1-file-load](../../../figures/showcase1-file-load.png)
+
+![showcase1-pipeline](../../../figures/showcase1-pipeline.png)
+
+The settings are default set relevant to this scenario and one alert require to be set. Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
+
+![emailalert-node](../../../figures/emailalert-node.png) ![emailalert-node-property](../../../figures/emailalert-node-property-showcase1.png)
+
+Provide an email address you want to receive from the alert for this show case in "receiver-address". Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
+
