@@ -9,6 +9,7 @@ Use the following command to clone the source code from GitHub:
 ```
 > git clone https://github.com/IST-EVA-Support/EVA_Show-Case.git
 > cd EVA_Show-Case
+> find . -type f -iname *.sh -exec chmod +x {} \;
 ```
 
 Showcases currently available:

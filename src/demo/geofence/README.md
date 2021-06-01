@@ -25,7 +25,7 @@ Use the path:
 Run install.sh with root privileges:
 
 ```
-> sudo ./install.sh
+> ./install.sh
 ```
 
 This is required to modify the path to the OpenCV library. If you have installed EVA on a non-ADLINK device, please check the requirements in our EVA portal.
