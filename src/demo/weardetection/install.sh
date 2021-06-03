@@ -87,5 +87,6 @@ message_out "Deploy alert plugin..."
 
 message_out "Install related python package"
 pip3 install -r requirements.txt
+sudo apt-get install espeak
 
 message_out "Installation completed, you could run this demo by execute ./run.sh"
