@@ -1,0 +1,5 @@
+none
+hat
+mask
+coat
+person
