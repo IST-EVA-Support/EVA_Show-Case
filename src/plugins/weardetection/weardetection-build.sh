@@ -38,7 +38,7 @@ message_out "start to configure by meson..."
 #meson build
 cd $(get_script_dir)
 #meson $(get_script_dir)/build -Dopencv_dir=/opt/intel/openvino_2021/opencv/
-meson $(get_script_dir)/build -Dopencv_dir=/usr/local
+meson $(get_script_dir)/build -Dopencv_dir=/usr
 
 # compile the code
 message_out "start to compile by ninja..."
