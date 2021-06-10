@@ -35,7 +35,7 @@ fi
 # configure the code
 message_out "start to configure by meson..."
 cd $(get_script_dir)
-meson $(get_script_dir)/build -Dopencv_dir=/usr/local
+meson $(get_script_dir)/build -Dopencv_dir=/usr
 
 # compile the code
 message_out "start to compile by ninja..."
