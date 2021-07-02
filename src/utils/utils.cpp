@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <regex>
 #include <string>
+#include <sstream>
 #include <vector>
 #include "gstadmeta.h"
 #include "utils.h"
