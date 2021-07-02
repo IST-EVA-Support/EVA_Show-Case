@@ -30,7 +30,7 @@ gst_video = declare_dependency(
 	)
   
 ## Declare OpenCV4 dependency
-#opencv_dir = '/usr/local'
+#opencv_dir = '/usr'
 opencv_dir = get_option('opencv_dir')
 libs_cv = []
 req_cv_libs = ['core', 'imgproc', 'video', 'videoio', 'imgcodecs', 'highgui']

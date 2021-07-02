@@ -87,5 +87,8 @@ message_out "Deploy alert plugin..."
 
 message_out "Install related python package"
 pip3 install -r requirements.txt
+sudo apt install gstreamer1.0-libav
+sudo apt-get install espeak
+rm ~/.cache/gstreamer-1.0/regi*
 
 message_out "Installation completed, you could run this demo by execute ./run.sh"

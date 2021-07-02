@@ -44,6 +44,10 @@ Then you will see the pop-up display window of this showcase as in the example b
 
 ![image-showcase2](../../../figures/image-showcase2.png)
 
+The blue area denotes the restrict area which defined in alert-def-area.txt depends on the video. This file provides the defined area with normalized clockwise coordinates x and y each row. Once you modified this weardetection plugin source code, required to rebuild it simply direct to the path [/src/plugins/weardetection](/src/plugins/weardetection) and run weardetection-build.sh for ubuntu system or weardetection-build.bat for windows 10. (windows version of this showcase will provide in later version) The email alert plugin were implemented in python. Once modified the email alert plugin, direct to [/src/plugins/alert/email](/src/plugins/alert/email) and run email-build.sh for ubuntu or email-build.bat for windows 10. (windows version of this showcase will provide in later version). The same rebuild procedure for other alert plugins. More detail setting could be found in EVA Portal.
+
+*Modified installation details can be found at the EVA Portal: < Under Construction >
+
 ## Training Materials
 
 The training materials can be downloaded with the following links.
@@ -62,7 +66,7 @@ yolov3: https://github.com/AlexeyAB/darknet/tree/Yolo_v3
 
 Note: Showcases 1 and 2 use the same training materials.
 
-*Modified installation details can be found at the EVA Portal: < Under Construction >
+
 
 ## Run This Showcase Through EVA IDE
 
