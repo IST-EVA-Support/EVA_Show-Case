@@ -4,13 +4,26 @@ setlocal enabledelayedexpansion
 
 ::check vs2019 build exist
 echo VS2019 env setting
-::set buildenv="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
-set buildenv="C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-echo buildenv = %buildenv%
-if not exist %buildenv% (
-	call :message_out "build 2019 environment does not exist." 3
+set buildenvBuildTools="C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+set buildenvCommunity="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+
+if exist %buildenvBuildTools% (
+	set buildenv=%buildenvBuildTools%
+	goto:setenv
+) else (
+	call :message_out "build 2019 environment <BuildTools> does not exist." 3
+)
+
+if exist %buildenvCommunity% (
+	set buildenv=%buildenvCommunity%
+	goto:setenv
+)
+else (
+	call :message_out "build 2019 environment <Community> does not exist." 3
 	goto:eof
 )
+
+:setenv
 call :message_out "build 2019 environment exists and set vs2019 build environment." 5
 call %buildenv%
 
