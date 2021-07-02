@@ -55,6 +55,7 @@ struct _GstweardetectionPrivate
 	gchar* alertType;
     int coatNotDetectedCounter;
     int threshold_coatNotDetectedCounter;
+	int noPeopeleDetectedCounter;
 };
 
 enum
@@ -175,6 +176,7 @@ static void gst_weardetection_init (Gstweardetection *weardetection)
     weardetection->priv->alertType = "Wear\0";//DEFAULT_ALERT_TYPE;
     weardetection->priv->coatNotDetectedCounter = 0;
     weardetection->priv->threshold_coatNotDetectedCounter = 20;
+	weardetection->priv->noPeopeleDetectedCounter = 0;
     weardetection->priv->wear_display = true;
     weardetection->priv->alert_display = true;
 }
@@ -471,6 +473,18 @@ static void doAlgorithm(Gstweardetection *weardetection, GstBuffer* buffer)
     bool personWithCoat = false;
     int num_coat_detected = weardetection->priv->coat_vec.size();
     int num_person_detected = weardetection->priv->person_vec.size();
+	
+	// no people detected check
+	if(num_person_detected == 0)
+		weardetection->priv->noPeopeleDetectedCounter++;
+	else
+		weardetection->priv->noPeopeleDetectedCounter = 0;
+	// if no people detected for a period of time, set no wear coat counter to zero for reset.
+	if(weardetection->priv->noPeopeleDetectedCounter > 30)
+	{
+		weardetection->priv->coatNotDetectedCounter = 0;
+	}
+	
     
     for(int id = 0; id < num_person_detected; ++id)
     {    
