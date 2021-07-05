@@ -13,6 +13,7 @@ message_out(){
 }
 
 message_out "Start installing..."
+# build required plugin
 message_out "Building geofence plugin..."
 ../../plugins/geofence/geofence-build.sh
 # download video
@@ -29,7 +30,7 @@ then
     message_out "alert-def-area-geo.txt exists, skip."
 else
     message_out "Start download area file..."
-    wget https://adlinkdxstorage.blob.core.windows.net/file/alert-def-area-geo.txt
+    wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/alert-def-area-geo.txt
 fi
 # download model
 if [ $ModelNetwork == "ssd_mobilenet" ]
@@ -87,7 +88,7 @@ then
         message_out "adlink-mobilenetSSDv2-geo-fencing-label.txt exists, skip."
     else
         message_out "Start download label file..."
-        wget https://adlinkdxstorage.blob.core.windows.net/file/adlink-mobilenetSSDv2-geo-fencing-label.txt
+        wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-mobilenetSSDv2-geo-fencing-label.txt
     fi
 elif [ $ModelNetwork == "yolov3" ]
 then
@@ -99,6 +100,7 @@ then
         wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing-label.txt
     fi
 fi
+# python plugin
 message_out "Deploy alert plugin..."
 ../../plugins/alert/email/emailAlert-build.sh
 ../../plugins/alert/voice/voiceAlert-build.sh
