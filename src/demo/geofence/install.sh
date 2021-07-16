@@ -13,9 +13,10 @@ message_out(){
 }
 
 message_out "Start installing..."
+# build required plugin
 message_out "Building geofence plugin..."
 ../../plugins/geofence/geofence-build.sh
-
+# download video
 if [ -e "geo-fencing-demo.mp4" ]
 then
     message_out "Demo video exists, skip."
@@ -23,7 +24,15 @@ else
     message_out "Start download demo video..."
     wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/geo-fencing-demo.mp4
 fi
-
+# download video area define file
+if [ -e "alert-def-area-geo.txt" ]
+then
+    message_out "alert-def-area-geo.txt exists, skip."
+else
+    message_out "Start download area file..."
+    wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/alert-def-area-geo.txt
+fi
+# download model
 if [ $ModelNetwork == "ssd_mobilenet" ]
 then
     if [ -e "mobilenetSSDv2_geofencing.engine" ]
@@ -71,23 +80,27 @@ then
 else
     message_out "Unsupported Model: $ModelNetwork" 
 fi
-
-if [ -e "alert-def-area-geo.txt" ]
+# download model label file
+if [ $ModelNetwork == "ssd_mobilenet" ]
 then
-    message_out "alert-def-area-geo.txt exists, skip."
-else
-    message_out "Start download area file..."
-    wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/alert-def-area-geo.txt
-fi
-
-if [ -e "adlink-mobilenetSSDv2-geo-fencing-label.txt" ]
+    if [ -e "adlink-mobilenetSSDv2-geo-fencing-label.txt" ]
+    then
+        message_out "adlink-mobilenetSSDv2-geo-fencing-label.txt exists, skip."
+    else
+        message_out "Start download label file..."
+        wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-mobilenetSSDv2-geo-fencing-label.txt
+    fi
+elif [ $ModelNetwork == "yolov3" ]
 then
-    message_out "adlink-mobilenetSSDv2-geo-fencing-label.txt exists, skip."
-else
-    message_out "Start download label file..."
-    wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-mobilenetSSDv2-geo-fencing-label.txt
+    if [ -e "adlink-yolov3-geo-fencing-label.txt" ]
+    then
+        message_out "adlink-yolov3-geo-fencing-label.txt exists, skip."
+    else
+        message_out "Start download label file..."
+        wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing-label.txt
+    fi
 fi
-
+# python plugin
 message_out "Deploy alert plugin..."
 ../../plugins/alert/email/emailAlert-build.sh
 ../../plugins/alert/voice/voiceAlert-build.sh
@@ -99,3 +112,5 @@ sudo apt-get install espeak
 rm ~/.cache/gstreamer-1.0/regi*
 
 message_out "Installation completed, you could run this demo by execute ./run.sh"
+message_out "** run mobilenetSSDv2, execute run-win.bat directly."
+message_out "** run yolov3, run run-win.bat with argument yolov3."

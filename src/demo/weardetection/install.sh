@@ -13,10 +13,11 @@ message_out(){
 }
 
 message_out "Start installing..."
+# build required plugin
 message_out "Building geofence plugin..."
 ../../plugins/weardetection/weardetection-build.sh
 ../../plugins/geofence/geofence-build.sh
-
+# download video
 if [ -e "wear-detection-demo-1.mp4" ]
 then
     message_out "Demo video exists, skip."
@@ -24,7 +25,15 @@ else
     message_out "Start download demo video..."
     wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/wear-detection-demo-1.mp4
 fi
-
+# download video area define file
+if [ -e "alert-def-area.txt" ]
+then
+    message_out "alert-def-are.txt exists, skip."
+else
+    message_out "Start download area file..."
+    wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/alert-def-area.txt
+fi
+# download model
 if [ $ModelNetwork == "ssd_mobilenet" ]
 then
     if [ -e "mobilenetSSDv2_geofencing.engine" ]
@@ -72,23 +81,27 @@ then
 else
     message_out "Unsupported Model: $ModelNetwork" 
 fi
-
-if [ -e "alert-def-area.txt" ]
+# download model label file
+if [ $ModelNetwork == "ssd_mobilenet" ]
 then
-    message_out "alert-def-are.txt exists, skip."
-else
-    message_out "Start download area file..."
-    wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/alert-def-area.txt
-fi
-
-if [ -e "adlink-mobilenetSSDv2-geo-fencing-label.txt" ]
+    if [ -e "adlink-mobilenetSSDv2-geo-fencing-label.txt" ]
+    then
+        message_out "adlink-mobilenetSSDv2-geo-fencing-label.txt exists, skip."
+    else
+        message_out "Start download label file..."
+        wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-mobilenetSSDv2-geo-fencing-label.txt
+    fi
+elif [ $ModelNetwork == "yolov3" ]
 then
-    message_out "adlink-mobilenetSSDv2-geo-fencing-label.txt exists, skip."
-else
-    message_out "Start download label file..."
-    wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-mobilenetSSDv2-geo-fencing-label.txt
+    if [ -e "adlink-yolov3-geo-fencing-label.txt" ]
+    then
+        message_out "adlink-yolov3-geo-fencing-label.txt exists, skip."
+    else
+        message_out "Start download label file..."
+        wget https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing-label.txt
+    fi
 fi
-
+# python plugin
 message_out "Deploy alert plugin..."
 ../../plugins/alert/email/emailAlert-build.sh
 ../../plugins/alert/voice/voiceAlert-build.sh

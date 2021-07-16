@@ -15,7 +15,7 @@
 #include "gstadmeta.h"
 #include "utils.h"
 
-#define DEFAULT_ALERT_TYPE "BreakIn"
+////#define DEFAULT_ALERT_TYPE "BreakIn"
 
 
 GST_DEBUG_CATEGORY_STATIC (gst_geofencebase_debug_category);
@@ -47,7 +47,8 @@ struct _GstGeoFenceBasePrivate
     bool person_display;
     bool alert;
     std::vector<int> map_vec;
-    std::string alertType;
+    //std::string alertType;
+	gchar* alertType;
 };
 
 enum
@@ -99,7 +100,7 @@ static void gst_geofencebase_class_init (GstGeofencebaseClass * klass)
                                    g_param_spec_string ("alert-area-def", "Alert-area-def", "The definition file location of the alert area respect the frame based on the specific resolution.", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
   
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_TYPE,
-                                   g_param_spec_string ("alert-type", "Alert-Type", "The alert type name when event occurred.", DEFAULT_ALERT_TYPE, (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+                                   g_param_spec_string ("alert-type", "Alert-Type", "The alert type name when event occurred.", "BreakIn\0"/*DEFAULT_ALERT_TYPE*/, (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
   
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_AREA_DISPLAY,
                                    g_param_spec_boolean("area-display", "Area-display", "Show alert area in frame.", FALSE, G_PARAM_READWRITE));
@@ -128,7 +129,7 @@ static void gst_geofencebase_init (GstGeofencebase *geofencebase)
     geofencebase->priv->alert = false;
     geofencebase->eventTick = 0;
     geofencebase->lastEventTick = 0;
-    geofencebase->priv->alertType = DEFAULT_ALERT_TYPE;
+    geofencebase->priv->alertType = "BreakIn\0";//DEFAULT_ALERT_TYPE;
 }
 
 void gst_geofencebase_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
@@ -204,7 +205,8 @@ void gst_geofencebase_get_property (GObject * object, guint property_id, GValue 
        g_value_set_string (value, geofencebase->priv->alert_definition_path.c_str());
        break;
     case PROP_ALERT_TYPE:
-       g_value_set_string (value, geofencebase->priv->alertType.c_str());
+       //g_value_set_string (value, geofencebase->priv->alertType.c_str());
+	   g_value_set_string (value, geofencebase->priv->alertType);
        break;
     case PROP_ALERT_AREA_DISPLAY:
        g_value_set_boolean(value, geofencebase->priv->area_display);
@@ -416,7 +418,7 @@ static void doAlgorithm(GstGeofencebase *geofencebase, GstBuffer* buffer)
             if(frame_exist)
             {
                 // alert message format:",type<time>", must used append.
-                std::string alertMessage = "," + geofencebase->priv->alertType + "<" + return_current_time_and_date() + ">";
+                std::string alertMessage = "," + std::string(geofencebase->priv->alertType) + "<" + return_current_time_and_date() + ">";
                 
                 // write alert message to meta use pointer
                 meta->batch.frames[0].detection_results[geofencebase->priv->map_vec[id]].meta += alertMessage;

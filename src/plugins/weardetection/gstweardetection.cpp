@@ -14,8 +14,8 @@
 #include <vector>
 #include "gstadmeta.h"
 
-#define DEFAULT_ALERT_TYPE "Wear"
-#define DEFAULT_TARGET_TYPE "NONE"
+//#define DEFAULT_ALERT_TYPE "Wear"
+//#define DEFAULT_TARGET_TYPE "NONE"
 
 
 GST_DEBUG_CATEGORY_STATIC (gst_weardetection_debug_category);
@@ -49,10 +49,13 @@ struct _GstweardetectionPrivate
     bool alert_display;
     bool alert;
     std::vector<int> map_vec;
-    std::string targetType;
-    std::string alertType;
+    //std::string targetType;
+    gchar* targetType;
+	//std::string alertType;
+	gchar* alertType;
     int coatNotDetectedCounter;
     int threshold_coatNotDetectedCounter;
+	int noPeopeleDetectedCounter;
 };
 
 enum
@@ -137,10 +140,10 @@ static void gst_weardetection_class_init (GstweardetectionClass * klass)
   
   // Install the properties to GObjectClass
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_TARGET_TYPE,
-                                   g_param_spec_string ("target-type", "Target-Type", "The target type name used in this element for processing.", DEFAULT_TARGET_TYPE, (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+                                   g_param_spec_string ("target-type", "Target-Type", "The target type name used in this element for processing.", "NONE"/*DEFAULT_TARGET_TYPE*/, (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
   
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_TYPE,
-                                   g_param_spec_string ("alert-type", "Alert-Type", "The alert type name when event occurred.", DEFAULT_ALERT_TYPE, (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+                                   g_param_spec_string ("alert-type", "Alert-Type", "The alert type name when event occurred.", "Wear\0"/*DEFAULT_ALERT_TYPE*/, (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
     
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_NOT_WEAR_ACCUMULATE_COUNT,
                                    g_param_spec_int("accumulate-count", "Accumulate-count", "Not wear ", 0, 255, 20, G_PARAM_READWRITE));
@@ -169,10 +172,11 @@ static void gst_weardetection_init (Gstweardetection *weardetection)
     weardetection->priv->alert = false;
     weardetection->eventTick = 0;
     weardetection->lastEventTick = 0;
-    weardetection->priv->targetType = DEFAULT_TARGET_TYPE;
-    weardetection->priv->alertType = DEFAULT_ALERT_TYPE;
+    weardetection->priv->targetType = "NONE\0";//DEFAULT_TARGET_TYPE;
+    weardetection->priv->alertType = "Wear\0";//DEFAULT_ALERT_TYPE;
     weardetection->priv->coatNotDetectedCounter = 0;
     weardetection->priv->threshold_coatNotDetectedCounter = 20;
+	weardetection->priv->noPeopeleDetectedCounter = 0;
     weardetection->priv->wear_display = true;
     weardetection->priv->alert_display = true;
 }
@@ -233,10 +237,12 @@ void gst_weardetection_get_property (GObject * object, guint property_id, GValue
        g_value_set_boolean(value, weardetection->priv->alert_display);
        break;
     case PROP_TARGET_TYPE:
-       g_value_set_string (value, weardetection->priv->targetType.c_str());
+       //g_value_set_string (value, weardetection->priv->targetType.c_str());
+	   g_value_set_string (value, weardetection->priv->targetType);
        break;
     case PROP_ALERT_TYPE:
-       g_value_set_string (value, weardetection->priv->alertType.c_str());
+       //g_value_set_string (value, weardetection->priv->alertType.c_str());
+	   g_value_set_string (value, weardetection->priv->alertType);
        break;    
     case PROP_NOT_WEAR_ACCUMULATE_COUNT:
        g_value_set_int(value, weardetection->priv->threshold_coatNotDetectedCounter);
@@ -385,7 +391,7 @@ static void getDetectedPerson(Gstweardetection *weardetection, GstBuffer* buffer
                 
                 if(detection_result.obj_label.compare("person") == 0)
                 {
-                    if(detection_result.meta.find(weardetection->priv->targetType) != std::string::npos || weardetection->priv->targetType.compare(DEFAULT_TARGET_TYPE) == 0)
+                    if(detection_result.meta.find(weardetection->priv->targetType) != std::string::npos || std::string(weardetection->priv->targetType).compare("NONE"/*DEFAULT_TARGET_TYPE*/) == 0)
                     {
                         std::vector<cv::Point> personPoint_vec;
                         personPoint_vec.push_back(cv::Point2d(x1, y1));
@@ -467,6 +473,18 @@ static void doAlgorithm(Gstweardetection *weardetection, GstBuffer* buffer)
     bool personWithCoat = false;
     int num_coat_detected = weardetection->priv->coat_vec.size();
     int num_person_detected = weardetection->priv->person_vec.size();
+	
+	// no people detected check
+	if(num_person_detected == 0)
+		weardetection->priv->noPeopeleDetectedCounter++;
+	else
+		weardetection->priv->noPeopeleDetectedCounter = 0;
+	// if no people detected for a period of time, set no wear coat counter to zero for reset.
+	if(weardetection->priv->noPeopeleDetectedCounter > 30)
+	{
+		weardetection->priv->coatNotDetectedCounter = 0;
+	}
+	
     
     for(int id = 0; id < num_person_detected; ++id)
     {    
@@ -496,7 +514,7 @@ static void doAlgorithm(Gstweardetection *weardetection, GstBuffer* buffer)
             if(frame_exist)
             {
                 // alert message format:",type<time>", must use append.
-                std::string alertMessage = "," + weardetection->priv->alertType + "<" + return_current_time_and_date() + ">";
+                std::string alertMessage = "," + std::string(weardetection->priv->alertType) + "<" + return_current_time_and_date() + ">";
                 meta->batch.frames[0].detection_results[weardetection->priv->map_vec[id]].meta += alertMessage;
             }
         }

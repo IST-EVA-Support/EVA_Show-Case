@@ -6,13 +6,30 @@ add_languages('cpp', required : true)
 
 cc = meson.get_compiler('c')
 
+
 gst = dependency('gstreamer-1.0')
 gst_base = dependency('gstreamer-base-1.0')
+#gst_video = declare_dependency(
+#    dependencies : cc.find_library('gstvideo-1.0'),
+#    include_directories : ['/usr/include/gstreamer-1.0'],
+#  )
+
+eva_root_dir = get_option('eva_root')
+inc_gst_video = ''
+lib_gst_video = []
+if target_machine.system() == 'linux'
+	lib_gst_video += cc.find_library('gstvideo-1.0', required : true)
+	inc_gst_video = include_directories('/usr/include/gstreamer-1.0')
+elif target_machine.system() == 'windows'
+	lib_gst_video += cc.find_library('gstvideo-1.0', required : true, dirs: 'C:\ADLINK\gstreamer\lib')
+	inc_gst_video = include_directories(join_paths(eva_root_dir, '..', 'gstreamer', 'include', 'gstreamer-1.0'))
+endif
+
 gst_video = declare_dependency(
-    dependencies : cc.find_library('gstvideo-1.0'),
-    include_directories : ['/usr/include/gstreamer-1.0'],
-  )
-  
+	dependencies : lib_gst_video,
+	include_directories : inc_gst_video,
+	)
+   
 ## Declare OpenCV4 dependency
 #opencv_dir = '/usr'
 opencv_dir = get_option('opencv_dir')
