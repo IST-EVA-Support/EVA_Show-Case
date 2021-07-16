@@ -113,3 +113,5 @@ sudo apt-get install espeak
 rm ~/.cache/gstreamer-1.0/regi*
 
 message_out "Installation completed, you could run this demo by execute ./run.sh"
+message_out "** run mobilenetSSDv2, execute run-win.bat directly."
+message_out "** run yolov3, run run-win.bat with argument yolov3."
