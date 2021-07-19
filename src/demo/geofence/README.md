@@ -52,7 +52,7 @@ The red area denotes the restrict area which defined in alert-def-area-geo.txt d
 
 The training materials can be downloaded with the following links.
 
-Training images: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-training-images.zip
+Training images: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-training-images.zip or http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-training-images.zip 
 
 Training notation for mobilenetSSDv2: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-mobilenetSSDv2.zip
 
