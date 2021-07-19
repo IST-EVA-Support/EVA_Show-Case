@@ -52,11 +52,11 @@ The blue area denotes the restrict area which defined in alert-def-area.txt depe
 
 The training materials can be downloaded with the following links.
 
-Training images: https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-training-images.zip
+Training images: https://adlinkdxstorage.blob.core.windows.net/file/geo-fencing-training-images.zip or http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-training-images.zip 
 
-Training notation for mobilenetSSDv2: https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-mobilenetSSDv2.zip
+Training notation for mobilenetSSDv2: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-mobilenetSSDv2.zip
 
-Training notation for yolov3: https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-yolov3.zip
+Training notation for yolov3: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-yolov3.zip
 
 Training architecture sites listed below:
 
@@ -68,7 +68,7 @@ Note: Showcases 1 and 2 use the same training materials.
 
 
 
-## Run This Showcase Through EVA IDE
+## Run This Showcase Through EVA IDE(For EVASDK 3.5.2 or later)
 
 In this showcase, you can run the pipeline by execute <a href="#runsh">run.sh</a> but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/weardetection as root:
 
