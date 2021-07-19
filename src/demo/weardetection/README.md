@@ -86,7 +86,7 @@ And you will see the IDE show up as below:
 
 ![EVAIDE](../../../figures/EVAIDE.png)
 
-Then select showcase2.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
+Then select the pygraph you want to run, here for example select showcase2-mobilenetssdv2.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
 
 ![showcase2-file-load](../../../figures/showcase2-file-load.png)
 
