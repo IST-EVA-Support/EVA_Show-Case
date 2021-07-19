@@ -89,10 +89,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "dfc9437a-f2e5-4dcd-b3c3-b660695d1c41",
-                                "destinationUUID": "ff3db003-6777-4ffb-ac2a-00716e6d153a",
+                                "destinationUUID": "8ff2c108-b148-4f18-b017-de2f7ce68817",
                                 "sourceName": "filesrc_src",
                                 "destinationName": "qtdemux_sink",
-                                "uuid": "4c5f1754-0f4e-4f2c-9401-e2885ca2dfa4",
+                                "uuid": "cf1aa497-c7d1-4179-9927-e48debd8d9ad",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -157,29 +157,6 @@
             ],
             "outputs": [
                 {
-                    "name": "audio_%u",
-                    "package": "PyFlowGstreamer",
-                    "fullName": "qtdemux_audio_%u",
-                    "dataType": "",
-                    "direction": 1,
-                    "value": null,
-                    "uuid": "09560898-330d-40a3-abfe-af42bf17131f",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        8
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "audio_%u",
-                        "wires": {}
-                    }
-                },
-                {
                     "name": "video_%u",
                     "package": "PyFlowGstreamer",
                     "fullName": "qtdemux_video_%u",
@@ -211,10 +188,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "1d276cc4-6212-40d8-b2f7-354fed3eae96",
-                                "destinationUUID": "08933f0f-04d2-4d55-914d-b0e02f2e3744",
+                                "destinationUUID": "062bf8fd-4051-48f1-82d6-201f0fad0b1f",
                                 "sourceName": "qtdemux_video_%u",
                                 "destinationName": "h264parse_sink",
-                                "uuid": "dbf11aa1-34ca-41d1-b609-7595c2f09397",
+                                "uuid": "2d4068fb-4702-4eb1-8e4c-494731024093",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -247,6 +224,29 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "subtitle_%u",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "audio_%u",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "qtdemux_audio_%u",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "09560898-330d-40a3-abfe-af42bf17131f",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        8
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "audio_%u",
                         "wires": {}
                     }
                 }
@@ -331,10 +331,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "0aead57f-4a1a-4bd2-867d-83258c658fb2",
-                                "destinationUUID": "5803a1c7-0d5e-46a7-8c08-816ea1fffc6c",
+                                "destinationUUID": "c51452f4-124e-46ba-b471-47303b5e0da8",
                                 "sourceName": "h264parse_src",
                                 "destinationName": "avdec_h264_sink",
-                                "uuid": "d2cd07fd-3b5a-4055-a612-fdbfb96f4c52",
+                                "uuid": "e82f4a67-7520-46fd-81c5-91c8c1c6394f",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -432,10 +432,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "6c97f1d6-b80b-4dc2-9108-3c7726066b09",
-                                "destinationUUID": "9f701200-6f7d-48af-b60f-8d56837f3886",
+                                "destinationUUID": "18093972-f353-4585-9930-ca2fe1643bba",
                                 "sourceName": "avdec_h264_src",
                                 "destinationName": "videoconvert_sink",
-                                "uuid": "9a37fced-58a6-4327-a8e3-99b63dc33d16",
+                                "uuid": "729c5296-39e4-4060-8d4d-eb8c3271f908",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -533,10 +533,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "ae124509-8d06-4233-a1b0-9febd03fc927",
-                                "destinationUUID": "46bd8270-f40d-4180-a62a-ff4e8d118d15",
+                                "destinationUUID": "8ec1ec0f-01f9-4eaf-96bb-46be5015dab7",
                                 "sourceName": "videoconvert_src",
                                 "destinationName": "adrt_sink",
-                                "uuid": "a16d090a-a62a-4125-8e12-560a2e4cd024",
+                                "uuid": "ea456911-a0ec-4fff-990a-13b0a950c67d",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -580,15 +580,15 @@
             "uuid": "1841dcf2-06bb-4fe9-8d83-49f1ab13d1ee",
             "inputs": [
                 {
-                    "name": "model",
+                    "name": "device",
                     "package": "PyFlowBase",
-                    "fullName": "adrt_model",
-                    "dataType": "StringPin",
+                    "fullName": "adrt_device",
+                    "dataType": "IntPin",
                     "direction": 0,
-                    "value": "\"./mobilenetSSDv2_geofencing.engine\"",
-                    "uuid": "1e370594-f9cc-41c3-9f1b-56449975ae4b",
+                    "value": "0",
+                    "uuid": "a224e630-1064-4511-a128-542aee9772a0",
                     "linkedTo": [],
-                    "pinIndex": 4,
+                    "pinIndex": 5,
                     "options": [
                         256
                     ],
@@ -598,7 +598,7 @@
                     "alwaysDict": false,
                     "wrapper": {
                         "bLabelHidden": false,
-                        "displayName": "model",
+                        "displayName": "device",
                         "wires": {}
                     }
                 },
@@ -626,15 +626,15 @@
                     }
                 },
                 {
-                    "name": "device",
+                    "name": "rgbconv",
                     "package": "PyFlowBase",
-                    "fullName": "adrt_device",
-                    "dataType": "IntPin",
+                    "fullName": "adrt_rgbconv",
+                    "dataType": "BoolPin",
                     "direction": 0,
-                    "value": "0",
-                    "uuid": "a224e630-1064-4511-a128-542aee9772a0",
+                    "value": "true",
+                    "uuid": "b88903b1-1e04-4d6d-b907-d4448040e8d3",
                     "linkedTo": [],
-                    "pinIndex": 5,
+                    "pinIndex": 9,
                     "options": [
                         256
                     ],
@@ -644,7 +644,7 @@
                     "alwaysDict": false,
                     "wrapper": {
                         "bLabelHidden": false,
-                        "displayName": "device",
+                        "displayName": "rgbconv",
                         "wires": {}
                     }
                 },
@@ -672,29 +672,6 @@
                     }
                 },
                 {
-                    "name": "rgbconv",
-                    "package": "PyFlowBase",
-                    "fullName": "adrt_rgbconv",
-                    "dataType": "BoolPin",
-                    "direction": 0,
-                    "value": "true",
-                    "uuid": "b88903b1-1e04-4d6d-b907-d4448040e8d3",
-                    "linkedTo": [],
-                    "pinIndex": 9,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "rgbconv",
-                        "wires": {}
-                    }
-                },
-                {
                     "name": "scale",
                     "package": "PyFlowBase",
                     "fullName": "adrt_scale",
@@ -714,6 +691,29 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "scale",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "model",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_model",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"./mobilenetSSDv2_geofencing.engine\"",
+                    "uuid": "1e370594-f9cc-41c3-9f1b-56449975ae4b",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "model",
                         "wires": {}
                     }
                 }
@@ -749,10 +749,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "492ee988-a0a3-4b5b-b86d-44644a87846e",
-                                "destinationUUID": "f13a8de6-3b0f-42c1-bef1-3456edec4525",
+                                "destinationUUID": "daed48b2-3709-4752-acd4-3e8cce81df98",
                                 "sourceName": "adrt_src",
                                 "destinationName": "adtrans_ssd_sink",
-                                "uuid": "be92eaef-e239-4ae4-9c25-b25fe5acfb22",
+                                "uuid": "38145895-daab-409c-9088-7afb3dfdeb55",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -919,10 +919,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "cbb0b939-ea03-4691-823b-66b476d7b54b",
-                                "destinationUUID": "b34cb4c7-825c-411f-bce4-e0763f9056dc",
+                                "destinationUUID": "9d64dfe9-f2bf-4ce5-9362-5f1e25eedfb8",
                                 "sourceName": "adtrans_ssd_src",
                                 "destinationName": "geofencebase_sink",
-                                "uuid": "0eeb6b59-01b7-41a5-81c7-68458651332d",
+                                "uuid": "3bd02ea8-865c-4331-baee-23b6f70229cf",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -965,29 +965,6 @@
             "name": "geofencebase",
             "uuid": "64966af0-e2e6-426a-9e66-dec89110c052",
             "inputs": [
-                {
-                    "name": "person-display",
-                    "package": "PyFlowBase",
-                    "fullName": "geofencebase_person-display",
-                    "dataType": "BoolPin",
-                    "direction": 0,
-                    "value": "true",
-                    "uuid": "64c96ed1-a7c1-4d09-aa79-15fc18872aac",
-                    "linkedTo": [],
-                    "pinIndex": 6,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "person-display",
-                        "wires": {}
-                    }
-                },
                 {
                     "name": "alert-area-def",
                     "package": "PyFlowBase",
@@ -1056,6 +1033,52 @@
                         "displayName": "area-display",
                         "wires": {}
                     }
+                },
+                {
+                    "name": "alert-type",
+                    "package": "PyFlowBase",
+                    "fullName": "geofencebase_alert-type",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"geofence\"",
+                    "uuid": "0847e44e-ae91-4bce-be46-5673ff45de53",
+                    "linkedTo": [],
+                    "pinIndex": 7,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "alert-type",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "person-display",
+                    "package": "PyFlowBase",
+                    "fullName": "geofencebase_person-display",
+                    "dataType": "BoolPin",
+                    "direction": 0,
+                    "value": "true",
+                    "uuid": "64c96ed1-a7c1-4d09-aa79-15fc18872aac",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "person-display",
+                        "wires": {}
+                    }
                 }
             ],
             "outputs": [
@@ -1071,10 +1094,10 @@
                         {
                             "lhsNodeName": "geofencebase",
                             "outPinId": 1,
-                            "rhsNodeName": "videoconvert1",
+                            "rhsNodeName": "email_alert",
                             "inPinId": 1,
                             "lhsNodeUid": "64966af0-e2e6-426a-9e66-dec89110c052",
-                            "rhsNodeUid": "ff8add2e-3fe6-400e-8173-ec4c758e38c5"
+                            "rhsNodeUid": "03e6c7c2-82ae-4009-8f40-12ba1ec46eb1"
                         }
                     ],
                     "pinIndex": 1,
@@ -1089,10 +1112,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "1a8cb6f4-ba1f-40e8-9770-3ecf1abb8c5b",
-                                "destinationUUID": "83bf2a1f-51b5-4533-a2e4-5847070585cb",
+                                "destinationUUID": "18840209-772d-4372-ba95-c8b56ff6563e",
                                 "sourceName": "geofencebase_src",
-                                "destinationName": "videoconvert1_sink",
-                                "uuid": "ea241fd2-5695-45ee-9902-566c3ab1a060",
+                                "destinationName": "email_alert_sink",
+                                "uuid": "e031ef92-3b5c-447e-8531-abf6ef75a367",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1190,10 +1213,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "9a14e703-045f-40ac-a2f3-799e85d34766",
-                                "destinationUUID": "4d38b2a7-8473-4ea5-a9e5-6b0e951c34bb",
+                                "destinationUUID": "063560ee-1e63-4f54-98db-4c21902d607c",
                                 "sourceName": "videoconvert1_src",
                                 "destinationName": "ximagesink_sink",
-                                "uuid": "2a652e07-ebf9-419d-afe9-4757b97e6e03",
+                                "uuid": "14b2d08f-386d-43cc-b4fd-46e538fc5175",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1277,6 +1300,277 @@
             },
             "x": 627.5720063730448,
             "y": -336.93997312507435
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "email_alert",
+            "owningGraphName": "root",
+            "name": "email_alert",
+            "uuid": "03e6c7c2-82ae-4009-8f40-12ba1ec46eb1",
+            "inputs": [
+                {
+                    "name": "alert-type",
+                    "package": "PyFlowBase",
+                    "fullName": "email_alert_alert-type",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"geofence\"",
+                    "uuid": "1dca74d4-1065-477c-822c-a97c70d83b19",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "alert-type",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "receiver-address",
+                    "package": "PyFlowBase",
+                    "fullName": "email_alert_receiver-address",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"youremail@domain.com\"",
+                    "uuid": "357b0f48-14d9-4870-8670-35fd042f9420",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "receiver-address",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "email_alert_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"email_alert\"",
+                    "uuid": "b02d4e74-e9d3-4018-b7ab-ebbc18bf9da6",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "email_alert_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "e99fbc81-0352-4e19-8b1f-22cf5cc430f1",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "email_alert",
+                            "outPinId": 1,
+                            "rhsNodeName": "voice_alert",
+                            "inPinId": 1,
+                            "lhsNodeUid": "03e6c7c2-82ae-4009-8f40-12ba1ec46eb1",
+                            "rhsNodeUid": "e62566f3-c3f3-4196-a27e-5f1ad7325b68"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "e99fbc81-0352-4e19-8b1f-22cf5cc430f1",
+                                "destinationUUID": "b331437f-2221-4d21-82bc-0993cd835572",
+                                "sourceName": "email_alert_src",
+                                "destinationName": "voice_alert_sink",
+                                "uuid": "a6f095ae-0b11-4343-9577-fbab89fc370d",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "email_alert"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 140.0,
+                    "h": 143.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">email_alert</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 33.096537902993205,
+            "y": -103.23535567232949
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "voice_alert",
+            "owningGraphName": "root",
+            "name": "voice_alert",
+            "uuid": "e62566f3-c3f3-4196-a27e-5f1ad7325b68",
+            "inputs": [
+                {
+                    "name": "alert-type",
+                    "package": "PyFlowBase",
+                    "fullName": "voice_alert_alert-type",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"geofence\"",
+                    "uuid": "41d5db53-cff9-4b4e-8c39-3dbd19f3dea7",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "alert-type",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "voice_alert_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"voice_alert\"",
+                    "uuid": "eba2d26f-e03a-42a3-be1f-baf376a2cf41",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "voice_alert_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "fd9062a6-6532-48f9-885a-9a4cab166765",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "voice_alert",
+                            "outPinId": 1,
+                            "rhsNodeName": "videoconvert1",
+                            "inPinId": 1,
+                            "lhsNodeUid": "e62566f3-c3f3-4196-a27e-5f1ad7325b68",
+                            "rhsNodeUid": "ff8add2e-3fe6-400e-8173-ec4c758e38c5"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "fd9062a6-6532-48f9-885a-9a4cab166765",
+                                "destinationUUID": "97137d87-d17f-4658-9fad-9e77c47c9e2c",
+                                "sourceName": "voice_alert_src",
+                                "destinationName": "videoconvert1_sink",
+                                "uuid": "ed8dbd96-dc85-4e90-ba23-6d18ab4fedba",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "voice_alert"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 120.0,
+                    "h": 98.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">voice_alert</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 232.89155070451267,
+            "y": -84.220171435405
         }
     ],
     "depth": 1,
