@@ -136,7 +136,7 @@ Then select the pygraph you want to run, here for example select showcase1-mobil
 
 ![showcase1-pipeline](../../../figures/showcase1-pipeline.png)
 
-The settings are default set relevant to this scenario<a href="#runsh"><Note 1></a> and one alert require to be set. Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
+The settings are default set relevant to this scenario<a href="#note1"><Note 1></a> and one alert require to be set. Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
 
 ![emailalert-node](../../../figures/emailalert-node.png) ![emailalert-node-property](../../../figures/emailalert-node-property-showcase1.png)
 
