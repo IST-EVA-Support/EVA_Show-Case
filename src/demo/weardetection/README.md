@@ -22,13 +22,37 @@ Use the path:
 > cd src/demo/weardetection
 ```
 
+For Windows, 
+
+```
+> cd src\demo\geofence\windows
+```
+
 Run install.sh with root privileges:
 
 ```
 > ./install.sh
 ```
 
+For Windows:
+
+```
+> install-win.bat
+```
+
 This is required to modify the path to the OpenCV library. If you have installed EVA on a non-ADLINK device, please check the requirements in our EVA portal.
+
+The mobilenetssdv2 is the default installed, if want to install yolov3, use the argument below:
+
+```
+> ./install.sh yolov3
+```
+
+For Windows:
+
+```
+> install-win.bat yolov3
+```
 
 <a id="runsh"></a>
 
@@ -37,6 +61,26 @@ After installation, execute run.sh for the pipeline command:
 ```
 > ./run.sh
 ```
+
+For Windows:
+
+```
+> run-win.bat
+```
+
+The mobilenetssdv2 is the default run, if yolov3 is installed, use the argument below:
+
+```
+> ./run.sh yolov3
+```
+
+For Windows:
+
+```
+> run-win.bat yolov3
+```
+
+
 
 Or you can open EVA_IDE and load pygraph then execute, please see the section, [Run This Showcase Through EVA IDE](#Run-This-Showcase-Through-EVA-IDE).
 
@@ -92,9 +136,17 @@ Then select the pygraph you want to run, here for example select showcase2-mobil
 
 ![showcase1-pipeline](../../../figures/showcase2-pipeline.png)
 
-The settings are default set relevant to this scenario and one alert require to be set. Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
+The settings are default set relevant to this scenario<a href="#runsh"><Note 1></a> and one alert require to be set. Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
 
 ![emailalert-node](../../../figures/emailalert-node.png) ![emailalert-node-property](../../../figures/emailalert-node-property-showcase2.png)
 
 Provide an email address you want to receive from the alert for this show case in "receiver-address". Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
+
+<a id="note1"></a>
+
+<Note 1> If your IDE can not show/add the plugin node "h264parse" or "weardetection" after loading the pygraph file, manually add it into the while list. The file element_list.txt will be generated after running IDE once. 
+
+For Linux, add "+h264parse" or "+weardetection" in file : /home/USER_ACCOUNT/adlink/eva/IDE/config/element_list.txt. 
+
+For Windows 10, add "+h264parse" or "+weardetection" in file : C:\ADLINK\eva\IDE\config\element_list.txt
 
