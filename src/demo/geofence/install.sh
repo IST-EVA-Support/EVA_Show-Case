@@ -46,7 +46,7 @@ then
             message_out "Start download model..."
             wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/geo_fencing_ssd_v2.zip
             # unzip it, then delete the zip file
-            sudo apt-get install unzip
+            sudo apt-get -y install unzip
             unzip geo_fencing_ssd_v2.zip
             rm geo_fencing_ssd_v2.zip
         fi
@@ -68,7 +68,7 @@ then
             message_out "Start download model..."
             wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing.zip
             # unzip it, then delete the zip file
-            sudo apt-get install unzip
+            sudo apt-get -y install unzip
             unzip adlink-yolov3-geo-fencing.zip
             rm adlink-yolov3-geo-fencing.zip
         fi
@@ -107,8 +107,8 @@ message_out "Deploy alert plugin..."
 
 message_out "Install related python package"
 pip3 install -r requirements.txt
-sudo apt install gstreamer1.0-libav
-sudo apt-get install espeak
+sudo apt -y install gstreamer1.0-libav
+sudo apt-get -y install espeak
 rm ~/.cache/gstreamer-1.0/regi*
 
 message_out "Installation completed, you could run this demo by execute ./run.sh"
