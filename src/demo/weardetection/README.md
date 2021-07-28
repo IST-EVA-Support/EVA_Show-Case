@@ -104,9 +104,15 @@ Training notation for yolov3: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/
 
 Training architecture sites listed below:
 
-mobilenetSSDv2: https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1_detection_zoo.md, ssd_mobilenet_v2_coco
+mobilenetSSDv2: 
 
-yolov3: https://github.com/AlexeyAB/darknet/tree/Yolo_v3
+https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1.md
+
+https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1_detection_zoo.md, ssd_mobilenet_v2_coco
+
+yolov3: 
+
+https://github.com/AlexeyAB/darknet/tree/Yolo_v3
 
 Note: Showcases 1 and 2 use the same training materials.
 
