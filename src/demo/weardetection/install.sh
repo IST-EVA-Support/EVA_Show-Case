@@ -15,6 +15,7 @@ message_out(){
 message_out "Start installing..."
 # build required plugin
 message_out "Building geofence plugin..."
+sudo apt -y install libgstreamer-plugins-base1.0-dev
 ../../plugins/weardetection/weardetection-build.sh
 ../../plugins/geofence/geofence-build.sh
 # download video
