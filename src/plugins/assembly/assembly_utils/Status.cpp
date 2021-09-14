@@ -1,8 +1,22 @@
 #include "Status.h"
 #include <iostream>
 
+using namespace BASIC_INFORMATION;
 using namespace PROGRESS;
 using namespace PREPARE;
+
+//===== Class BOM
+BOM::BOM(std::vector<std::string> nameVector, std::vector<int> numberVector, std::vector<int> orderVector)
+{
+    this->NameVector = nameVector;
+    this->NumberVector = numberVector;
+    this->OrderVector = orderVector;
+}
+
+BOM::~BOM()
+{
+    
+}
 
 //===== Class PrepareStatus
 PrepareStatus* PrepareStatus::singletonInstance = NULL;
@@ -184,6 +198,21 @@ int Material::GetValidatePartCurrentIndex()
 int Material::GetPartRequiredIndex()
 {
     return this->positionInBox->GetRequiredIndex();
+}
+
+int Material::GetBestScoreObjectIndex()
+{
+    int bestScore = -1;
+    int bestObjectIndex = -1;
+    for(int i = 0; i < scoreVector.size(); ++i)
+    {
+        if(scoreVector[i] > bestScore)
+        {
+            bestScore = scoreVector[i];
+            bestObjectIndex = i;
+        }
+    }
+    return bestObjectIndex;
 }
 
 void Material::ClearStatus()

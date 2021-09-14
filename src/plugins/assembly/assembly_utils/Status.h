@@ -4,6 +4,20 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
 
+namespace BASIC_INFORMATION
+{
+    class BOM
+    {
+    public:
+        BOM(std::vector<std::string> nameVector, std::vector<int> NumberVector, std::vector<int> OrderVector);
+        ~BOM();
+    public:
+        std::vector<std::string> NameVector;
+        std::vector<int> NumberVector;
+        std::vector<int> OrderVector;
+    };
+}
+
 namespace PROGRESS
 {
     enum class Prepare {NotReady, Ready, Assembly};
@@ -75,6 +89,7 @@ public:
     int GetValidatePartCurrentNumber();
     int GetValidatePartCurrentIndex();
     int GetPartRequiredIndex();
+    int GetBestScoreObjectIndex();
     void ClearStatus();
     bool IsReady();
     bool CheckNumber();

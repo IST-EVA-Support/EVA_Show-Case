@@ -3,9 +3,9 @@
 
 #include <gst/video/video.h>
 #include <gst/video/gstvideofilter.h>
-//#include <opencv2/opencv.hpp>
 #include "assembly_utils/Status.h"
 
+using namespace BASIC_INFORMATION;
 using namespace PROGRESS;
 using namespace PREPARE;
 
@@ -29,6 +29,7 @@ struct _GstPartpreparation
   GstPartpreparationPrivate *priv;
   
   cv::Mat srcMat;
+  BOM bom;
   PrepareStatus* prepareStatus;
   long prepareStartTick;
   long prepareEndTick;

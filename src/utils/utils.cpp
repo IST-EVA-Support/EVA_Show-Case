@@ -41,3 +41,16 @@ std::string return_current_time_and_date()
     ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X");
     return ss.str();
 }
+
+std::string round2String(double d, int r)
+{
+    float div = 1;
+    for(int i = 0 ; i < r ; ++ i)
+        div *= 10;
+    
+    int s = d * div;
+    float t = s / div;
+    std::string str = std::to_string (t);
+    str.erase(str.find_last_not_of('0') + 1, std::string::npos);
+    return str;
+}

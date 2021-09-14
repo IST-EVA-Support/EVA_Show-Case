@@ -9,16 +9,16 @@
 #include "gstadmeta.h"
 #include "utils.h"
 
+// *** define the required parts name, their required number and index in the box
+// std::vector<std::string> partNameVector = {"background", "container-parts", 
+//         "container-semi-finished-products", "light-guide-cover", "screw", "screwed-on", 
+//         "semi-finished-products", "small-board-side-A", "small-board-side-B", "wire"};
+// std::vector<int>  partRequiredNumberVector = {0, 1, 0, 2, 4, 0, 0, 2, 0, 1};
+// std::vector<int>  partRequiredIndexVector = {-1, -1, -1, 0, 2, -1, -1, 1, -1, 3}; // -1: omit to check; 0~n: index in box from left to right
+// ***
+
 GST_DEBUG_CATEGORY_STATIC (gst_partpreparation_debug_category);
 #define GST_CAT_DEFAULT gst_partpreparation_debug_category
-
-// *** define the required parts name, their required number and index in the box
-std::vector<std::string> partNameVector = {"background", "container-parts", 
-        "container-semi-finished-products", "light-guide-cover", "screw", "screwed-on", 
-        "semi-finished-products", "small-board-side-A", "small-board-side-B", "wire"};
-std::vector<int>  partRequiredNumberVector = {0, 1, 0, 2, 4, 0, 0, 2, 0, 1};
-std::vector<int>  partRequiredIndexVector = {-1, -1, -1, 0, 2, -1, -1, 1, -1, 3};
-// ***
 
 static void gst_partpreparation_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
 static void gst_partpreparation_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
@@ -32,24 +32,24 @@ static gboolean gst_partpreparation_set_info (GstVideoFilter * filter, GstCaps *
 static GstFlowReturn gst_partpreparation_transform_frame_ip (GstVideoFilter * filter, GstVideoFrame * frame);
 
 static void mapGstVideoFrame2OpenCVMat(GstPartpreparation *partpreparation, GstVideoFrame *frame, GstMapInfo &info);
-static void getDetectionBoxes(GstPartpreparation *partpreparation, GstBuffer* buffer);
+static void getDetectedBox(GstPartpreparation *partpreparation, GstBuffer* buffer);
 static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer);
 static void drawObjects(GstPartpreparation *partpreparation);
 static void drawInformation(GstPartpreparation *partpreparation);
 static void drawStatus(GstPartpreparation *partpreparation);
 
-std::string round2String(double d, int r)
-{
-    float div = 1;
-    for(int i = 0 ; i < r ; ++ i)
-        div *= 10;
-    
-    int s = d * div;
-    float t = s / div;
-    std::string str = std::to_string (t);
-    str.erase(str.find_last_not_of('0') + 1, std::string::npos);
-    return str;
-}
+// std::string round2String(double d, int r)
+// {
+//     float div = 1;
+//     for(int i = 0 ; i < r ; ++ i)
+//         div *= 10;
+//     
+//     int s = d * div;
+//     float t = s / div;
+//     std::string str = std::to_string (t);
+//     str.erase(str.find_last_not_of('0') + 1, std::string::npos);
+//     return str;
+// }
 
 struct _GstPartPreparationPrivate
 {
@@ -137,13 +137,30 @@ static void gst_partpreparation_init (GstPartpreparation *partpreparation)
     /*< private >*/
     partpreparation->priv = (GstPartpreparationPrivate *)gst_partpreparation_get_instance_private (partpreparation);
     
+    // *** define the required parts name, their required number and index in the box
+    std::vector<std::string> partNameVector = {
+        "background", 
+        "container-parts", 
+        "container-semi-finished-products",
+        "light-guide-cover", 
+        "screw", 
+        "screwed-on", 
+        "semi-finished-products", 
+        "small-board-side-A", 
+        "small-board-side-B", 
+        "wire"};
+    std::vector<int>  partRequiredNumberVector = {0, 1, 0, 2, 4, 0, 0, 2, 0, 1};
+    std::vector<int>  partRequiredIndexVector = {-1, -1, -1, 0, 2, -1, -1, 1, -1, 3}; // -1: omit to check; 0~n: index in box from left to right
+    partpreparation->bom = BOM(partNameVector, partRequiredNumberVector, partRequiredIndexVector);
+    // ***
+    
     // initialize the materials
-    for(unsigned int i = 0; i < partNameVector.size(); i++)
+    for(unsigned int i = 0; i < partpreparation->bom.NameVector.size(); i++)
     {
         if(partRequiredNumberVector[i] > 0)
         {
-            partpreparation->priv->bomList.push_back(partNameVector[i]);
-            partpreparation->priv->bomMaterial.push_back(new Material(partRequiredNumberVector[i], partRequiredIndexVector[i]));
+            partpreparation->priv->bomList.push_back(partpreparation->bom.NameVector[i]);
+            partpreparation->priv->bomMaterial.push_back(new Material(partpreparation->bom.NumberVector[i], partpreparation->bom.OrderVector[i]));
         }
     }
 
@@ -296,7 +313,7 @@ static GstFlowReturn gst_partpreparation_transform_frame_ip (GstVideoFilter * fi
   mapGstVideoFrame2OpenCVMat(partpreparation, frame, info);
   
   // get inference detected parts
-  getDetectionBoxes(partpreparation, frame->buffer);
+  getDetectedBox(partpreparation, frame->buffer);
   
   // do algorithm
   doAlgorithm(partpreparation, frame->buffer);
@@ -330,7 +347,7 @@ static void mapGstVideoFrame2OpenCVMat(GstPartpreparation *partpreparation, GstV
         partpreparation->srcMat.data = info.data;
 }
 
-static void getDetectionBoxes(GstPartpreparation *partpreparation, GstBuffer* buffer)
+static void getDetectedBox(GstPartpreparation *partpreparation, GstBuffer* buffer)
 {
     // reset the status
     for (auto& value : partpreparation->priv->bomMaterial)
@@ -364,9 +381,10 @@ static void getDetectionBoxes(GstPartpreparation *partpreparation, GstBuffer* bu
                     int x2 = (int)(width * detection_result.x2);
                     int y2 = (int)(height * detection_result.y2);
                     partpreparation->priv->bomMaterial[materialIndex]->Add(x1, y1, x2, y2, detection_result.prob);
+                
+                    if(detection_result.obj_label.compare("container-parts") == 0)
+                        partpreparation->priv->indexOfPartContainer = materialIndex;
                 }
-                if(detection_result.obj_label.compare("container-parts") == 0)
-                    partpreparation->priv->indexOfPartContainer = i;
             }
         }
     }
@@ -393,7 +411,7 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
         else
             return;
     
-    // Check are materials are int the container box
+    // Check where materials are in the container box
     //Get container-parts(index=0 in bomList)    
     std::vector<int> rectVector;
     if(partpreparation->priv->bomMaterial[0]->GetObjectNumber() > 0)
@@ -402,6 +420,7 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
     if(rectVector.size() != 4)
         return;
     
+    // Container index is 0 in bomMaterial
     std::vector<cv::Point> containerPointsVec = partpreparation->priv->bomMaterial[0]->GetObjectPoints(0);
     
     //Check each material is in the container-parts and required number

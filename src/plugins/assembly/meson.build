@@ -87,7 +87,7 @@ gstmeta_dep = declare_dependency(
 #  )
   
 # Plugin geofence
-plugin_sources = ['gstpartpreparation.cpp', '../../utils/utils.cpp', 'assembly_utils/Status.cpp', 'gstassembly.cpp']
+plugin_sources = ['gstpartpreparation.cpp', 'gstpartassembly.cpp','../../utils/utils.cpp', 'assembly_utils/Status.cpp', 'gstassembly.cpp']
 
 adedge = library('assembly',
   plugin_sources,

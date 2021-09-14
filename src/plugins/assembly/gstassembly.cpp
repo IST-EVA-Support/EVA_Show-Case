@@ -3,7 +3,7 @@
 #else
 
 #ifndef VERSION
-#define VERSION "1.1.0"
+#define VERSION "1.0.0"
 #endif
 #ifndef PACKAGE
 #define PACKAGE "An ADLINK Assembly plugin"
@@ -18,7 +18,7 @@
 #endif
 
 #include "gstpartpreparation.h"
-//#include "gstgeofencefoot.h"
+#include "gstpartassembly.h"
 
 GST_DEBUG_CATEGORY_STATIC (assembly_debug);
 #define GST_CAT_DEFAULT assembly_debug
@@ -29,8 +29,8 @@ static gboolean plugin_init (GstPlugin * plugin)
     GST_DEBUG_CATEGORY_INIT (assembly_debug, "[assembly debug]", 0, "assembly plugins");
     if (!gst_element_register (plugin, "partpreparation", GST_RANK_NONE, GST_TYPE_PARTPREPARATION))
         return FALSE;
-//     if(!gst_element_register (plugin, "geofencefoot", GST_RANK_NONE, GST_TYPE_GEOFENCEFOOT))
-//         return FALSE;
+    if(!gst_element_register (plugin, "partassembly", GST_RANK_NONE, GST_TYPE_PARTASSEMBLY))
+        return FALSE;
     return TRUE;
 }
 //define the plugin information
