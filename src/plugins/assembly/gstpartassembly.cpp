@@ -54,6 +54,15 @@ std::vector<float> processingTime = {
     0,  // final visual inspection: 2 small-board-side-B with 4 screw-on(each small-board-side-B contains 2 screw-on) and 1 wire
     0}; // Complete
     
+std::vector<float> processingRegularTime = {
+    5,  // put 1 semi-product in container
+    5,  // put 2 light-guide-cover in semi-finished-products(left and right)
+    6,  // put 2 small-board-side-B in semi-finished-products(left and right)
+    10, // screw on 4 screws(2 on left, 2 on right)
+    5,  // put wire on
+    5,  // final visual inspection: 2 small-board-side-B with 4 screw-on(each small-board-side-B contains 2 screw-on) and 1 wire
+    5}; // Complete
+    
 std::vector<std::string> assemblyActionInfoVector = {
     "semi-product in container",                // put 1 semi-product in container
     "2 light-guide-cover(left and right)",      // put 2 light-guide-cover in semi-finished-products(left and right)
@@ -71,28 +80,20 @@ struct _GstpartassemblyPrivate
     int indexOfSemiProduct;
     int bestIndexObjectOfSemiProduct;
     
-    //std::string alert_definition_path;
-    std::vector<std::vector<double>> ratio_vec;
-    std::vector<cv::Point> area_point_vec;
-    std::vector<std::vector<cv::Point>> person_vec;
-    std::vector<std::vector<cv::Point>> upper_person_vec;
-    std::vector<std::vector<cv::Point>> foot_vec;
-    bool area_display;
-    bool person_display;
+    bool partsDisplay;
+    bool informationDisplay;
     bool alert;
-    std::vector<int> map_vec;
-    //std::string alertType;
-	gchar* alertType;
-    bool enterArea;
+    gchar* targetType;
+    gchar* alertType;
 };
 
 enum
 {
     PROP_0,
-    //PROP_ALERT_AREA_DEFINITION,
-    PROP_ALERT_AREA_DISPLAY,
-    PROP_ALERT_PERSON_DISPLAY,
-    PROP_ALERT_TYPE,    
+    PROP_TARGET_TYPE,
+    PROP_ALERT_TYPE,
+    PROP_PARTS_DISPLAY,
+    PROP_INFORMATION_DISPLAY
 };
 
 #define DEBUG_INIT GST_DEBUG_CATEGORY_INIT(GST_CAT_DEFAULT, "gstpartassembly", 0, "debug category for gstpartassembly element");
@@ -134,14 +135,17 @@ static void gst_partassembly_class_init (GstpartassemblyClass * klass)
 //   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_AREA_DEFINITION,
 //                                    g_param_spec_string ("alert-area-def", "Alert-area-def", "The definition file location of the alert area respect the frame based on the specific resolution.", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
   
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_TARGET_TYPE,
+                                   g_param_spec_string ("target-type", "Target-Type", "The target type name used in this element for processing.", "NONE"/*DEFAULT_TARGET_TYPE*/, (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+  
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_TYPE,
-                                   g_param_spec_string ("alert-type", "Alert-Type", "The alert type name when event occurred.", "BreakIn\0"/*DEFAULT_ALERT_TYPE*/, (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+                                   g_param_spec_string ("alert-type", "Alert-Type", "The alert type name represents the event occurred. Two alert types are offered:\n\t\t\t(1)\"idling\", which means OP is idling;\n\t\t\t(2)\"completed\", which means the assembly is completed.", "idling\0", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
   
-  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_AREA_DISPLAY,
-                                   g_param_spec_boolean("area-display", "Area-display", "Show alert area in frame.", FALSE, G_PARAM_READWRITE));
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_PARTS_DISPLAY,
+                                   g_param_spec_boolean("parts-display", "Parts-display", "Show detected parts in frame.", TRUE, G_PARAM_READWRITE));
   
-  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_PERSON_DISPLAY,
-                                   g_param_spec_boolean("person-display", "Person-display", "Show inferenced person region in frame.", FALSE, G_PARAM_READWRITE));
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_INFORMATION_DISPLAY,
+                                   g_param_spec_boolean("information-display", "Information-display", "Show the assembly process status.", TRUE, G_PARAM_READWRITE));
   
   
   gobject_class->dispose = gst_partassembly_dispose;
@@ -186,13 +190,16 @@ static void gst_partassembly_init (Gstpartassembly *partassembly)
     }
     
     
-    partassembly->priv->area_display = false;
-    partassembly->priv->person_display = false;
+    partassembly->priv->partsDisplay = true;
+    partassembly->priv->informationDisplay = true;
     partassembly->priv->alert = false;
+    partassembly->targetTypeChecked = false;
     partassembly->startTick = 0;
+    partassembly->alertTick = 0;
 //     partassembly->eventTick = 0;
 //     partassembly->lastEventTick = 0;
-    partassembly->priv->alertType = "BreakIn\0";//DEFAULT_ALERT_TYPE;
+    partassembly->priv->targetType = "NONE\0";//DEFAULT_TARGET_TYPE;
+    partassembly->priv->alertType = "idling\0";//DEFAULT_ALERT_TYPE;
 //     partassembly->priv->enterArea = false;
 }
 
@@ -204,51 +211,28 @@ void gst_partassembly_set_property (GObject * object, guint property_id, const G
 
   switch (property_id)
   {
-//     case PROP_ALERT_AREA_DEFINITION:
-//     {
-//         partassembly->priv->alert_definition_path = g_value_dup_string(value);
-//         GST_MESSAGE(std::string("partassembly->priv->alert_definition_path = " + partassembly->priv->alert_definition_path).c_str());
-//         
-//         GST_MESSAGE("Start parsing definition file...");
-//         std::ifstream infile(partassembly->priv->alert_definition_path);
-//         if(!infile) 
-//         {
-//             std::cout << "Cannot open input file.\n";
-//             break;
-//         }
-//         std::string lineString;
-//         while (std::getline(infile, lineString))
-//         {
-//             std::vector<std::string> ratioVec = split(lineString);
-//             double x = std::atof(ratioVec[0].c_str());
-//             double y = std::atof(ratioVec[1].c_str());
-//             
-//             std::vector<double> vec;
-//             vec.push_back(x);
-//             vec.push_back(y);
-//             partassembly->priv->ratio_vec.push_back(vec);
-//         }
-//         GST_MESSAGE("Parsing definition file done!");
-//         
-//         break;  
-//     }
+    case PROP_TARGET_TYPE:
+    {
+        partassembly->priv->targetType = g_value_dup_string(value);
+        break;  
+    }
     case PROP_ALERT_TYPE:
     {
         partassembly->priv->alertType = g_value_dup_string(value);
         break;  
     }
-    case PROP_ALERT_AREA_DISPLAY:
+    case PROP_PARTS_DISPLAY:
     {
-        partassembly->priv->area_display = g_value_get_boolean(value);
-        if(partassembly->priv->area_display)
-            GST_MESSAGE("Display area is enabled!");
+        partassembly->priv->partsDisplay = g_value_get_boolean(value);
+        if(partassembly->priv->partsDisplay)
+            GST_MESSAGE("Display part objects is enabled!");
         break;
     }
-    case PROP_ALERT_PERSON_DISPLAY:
+    case PROP_INFORMATION_DISPLAY:
     {
-        partassembly->priv->person_display = g_value_get_boolean(value);
-        if(partassembly->priv->person_display)
-            GST_MESSAGE("Display inferenced person is enabled!");
+        partassembly->priv->informationDisplay = g_value_get_boolean(value);
+        if(partassembly->priv->informationDisplay)
+            GST_MESSAGE("Display assembly information is enabled!");
         break;
     }
     default:
@@ -265,18 +249,19 @@ void gst_partassembly_get_property (GObject * object, guint property_id, GValue 
 
   switch (property_id)
   {
-//     case PROP_ALERT_AREA_DEFINITION:
-//        g_value_set_string (value, partassembly->priv->alert_definition_path.c_str());
-//        break;
+    case PROP_TARGET_TYPE:
+       //g_value_set_string (value, weardetection->priv->targetType.c_str());
+	   g_value_set_string (value, partassembly->priv->targetType);
+       break;
     case PROP_ALERT_TYPE:
        //g_value_set_string (value, partassembly->priv->alertType.c_str());
 	   g_value_set_string (value, partassembly->priv->alertType);
        break;
-    case PROP_ALERT_AREA_DISPLAY:
-       g_value_set_boolean(value, partassembly->priv->area_display);
+    case PROP_PARTS_DISPLAY:
+       g_value_set_boolean(value, partassembly->priv->partsDisplay);
        break;
-    case PROP_ALERT_PERSON_DISPLAY:
-       g_value_set_boolean(value, partassembly->priv->person_display);
+    case PROP_INFORMATION_DISPLAY:
+       g_value_set_boolean(value, partassembly->priv->informationDisplay);
        break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -349,11 +334,13 @@ static GstFlowReturn gst_partassembly_transform_frame_ip (GstVideoFilter * filte
   // do algorithm
   doAlgorithm(partassembly, frame->buffer);  
   
-  // draw alert area
-  drawObjects(partassembly);
+  // draw part objects
+  if(partassembly->priv->partsDisplay)
+    drawObjects(partassembly);
   
-  // draw alert person
-  drawStatus(partassembly);
+  // draw assembly information
+  if(partassembly->priv->informationDisplay)
+    drawStatus(partassembly);
   
   gst_buffer_unmap(frame->buffer, &info);
   return GST_FLOW_OK;
@@ -394,26 +381,53 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
             int detectionBoxResultNumber = frame_info.detection_results.size();
             int width = partassembly->srcMat.cols;
             int height = partassembly->srcMat.rows;
+            
+            // full iterated all object to find "container-parts" exists alert-type(target-type used in this element)
+            if(partassembly->targetTypeChecked == false)
+            {
+                partassembly->targetTypeChecked = (std::string(partassembly->priv->targetType).compare("NONE"/*DEFAULT_TARGET_TYPE*/) == 0);
+                if(!partassembly->targetTypeChecked) // target-type was set by user
+                {
+                    for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
+                    {
+                        adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
+                        // check alert type was set 
+                        if(detection_result.meta.find(partassembly->priv->targetType) != std::string::npos)
+                        {
+                            partassembly->targetTypeChecked = true;
+                            break;
+                        }
+                    }
+                }
+            }
+//             std::cout << "partassembly->targetTypeChecked = " << partassembly->targetTypeChecked << std::endl;
+            
+            
             for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
             {
                 adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
-                int materialIndex = getPartIndexInBomList(partassembly, detection_result.obj_label);
-
-                if(materialIndex != -1)
-                {
-                    int x1 = (int)(width * detection_result.x1);
-                    int y1 = (int)(height * detection_result.y1);
-                    int x2 = (int)(width * detection_result.x2);
-                    int y2 = (int)(height * detection_result.y2);
-                    partassembly->priv->bomMaterial[materialIndex]->Add(x1, y1, x2, y2, detection_result.prob);
                 
-                    // container index
-                    if(detection_result.obj_label.compare("container-semi-finished-products") == 0)
-                        partassembly->priv->indexOfSemiProductContainer = materialIndex;
+                // check target type is required or set
+                if(partassembly->targetTypeChecked)
+                {
+                    int materialIndex = getPartIndexInBomList(partassembly, detection_result.obj_label);
+
+                    if(materialIndex != -1)
+                    {
+                        int x1 = (int)(width * detection_result.x1);
+                        int y1 = (int)(height * detection_result.y1);
+                        int x2 = (int)(width * detection_result.x2);
+                        int y2 = (int)(height * detection_result.y2);
+                        partassembly->priv->bomMaterial[materialIndex]->Add(x1, y1, x2, y2, detection_result.prob);
                     
-                    // semi-product index
-                    if(detection_result.obj_label.compare("semi-finished-products") == 0)
-                        partassembly->priv->indexOfSemiProduct = materialIndex;
+                        // container index
+                        if(detection_result.obj_label.compare("container-semi-finished-products") == 0)
+                            partassembly->priv->indexOfSemiProductContainer = materialIndex;
+                        
+                        // semi-product index
+                        if(detection_result.obj_label.compare("semi-finished-products") == 0)
+                            partassembly->priv->indexOfSemiProduct = materialIndex;
+                    }
                 }
             }
         }
@@ -421,7 +435,8 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
     
     // Check overlap if required in the future
     // add the check overlap code here to remove multi-detected objects.
-    if(partassembly->priv->indexOfSemiProduct > 0)
+//     std::cout << "partassembly->priv->indexOfSemiProduct = " << partassembly->priv->indexOfSemiProduct << std::endl;
+    if(partassembly->priv->indexOfSemiProduct > 0) // more than one semi-product
         partassembly->priv->bestIndexObjectOfSemiProduct = partassembly->priv->bomMaterial[partassembly->priv->indexOfSemiProduct]->GetBestScoreObjectIndex();
 }
 
@@ -471,12 +486,23 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
     AdBatch &batch = meta->batch;
     bool frame_exist = batch.frames.size() > 0 ? true : false;
     
+    if(partassembly->priv->alert == true)
+        if((cv::getTickCount() - partassembly->alertTick) / cv::getTickFrequency() > 5)
+            partassembly->priv->alert = false;
+    
+//     std::cout << "1" << std::endl;
+//     std::cout << "partassembly->priv->indexOfSemiProductContainer = " << partassembly->priv->indexOfSemiProductContainer << std::endl;
     // Check whether materials are in the container and semi-product
     // Get container
     int containerId = partassembly->priv->indexOfSemiProductContainer;
+    if(containerId < 0)
+        return;
+    
     std::vector<int> rectContainerVector;
     if(partassembly->priv->bomMaterial[containerId]->GetObjectNumber() > 0)
         rectContainerVector = partassembly->priv->bomMaterial[containerId]->GetRectangle(0);
+    
+//     std::cout << "2" << std::endl;
     
     if(rectContainerVector.size() != 4)
     {
@@ -546,7 +572,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                 
                 processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
                 partassembly->startTick = 0;
-                std::cout << "stage " << checkAction << ": semi-product in container done." << std::endl;
+                GST_MESSAGE("Put semi-product in container done.");
             }
             else
             {
@@ -571,7 +597,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                     
                     processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
                     partassembly->startTick = 0;
-                    std::cout << "stage " << checkAction << ": light-guide-cover done." << std::endl;
+                    GST_MESSAGE("Put light-guide-cover done.");
                 }
             }
             else
@@ -596,7 +622,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                     
                     processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
                     partassembly->startTick = 0;
-                    std::cout << "stage " << checkAction << ": small-board-side-B done." << std::endl;
+                    GST_MESSAGE("Put small-board-side-B done.");
                 }
                 else
                     processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
@@ -623,7 +649,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                     
                     processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
                     partassembly->startTick = 0;
-                    std::cout << "stage " << checkAction << ": screwed-on done." << std::endl;
+                    GST_MESSAGE("Screw on screws done.");
                 }
                 else
                     processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
@@ -647,7 +673,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                 
                 processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
                 partassembly->startTick = 0;
-                std::cout << "stage " << checkAction << ": wire done." << std::endl;
+                GST_MESSAGE("Put wire done.");
             }
             else
             {
@@ -680,7 +706,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                 
                 processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
                 partassembly->startTick = 0;
-                std::cout << "stage " << checkAction << ": visual done." << std::endl;
+                GST_MESSAGE("Visual inspection done.");
             }
             else
             {
@@ -689,19 +715,50 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
             break;
         }
         case 6:     // complete
-            std::cout << "assembly completed\n";
+            GST_MESSAGE("Assembly completed");
             assemblyActionVector[checkAction] = true;
             break;
         default:
             //std::cout << "no action need to check.\n";
             break;
     }
+    
+    if(frame_exist && containerId != -1)
+    {
+        // Check regular time
+        for(unsigned int i = 0; i < assemblyActionVector.size() ; ++i)
+        {
+            if(processingTime[i] > processingRegularTime[i] && partassembly->priv->alert == false)
+            {
+                GST_MESSAGE("put idling alert message.");
+                partassembly->priv->alert = true;
+                
+                std::string alertMessage = "," + std::string(partassembly->priv->alertType) + "<" + return_current_time_and_date() + ">";
+            
+                meta->batch.frames[0].detection_results[containerId].meta += alertMessage;
+                partassembly->alertTick = cv::getTickCount();
+            }
+        }
+        
+        // If completed, set alert
+        if(checkAction == assemblyActionVector.size() - 1)
+        {
+            std::string alertMessage = "," + std::string("Completed") + "<" + return_current_time_and_date() + ">";
+            meta->batch.frames[0].detection_results[containerId].meta += alertMessage;
+            GST_MESSAGE("put Completed alert message.");
+        }
+    }
 }
 
 static void drawObjects(Gstpartassembly *partassembly)
 {
+    int width = partassembly->srcMat.cols;
+    int height = partassembly->srcMat.rows;
+    float scale = 0.025;
+    
     int font = cv::FONT_HERSHEY_COMPLEX;
-    double font_scale = 0.5;
+    //double font_scale = 0.5;
+    double font_scale = std::min(width, height)/(25/scale);
     int thickness = 2;
     
     int indexOfContainer = partassembly->priv->indexOfSemiProductContainer;
@@ -748,23 +805,27 @@ static void drawObjects(Gstpartassembly *partassembly)
 
 static void drawStatus(Gstpartassembly *partassembly)
 {
-    int font = cv::FONT_HERSHEY_COMPLEX;
-    double font_scale = 1;
-    int thickness = 1; 
     int width = partassembly->srcMat.cols;
     int height = partassembly->srcMat.rows;
+    
+    float scale = 0.03;
+    int font = cv::FONT_HERSHEY_COMPLEX;
+    //double font_scale = 1;
+    double font_scale = std::min(width, height)/(25/scale);
+    int thickness = 1; 
+
     cv::Scalar contentInfoColor = cv::Scalar(255, 255, 255);
     cv::Scalar actionDoneColor = cv::Scalar(0, 255, 0);
     cv::Scalar actionProcessColor = cv::Scalar(0, 255, 255);
     
     
-    int checkAction = -1;
-    int startX = 40;
-    int startY = height / 2;
-    int heightShift = 35;
+    int startX = width * 0.03;
+    int startY = height * 0.02;
+    //int heightShift = 35;
+    int heightShift = cv::getTextSize("Text", font, font_scale, thickness, 0).height * 1.5;
     bool metProcessingAction = false;
     double totalElapsedTime = 0;
-    for(int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
+    for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
     {
         startY += heightShift;
         totalElapsedTime += processingTime[i];
@@ -775,7 +836,7 @@ static void drawStatus(Gstpartassembly *partassembly)
             
             cv::putText(partassembly->srcMat, assemblyActionInfoVector[i] + timeString, cv::Point(startX, startY), font, font_scale, actionProcessColor, thickness * 2, 4, 0);
             
-            cv::circle (partassembly->srcMat, cv::Point(startX - 20, startY - heightShift / 4), 15, actionProcessColor, -1, cv::LINE_8, 0);
+            cv::circle (partassembly->srcMat, cv::Point(startX - width * 0.015, startY - heightShift / 4), heightShift / 2.5, actionProcessColor, -1, cv::LINE_8, 0);
         }
         else if(assemblyActionVector[i])
         {
@@ -789,5 +850,13 @@ static void drawStatus(Gstpartassembly *partassembly)
     
     // show total elapsed time
     startY += heightShift;
-    cv::putText(partassembly->srcMat, "total elapsed time = " + round2String(totalElapsedTime, 3), cv::Point(startX, startY), font, font_scale, cv::Scalar(128, 0, 255), thickness, 4, 0);
+    cv::putText(partassembly->srcMat, "total elapsed time = " + round2String(totalElapsedTime, 3), cv::Point(startX, startY), font, font_scale, cv::Scalar(30, 144, 255), thickness, 4, 0);
+    
+    // show alert
+    if(partassembly->priv->alert)
+    {
+        startY += 2 * heightShift;
+        cv::putText(partassembly->srcMat, " idling !!", cv::Point(startX, startY), font, font_scale * 2, cv::Scalar(0, 0, 255), thickness * 2, 4, 0);
+    }
+    
 }

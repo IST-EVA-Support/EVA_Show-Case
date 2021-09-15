@@ -204,7 +204,7 @@ int Material::GetBestScoreObjectIndex()
 {
     int bestScore = -1;
     int bestObjectIndex = -1;
-    for(int i = 0; i < scoreVector.size(); ++i)
+    for(unsigned int i = 0; i < scoreVector.size(); ++i)
     {
         if(scoreVector[i] > bestScore)
         {

@@ -30,8 +30,9 @@ struct _Gstpartassembly
   
   cv::Mat srcMat;
   BOM bom;
+  bool targetTypeChecked;
   long startTick;
-  long endTick;
+  long alertTick;
 
 };
 

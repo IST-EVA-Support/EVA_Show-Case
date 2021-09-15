@@ -110,7 +110,7 @@ static void gst_partpreparation_class_init (GstPartpreparationClass * klass)
   
   // Install the properties to GObjectClass
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_TYPE,
-                                   g_param_spec_string ("alert-type", "Alert-Type", "The alert type name when event occurred. Two alert types are offered:\n\t\t\t(1)\"ready\", which means the parts in the box are all prepared;\n\t\t\t(2)\"order-incorrect\", which means the parts order in the box are incorrect.", "order-incorrect\0", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+                                   g_param_spec_string ("alert-type", "Alert-Type", "The alert type name represents the event occurred. Two alert types are offered:\n\t\t\t(1)\"ready\", which means the parts in the box are all prepared;\n\t\t\t(2)\"order-incorrect\", which means the parts order in the box are incorrect.", "order-incorrect\0", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
   
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_PARTS_DISPLAY,
                                    g_param_spec_boolean("parts-display", "Parts-display", "Show detected parts in frame.", TRUE, G_PARAM_READWRITE));
