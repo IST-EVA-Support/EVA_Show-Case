@@ -55,8 +55,8 @@ std::vector<float> processingTime = {
     0}; // Complete
     
 std::vector<float> processingRegularTime = {
-    5,  // put 1 semi-product in container
-    5,  // put 2 light-guide-cover in semi-finished-products(left and right)
+    10,  // put 1 semi-product in container
+    8,  // put 2 light-guide-cover in semi-finished-products(left and right)
     6,  // put 2 small-board-side-B in semi-finished-products(left and right)
     10, // screw on 4 screws(2 on left, 2 on right)
     5,  // put wire on
@@ -808,7 +808,7 @@ static void drawStatus(Gstpartassembly *partassembly)
     int width = partassembly->srcMat.cols;
     int height = partassembly->srcMat.rows;
     
-    float scale = 0.03;
+    float scale = 0.02;
     int font = cv::FONT_HERSHEY_COMPLEX;
     //double font_scale = 1;
     double font_scale = std::min(width, height)/(25/scale);
@@ -820,7 +820,7 @@ static void drawStatus(Gstpartassembly *partassembly)
     
     
     int startX = width * 0.03;
-    int startY = height * 0.02;
+    int startY = height * 0.5;
     //int heightShift = 35;
     int heightShift = cv::getTextSize("Text", font, font_scale, thickness, 0).height * 1.5;
     bool metProcessingAction = false;
@@ -850,7 +850,7 @@ static void drawStatus(Gstpartassembly *partassembly)
     
     // show total elapsed time
     startY += heightShift;
-    cv::putText(partassembly->srcMat, "total elapsed time = " + round2String(totalElapsedTime, 3), cv::Point(startX, startY), font, font_scale, cv::Scalar(30, 144, 255), thickness, 4, 0);
+    cv::putText(partassembly->srcMat, "total elapsed time = " + round2String(totalElapsedTime, 3) + " s", cv::Point(startX, startY), font, font_scale, cv::Scalar(30, 144, 255), thickness, 4, 0);
     
     // show alert
     if(partassembly->priv->alert)

@@ -461,6 +461,12 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
         
         totalPartsNum += numberInContainer;
     }
+    
+    // if status is assembly, means already ready before.
+    if(partpreparation->prepareStatus->GetStatus() == Prepare::Assembly)
+    {
+        return;
+    }
 
     float find_min = width;
     for(unsigned int i = 0; i < (uint)requiredMaterialNumber; ++i)
@@ -624,10 +630,12 @@ static void drawInformation(GstPartpreparation *partpreparation)
 
 static void drawStatus(GstPartpreparation *partpreparation)
 {
-    int font = cv::FONT_HERSHEY_COMPLEX;
-    int thickness = 1;
     int width = partpreparation->srcMat.cols;
     int height = partpreparation->srcMat.rows;
+    float scale = 0.03;
+    int font = cv::FONT_HERSHEY_COMPLEX;
+    double font_scale = std::min(width, height)/(25/scale);
+    int thickness = 1; 
     
     // Show Ready or not
     int startX = width / 3;
@@ -639,10 +647,10 @@ static void drawStatus(GstPartpreparation *partpreparation)
         {
             double duration = (partpreparation->prepareEndTick - partpreparation->prepareStartTick) / cv::getTickFrequency();
             std::string t = round2String(duration, 3);
-            cv::putText(partpreparation->srcMat, "elapsed: " + t + " s", cv::Point(50, 50), font, 2, cv::Scalar(0, 255, 0), thickness*2, 8, 0);
+            cv::putText(partpreparation->srcMat, "elapsed: " + t + " s", cv::Point(50, 50), font, font_scale, cv::Scalar(0, 255, 0), thickness*2, 8, 0);
         }
         
-        cv::putText(partpreparation->srcMat, "Ready!", cv::Point(startX, startY), font, 3, cv::Scalar(0, 255, 0), thickness*3, 8, 0);
+        cv::putText(partpreparation->srcMat, "Ready!", cv::Point(startX, startY), font, font_scale * 2, cv::Scalar(0, 255, 0), thickness*3, 8, 0);
     }
     else if(partpreparation->prepareStatus->GetStatus() == Prepare::NotReady)
     {
@@ -652,14 +660,14 @@ static void drawStatus(GstPartpreparation *partpreparation)
             double elapsedTime = (cv::getTickCount() - partpreparation->prepareStartTick) / cv::getTickFrequency();
             std::string t = round2String(elapsedTime, 3);
             
-            cv::putText(partpreparation->srcMat, "elapsed: " + t + " s", cv::Point(50, 50), font, 2, cv::Scalar(15, 185, 255), thickness*2, 8, 0);
+            cv::putText(partpreparation->srcMat, "elapsed: " + t + " s", cv::Point(50, 50), font, font_scale, cv::Scalar(15, 185, 255), thickness*2, 8, 0);
         }
         
         if(!partpreparation->priv->alert)
-            cv::putText(partpreparation->srcMat, "Not Ready!", cv::Point(startX, startY), font, 3, cv::Scalar(15, 185, 255), thickness*3, 8, 0);
+            cv::putText(partpreparation->srcMat, "Not Ready!", cv::Point(startX, startY), font, font_scale * 2, cv::Scalar(15, 185, 255), thickness*3, 8, 0);
         else
-            cv::putText(partpreparation->srcMat, "incorrect order!", cv::Point(startX, startY), font, 3, cv::Scalar(0, 0, 255), thickness*3, 8, 0);
+            cv::putText(partpreparation->srcMat, "incorrect order!", cv::Point(startX, startY), font, font_scale * 3, cv::Scalar(0, 0, 255), thickness*3, 8, 0);
     }
     else
-        cv::putText(partpreparation->srcMat, "Assembly", cv::Point(startX, startY), font, 3, cv::Scalar(0, 255, 255), thickness*3, 8, 0);
+        cv::putText(partpreparation->srcMat, "Assembly", cv::Point(startX, startY), font, font_scale * 2, cv::Scalar(0, 255, 255), thickness*3, 8, 0);
 }
