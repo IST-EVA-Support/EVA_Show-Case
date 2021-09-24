@@ -51,6 +51,7 @@ fi
 #     message_out "Start download area file..."
 #     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/alert-def-area-geo.txt
 # fi
+
 # download model and label zip file
 if [ -e models.zip]
 then
@@ -60,9 +61,23 @@ else
     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/model.zip
     # unzip it, then delete the zip file
     sudo apt-get -y install unzip
-    unzip model.zip
+    unzip -o model.zip
     rm model.zip
 fi
+
+# adjust cmake version (etlt required cmake version >= 3.13)
+cmake_major_vrsion=$(cmake --version | grep "cmake version" | cut -c 1-14 --complement | cut -d . -f 1)
+cmake_minor_vrsion=$(cmake --version | grep "cmake version" | cut -c 1-14 --complement | cut -d . -f 2)
+cmake_version="${cmake_major_vrsion}.${cmake_minor_vrsion}"
+message_out $cmake_version
+
+if [ $cmake_vrsion >= 3.13 ]
+then 
+    message_out "version >= 3.13"
+else
+    message_out "version < 3.13"
+fi
+
 # # download model
 # if [ $ModelNetwork == "ssd_mobilenet" ]
 # then
