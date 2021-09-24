@@ -20,14 +20,28 @@ sudo apt -y install libgstreamer-plugins-base1.0-dev
 
 
 # ####
-# # download video
-# if [ -e "geo-fencing-demo.mp4" ]
-# then
-#     message_out "Demo video exists, skip."
-# else
-#     message_out "Start download demo video..."
-#     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/geo-fencing-demo.mp4
-# fi
+# download video
+if [ -e "material-preparation.avi" ]
+then
+    message_out "Demo video exists, skip."
+else
+    message_out "Start download demo video [material-preparation.avi]..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/material-preparation.avi
+fi
+if [ -e "disassembly.avi" ]
+then
+    message_out "Demo video exists, skip."
+else
+    message_out "Start download demo video [disassembly.avi]..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/disassembly.avi
+fi
+if [ -e "order-incorrect.avi" ]
+then
+    message_out "Demo video exists, skip."
+else
+    message_out "Start download demo video [order-incorrect.avi]..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/order-incorrect.avi
+fi
 # # download video area define file
 # if [ -e "alert-def-area-geo.txt" ]
 # then
