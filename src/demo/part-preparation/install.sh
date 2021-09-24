@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # ModelNetwork=${1:-ssd_mobilenet};
+modelPruned=${1:-no_pruned}
 
 # echo "ModelNetwork: $ModelNetwork";
 
@@ -50,6 +51,18 @@ fi
 #     message_out "Start download area file..."
 #     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/alert-def-area-geo.txt
 # fi
+# download model and label zip file
+if [ -e models.zip]
+then
+    message_out "model.zip exists, skip."
+else
+    message_out "Start download model.zip..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/model.zip
+    # unzip it, then delete the zip file
+    sudo apt-get -y install unzip
+    unzip model.zip
+    rm model.zip
+fi
 # # download model
 # if [ $ModelNetwork == "ssd_mobilenet" ]
 # then
