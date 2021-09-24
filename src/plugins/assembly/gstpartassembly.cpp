@@ -532,7 +532,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
         int totalObjectNumber = partassembly->priv->bomMaterial[materialID]->GetObjectNumber();
         std::vector<cv::Point> intersectionPolygon;
         int numberInSemiProduct = 0;
-        float averagePosition = 0;
+
         for(unsigned int objID = 0; objID < (uint)totalObjectNumber; objID++)
         {
             std::vector<cv::Point> objectPointsVec = partassembly->priv->bomMaterial[materialID]->GetObjectPoints(objID);
@@ -549,7 +549,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
     
     //get check assembly action
     int checkAction = -1;
-    for(int i = 0; i < assemblyActionVector.size(); ++i)
+    for(unsigned int i = 0; i < assemblyActionVector.size(); ++i)
     {
         if(!assemblyActionVector[i])
         {
