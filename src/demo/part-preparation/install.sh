@@ -53,7 +53,7 @@ fi
 # fi
 
 # download model and label zip file
-if [ -e models.zip]
+if [ -e "models.zip" ]
 then
     message_out "model.zip exists, skip."
 else
