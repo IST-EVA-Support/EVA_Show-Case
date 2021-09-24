@@ -78,14 +78,14 @@ upgrade_cmake=0
 if [ $major -lt 3 ]
 then 
     message_out "version < 3.13"
-    $upgrade_cmake=1
+    let upgrade_cmake=1
 else
     if [ $major -eq 3 ]
     then
         if [ $minor -lt 13 ]
         then
             message_out "version < 3.13"
-            $upgrade_cmake=1
+            let upgrade_cmake=1
         else
             message_out "version >= 3.13"
         fi
