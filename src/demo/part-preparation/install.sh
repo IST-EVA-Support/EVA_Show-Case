@@ -14,82 +14,89 @@ message_out(){
 }
 
 message_out "Start installing..."
-# # # # build required plugin
-# # # message_out "Building assembly plugin..."
-# # # sudo apt -y install libgstreamer-plugins-base1.0-dev
-# # # ../../plugins/assembly/assembly-build.sh
-# # # 
-# # # 
-# # # # ####
-# # # # download video
-# # # if [ -e "material-preparation.avi" ]
-# # # then
-# # #     message_out "Demo video exists, skip."
-# # # else
-# # #     message_out "Start download demo video [material-preparation.avi]..."
-# # #     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/material-preparation.avi
-# # # fi
-# # # if [ -e "disassembly.avi" ]
-# # # then
-# # #     message_out "Demo video exists, skip."
-# # # else
-# # #     message_out "Start download demo video [disassembly.avi]..."
-# # #     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/disassembly.avi
-# # # fi
-# # # if [ -e "order-incorrect.avi" ]
-# # # then
-# # #     message_out "Demo video exists, skip."
-# # # else
-# # #     message_out "Start download demo video [order-incorrect.avi]..."
-# # #     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/order-incorrect.avi
-# # # fi
-# # # # # download video area define file
-# # # # if [ -e "alert-def-area-geo.txt" ]
-# # # # then
-# # # #     message_out "alert-def-area-geo.txt exists, skip."
-# # # # else
-# # # #     message_out "Start download area file..."
-# # # #     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/alert-def-area-geo.txt
-# # # # fi
-# # # 
-# # # # download model and label zip file
-# # # if [ -e models.zip]
-# # # then
-# # #     message_out "model.zip exists, skip."
-# # # else
-# # #     message_out "Start download model.zip..."
-# # #     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/model.zip
-# # #     # unzip it, then delete the zip file
-# # #     sudo apt-get -y install unzip
-# # #     unzip -o model.zip
-# # #     rm model.zip
-# # # fi
+# build required plugin
+message_out "Building assembly plugin..."
+sudo apt -y install libgstreamer-plugins-base1.0-dev
+../../plugins/assembly/assembly-build.sh
+
+
+# ####
+# download video
+if [ -e "material-preparation.avi" ]
+then
+    message_out "Demo video exists, skip."
+else
+    message_out "Start download demo video [material-preparation.avi]..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/material-preparation.avi
+fi
+if [ -e "disassembly.avi" ]
+then
+    message_out "Demo video exists, skip."
+else
+    message_out "Start download demo video [disassembly.avi]..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/disassembly.avi
+fi
+if [ -e "order-incorrect.avi" ]
+then
+    message_out "Demo video exists, skip."
+else
+    message_out "Start download demo video [order-incorrect.avi]..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/order-incorrect.avi
+fi
+# # download video area define file
+# if [ -e "alert-def-area-geo.txt" ]
+# then
+#     message_out "alert-def-area-geo.txt exists, skip."
+# else
+#     message_out "Start download area file..."
+#     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/alert-def-area-geo.txt
+# fi
+
+# download model and label zip file
+if [ -e models.zip]
+then
+    message_out "model.zip exists, skip."
+else
+    message_out "Start download model.zip..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/model.zip
+    # unzip it, then delete the zip file
+    sudo apt-get -y install unzip
+    unzip -o model.zip
+    rm model.zip
+fi
 
 # adjust cmake version (etlt required cmake version >= 3.13)
 cmake_major_vrsion=$(cmake --version | grep "cmake version" | cut -c 1-14 --complement | cut -d . -f 1)
 cmake_minor_vrsion=$(cmake --version | grep "cmake version" | cut -c 1-14 --complement | cut -d . -f 2)
 cmake_version="${cmake_major_vrsion}.${cmake_minor_vrsion}"
-message_out $cmake_version
+message_out "cmake version = ${cmake_version}"
 
 # cmake_required_Version=3.13
 major=$((cmake_major_vrsion))
 minor=$((cmake_minor_vrsion))
-
+upgrade_cmake=0
 if [ $major -lt 3 ]
 then 
     message_out "version < 3.13"
+    $upgrade_cmake=1
 else
     if [ $major -eq 3 ]
     then
         if [ $minor -lt 13 ]
         then
             message_out "version < 3.13"
+            $upgrade_cmake=1
         else
             message_out "version >= 3.13"
         fi
     else
         message_out "version >= 3.13"
     fi
+fi
+
+if [ $upgrade_cmake -eq 1 ]
+then
+    message_out "Start upgrading cmake to version 3.13"
 fi
 
 # # download model
