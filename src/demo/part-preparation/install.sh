@@ -153,7 +153,7 @@ then
     git clone https://github.com/jetsonhacks/jetsonUtilities
     cd jetsonUtilities/
     GPU_ARCHS=$(python jetsonInfo.py | grep "CUDA Architecture" | cut -c 1-22 --complement | tr -d .)
-    tensorRT_version=$(python jetsonInfo.py | grep "TensorRT" | cut -c 1-11 --complement | | cut -d . -f 1-3)
+    tensorRT_version=$(python jetsonInfo.py | grep "TensorRT" | cut -c 1-11 --complement | cut -d . -f 1-3)
     
 elif [ $gpuArchChecker == "x86" ]
 then
@@ -187,7 +187,23 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
 
     message_out "Backup original libnvinfer_plugin.so.7.x.y and replacing with the rebuild one"
     original_plugin_name=$(ls /usr/lib/aarch64-linux-gnu | grep libnvinfer_plugin.so.${tensorRT_version})
-    echo $original_plugin_name
+#     message_out "TensorRT version = ${tensorRT_version}"
+#     message_out "original_plugin_name = ${original_plugin_name}"
+    backup_folder=${HOME}/libnvinfer_plugin_bak
+    backup_file=$(date +'%Y-%m-%d_%H-%M-%S')
+    backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
+#     message_out "backup folder = ${backup_folder}"
+#     message_out "backup file = ${backup_file}"
+#     message_out "backup file to ${backup_file_path}"
+    #backup original libnvinfer_plugin.so.x.y
+#     mkdir $backup_folder
+#     sudo mv /usr/lib/aarch64-linux-gnu/$original_plugin_name $backup_file_path
+    #copy rebuild one
+    rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
+    message_out "rebuild file = ${rebuild_file}"
+    
+#     sudo cp $rebuild_file  /usr/lib/aarch64-linux-gnu/$original_plugin_name
+#     sudo ldconfig
 else
     message_out "Not supported arch and exit installation"
     exit
