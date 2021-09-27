@@ -142,7 +142,8 @@ fi
 
 # check device GPU architecture by https://github.com/jetsonhacks/jetsonUtilities
 cd $current_path
-GPU_ARCHS_major=""
+GPU_ARCHS=""
+tensorRT_version=""
 if [ $gpuArchChecker == "jetson" ]
 then
     if [ -e "jetsonUtilities" ]
@@ -152,6 +153,7 @@ then
     git clone https://github.com/jetsonhacks/jetsonUtilities
     cd jetsonUtilities/
     GPU_ARCHS=$(python jetsonInfo.py | grep "CUDA Architecture" | cut -c 1-22 --complement | tr -d .)
+    tensorRT_version=$(python jetsonInfo.py | grep "TensorRT" | cut -c 1-11 --complement | | cut -d . -f 1-3)
     
 elif [ $gpuArchChecker == "x86" ]
 then
@@ -169,19 +171,23 @@ arch_array=("53" "61" "62" "70" "72" "75" "86")
 if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     message_out "supported arch and start to rebuild tensorrt..."
     
-    if [ -e "TensorRT" ]
-    then
-        rm -fr TensorRT
-    fi
-    
-    git clone -b 21.03 https://github.com/nvidia/TensorRT
-    cd TensorRT/
-    git submodule update --init --recursive
-    export TRT_SOURCE=`pwd`
-    cd $TRT_SOURCE
-    mkdir -p build && cd build
-    cmake .. -DGPU_ARCHS=$GPU_ARCHS -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR=`pwd`/out
-make nvinfer_plugin -j$(nproc)
+#     if [ -e "TensorRT" ]
+#     then
+#         rm -fr TensorRT
+#     fi
+#     
+#     git clone -b 21.03 https://github.com/nvidia/TensorRT
+#     cd TensorRT/
+#     git submodule update --init --recursive
+#     export TRT_SOURCE=`pwd`
+#     cd $TRT_SOURCE
+#     mkdir -p build && cd build
+#     cmake .. -DGPU_ARCHS=$GPU_ARCHS -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR=`pwd`/out
+# make nvinfer_plugin -j$(nproc)
+
+    message_out "Backup original libnvinfer_plugin.so.7.x.y and replacing with the rebuild one"
+    original_plugin_name=$(ls /usr/lib/aarch64-linux-gnu | grep libnvinfer_plugin.so.${tensorRT_version})
+    echo $original_plugin_name
 else
     message_out "Not supported arch and exit installation"
     exit
