@@ -161,7 +161,7 @@ fi
 message_out "GPU_ARCHS = ${GPU_ARCHS}"
 arch_array=("53" "61" "62" "70" "72" "75" "86")
 
-if [ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]; then
+if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     message_out "supported arch and start to rebuild tensorrt"
 else
     message_out "Not supported arch and exit installation"
