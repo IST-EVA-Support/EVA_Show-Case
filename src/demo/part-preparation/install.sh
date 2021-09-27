@@ -1,9 +1,39 @@
 #!/bin/bash
 
 # ModelNetwork=${1:-ssd_mobilenet};
-modelPruned=${1:-no_pruned}
+# modelPruned=${1:-no_pruned}
+modelPruned="no_pruned"
 
 # echo "ModelNetwork: $ModelNetwork";
+
+# GPU architecture checker
+# gpuArchChecker=${1:-jetson}
+gpuArchChecker="jetson"
+
+# echo "OPTIND starts at $OPTIND"
+while getopts "m:g:?" optname
+  do
+    case "$optname" in
+      "m")
+#         echo "Option $optname is specified"
+#         VAR1=$OPTARG
+        modelPruned=$OPTARG
+        ;;
+      "g")
+#         echo "Option $optname has value $OPTARG"
+        gpuArchChecker=$OPTARG
+        ;;
+      "?")
+        echo "Unknown option $OPTARG"
+        ;;
+    esac
+  done
+
+
+# echo "modelPruned = ${modelPruned}"
+# echo "gpuArchChecker = ${gpuArchChecker}"
+# echo 
+# exit
 
 LB='\033[1;33m'
 NC='\033[0m' # No Color
@@ -71,7 +101,7 @@ cmake_minor_vrsion=$(cmake --version | grep "cmake version" | cut -c 1-14 --comp
 cmake_version="${cmake_major_vrsion}.${cmake_minor_vrsion}"
 message_out "cmake version = ${cmake_version}"
 
-# cmake_required_Version=3.13
+## cmake_required_Version=3.13
 major=$((cmake_major_vrsion))
 minor=$((cmake_minor_vrsion))
 upgrade_cmake=0
@@ -106,6 +136,29 @@ then
     sudo make install
     sudo ln -s /usr/local/bin/cmake /usr/bin/cmake
 fi
+
+# check device GPU architecture by https://github.com/jetsonhacks/jetsonUtilities
+GPU_ARCHS=""
+if [ $gpuArchChecker == "jetson" ]
+then
+    if [ -e "jetsonUtilities" ]
+    then
+        rm -fr jetsonUtilities
+    fi
+    git clone https://github.com/jetsonhacks/jetsonUtilities
+    cd jetsonUtilities/
+    GPU_ARCHS=$(python jetsonInfo.py | grep "CUDA Architecture" | cut -c 1-22 --complement)
+    
+elif [ $gpuArchChecker == "x86" ]
+then
+    message_out "x86 version of this demo is not support currently."
+    exit
+else
+    message_out "not support GPU architecture."
+fi
+
+
+message_out "GPU_ARCHS = ${GPU_ARCHS}"
 
 # # download model
 # if [ $ModelNetwork == "ssd_mobilenet" ]
