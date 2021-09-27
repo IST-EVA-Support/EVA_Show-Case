@@ -163,13 +163,19 @@ arch_array=("53" "61" "62" "70" "72" "75" "86")
 
 if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     message_out "supported arch and start to rebuild tensorrt..."
+    
+    if [ -e "TensorRT" ]
+    then
+        rm -fr TensorRT
+    fi
+    
     git clone -b 21.03 https://github.com/nvidia/TensorRT
     cd TensorRT/
     git submodule update --init --recursive
     export TRT_SOURCE=`pwd`
     cd $TRT_SOURCE
     mkdir -p build && cd build
-    cmake .. -DGPU_ARCHS=$GPU_ARCHS  -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR=`pwd`/out
+    cmake .. -DGPU_ARCHS=$GPU_ARCHS -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR=`pwd`/out
 make nvinfer_plugin -j$(nproc)
 else
     message_out "Not supported arch and exit installation"
