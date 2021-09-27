@@ -43,6 +43,9 @@ message_out(){
     echo -e "${LB}=> $1${NC}"
 }
 
+# Get current path
+current_path=`pwd`
+
 message_out "Start installing..."
 # build required plugin
 message_out "Building assembly plugin..."
@@ -138,6 +141,7 @@ then
 fi
 
 # check device GPU architecture by https://github.com/jetsonhacks/jetsonUtilities
+cd $current_path
 GPU_ARCHS_major=""
 if [ $gpuArchChecker == "jetson" ]
 then
@@ -158,6 +162,7 @@ else
     exit
 fi
 
+cd $current_path
 message_out "GPU_ARCHS = ${GPU_ARCHS}"
 arch_array=("53" "61" "62" "70" "72" "75" "86")
 
