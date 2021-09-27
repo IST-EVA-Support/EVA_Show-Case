@@ -154,6 +154,8 @@ then
     cd jetsonUtilities/
     GPU_ARCHS=$(python jetsonInfo.py | grep "CUDA Architecture" | cut -c 1-22 --complement | tr -d .)
     tensorRT_version=$(python jetsonInfo.py | grep "TensorRT" | cut -c 1-11 --complement | cut -d . -f 1-3)
+    jetson_name=$(python jetsonInfo.py | grep "NVIDIA Jetson" | cut -c 1-14 --complement)
+    jetpack_version=$(python jetsonInfo.py | grep "JetPack" | cut -c 1-22,26-27 --complement | tr -d .)
     
 elif [ $gpuArchChecker == "x86" ]
 then
@@ -185,16 +187,14 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     cmake .. -DGPU_ARCHS=$GPU_ARCHS -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR=`pwd`/out
 make nvinfer_plugin -j$(nproc)
 
+
     message_out "Backup original libnvinfer_plugin.so.7.x.y and replacing with the rebuild one"
     original_plugin_name=$(ls /usr/lib/aarch64-linux-gnu | grep libnvinfer_plugin.so.${tensorRT_version})
-#     message_out "TensorRT version = ${tensorRT_version}"
-#     message_out "original_plugin_name = ${original_plugin_name}"
+
     backup_folder=${HOME}/libnvinfer_plugin_bak
     backup_file=$(date +'%Y-%m-%d_%H-%M-%S')
     backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
-#     message_out "backup folder = ${backup_folder}"
-#     message_out "backup file = ${backup_file}"
-#     message_out "backup file to ${backup_file_path}"
+
     #backup original libnvinfer_plugin.so.x.y
     mkdir $backup_folder
     sudo mv /usr/lib/aarch64-linux-gnu/$original_plugin_name $backup_file_path
@@ -208,6 +208,47 @@ else
     message_out "Not supported arch and exit installation"
     exit
 fi
+
+# Install TAO Converter to convert etlt file to engine file
+cd $current_path
+arch_jetson_name=("TX")
+if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
+    if [ $jetpack_version == "44" ]
+    then
+        message_out "supported jetson device and start to convert etlt file..."
+        #download tao-converter binary
+        wget https://developer.nvidia.com/cuda102-trt71-jp44-0
+        
+        # unzip it, then delete the zip file
+        sudo apt-get -y install unzip
+        unzip -o jp4.4-20210820T231339Z-001.zip
+        rm jp4.4-20210820T231339Z-001.zip
+        cd jp4.4
+        sudo chmod +x tao-converter
+        
+        #Install openssl library
+        sudo apt-get -y install libssl-dev
+        #Export the following environment variables
+        export TRT_LIB_PATH=”/usr/lib/aarch64-linux-gnu”
+        export TRT_INC_PATH=”/usr/include/aarch64-linux-gnu”
+        
+        message_out "Converting original model..."
+        ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_3400_fp32.engine ../model/dssd_resnet18_epoch_3400.etlt
+        
+        message_out "Converting pruned model..."
+        ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
+        
+        
+    elif
+    then
+        message_out "supported jetson device, but does not support this jetpack version: ${$jetpack_version}"
+    fi
+    
+elif
+then
+    message_out "Not supported device."
+fi
+
 
 
 # # download model
