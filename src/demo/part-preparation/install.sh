@@ -97,6 +97,14 @@ fi
 if [ $upgrade_cmake -eq 1 ]
 then
     message_out "Start upgrading cmake to version 3.13"
+    sudo apt remove --purge --auto-remove cmake
+    wget https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5.tar.gz
+    tar xvf cmake-3.13.5.tar.gz
+    cd cmake-3.13.5/
+    ./configure
+    make -j$(nproc)
+    sudo make install
+    sudo ln -s /usr/local/bin/cmake /usr/bin/cmake
 fi
 
 # # download model
