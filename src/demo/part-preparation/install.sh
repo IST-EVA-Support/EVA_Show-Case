@@ -138,7 +138,7 @@ then
 fi
 
 # check device GPU architecture by https://github.com/jetsonhacks/jetsonUtilities
-GPU_ARCHS=""
+GPU_ARCHS_major=""
 if [ $gpuArchChecker == "jetson" ]
 then
     if [ -e "jetsonUtilities" ]
@@ -147,7 +147,7 @@ then
     fi
     git clone https://github.com/jetsonhacks/jetsonUtilities
     cd jetsonUtilities/
-    GPU_ARCHS=$(python jetsonInfo.py | grep "CUDA Architecture" | cut -c 1-22 --complement)
+    GPU_ARCHS=$(python jetsonInfo.py | grep "CUDA Architecture" | cut -c 1-22 --complement | tr -d .)
     
 elif [ $gpuArchChecker == "x86" ]
 then
@@ -155,10 +155,19 @@ then
     exit
 else
     message_out "not support GPU architecture."
+    exit
 fi
 
-
 message_out "GPU_ARCHS = ${GPU_ARCHS}"
+arch_array=("53" "61" "62" "70" "72" "75" "86")
+
+if [ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]; then
+    message_out "supported arch and start to rebuild tensorrt"
+else
+    message_out "Not supported arch and exit installation"
+    exit
+fi
+
 
 # # download model
 # if [ $ModelNetwork == "ssd_mobilenet" ]
