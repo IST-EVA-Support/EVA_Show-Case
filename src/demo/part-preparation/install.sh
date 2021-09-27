@@ -196,14 +196,14 @@ make nvinfer_plugin -j$(nproc)
 #     message_out "backup file = ${backup_file}"
 #     message_out "backup file to ${backup_file_path}"
     #backup original libnvinfer_plugin.so.x.y
-#     mkdir $backup_folder
-#     sudo mv /usr/lib/aarch64-linux-gnu/$original_plugin_name $backup_file_path
+    mkdir $backup_folder
+    sudo mv /usr/lib/aarch64-linux-gnu/$original_plugin_name $backup_file_path
     #copy rebuild one
     rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
     message_out "rebuild file = ${rebuild_file}"
     
-#     sudo cp $rebuild_file  /usr/lib/aarch64-linux-gnu/$original_plugin_name
-#     sudo ldconfig
+    sudo cp $rebuild_file /usr/lib/aarch64-linux-gnu/$original_plugin_name
+    sudo ldconfig
 else
     message_out "Not supported arch and exit installation"
     exit
