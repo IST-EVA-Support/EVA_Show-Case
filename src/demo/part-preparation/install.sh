@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# test_string=$(ls | grep "install")
+# echo $test_string
+# path=/home/paullin/Desktop/EVA_Show-Case/src/demo/part-preparation
+# echo "path = ${path}"
+# 
+# if [ -d $path ]
+# then
+#     echo "it is directory"
+# else
+#     echo "it is not a directory"
+# fi
+# 
+# exit
+
+
 # ModelNetwork=${1:-ssd_mobilenet};
 # modelPruned=${1:-no_pruned}
 modelPruned="no_pruned"
@@ -140,12 +155,14 @@ then
     sudo ln -s /usr/local/bin/cmake /usr/bin/cmake
 fi
 
-# check device GPU architecture by https://github.com/jetsonhacks/jetsonUtilities
+# check device GPU architecture
 cd $current_path
 GPU_ARCHS=""
 tensorRT_version=""
+cuda_runtime_version=""
 if [ $gpuArchChecker == "jetson" ]
 then
+    # check Jetson GPU architecture by https://github.com/jetsonhacks/jetsonUtilities
     if [ -e "jetsonUtilities" ]
     then
         rm -fr jetsonUtilities
@@ -161,8 +178,20 @@ then
     
 elif [ $gpuArchChecker == "x86" ]
 then
-    message_out "x86 version of this demo is not support currently."
-    exit
+    # check x86 GPU architecture by deviceQuery
+    #message_out "x86 version of this demo is not support currently."
+    message_out "Check x86 device GPU architecture"
+    git clone https://github.com/NVIDIA-AI-IOT/deepstream_tao_apps.git
+    cd deepstream_tao_apps/TRT-OSS/x86
+    nvcc deviceQuery.cpp -o deviceQuery
+    GPU_ARCHS=$(./deviceQuery | grep "CUDA Capability Major/Minor version number:" | cut -c 1-49 --complement | tr -d .)
+    cuda_runtime_version=$(./deviceQuery | grep "CUDA Driver Version / Runtime Version" | cut -c 1-56 --complement | tr -d .)
+    message_out "x86 cuda_runtime_version = ${cuda_runtime_version}"
+    cd $current_path
+    rm -fr deepstream_tao_apps
+    
+    #Get TensorRT version in x86
+    tensorRT_version=$(dpkg -l | grep "ii  tensorrt" | cut -c 1-12 --complement | xargs | cut -d - -f 1 | cut -d . -f 1-3)
 else
     message_out "not support GPU architecture."
     exit
@@ -186,29 +215,73 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     export TRT_SOURCE=`pwd`
     cd $TRT_SOURCE
     mkdir -p build && cd build
+    
+    # Start to rebuild TensorRT OSS(Open Source Software)
+    #x86/jetson use same TRT_LIB_DIR
     cmake .. -DGPU_ARCHS=$GPU_ARCHS -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR=`pwd`/out
-make nvinfer_plugin -j$(nproc)
-
-
+    make nvinfer_plugin -j$(nproc)
+    
     message_out "Backup original libnvinfer_plugin.so.7.x.y and replacing with the rebuild one"
-    original_plugin_name=$(ls /usr/lib/aarch64-linux-gnu | grep libnvinfer_plugin.so.${tensorRT_version})
-
     backup_folder=${HOME}/libnvinfer_plugin_bak
     backup_file=$(date +'%Y-%m-%d_%H-%M-%S')
     backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
-
-    #backup original libnvinfer_plugin.so.x.y
     if [ ! -e backup_folder ]
     then
         mkdir $backup_folder
     fi
-    sudo mv /usr/lib/aarch64-linux-gnu/$original_plugin_name $backup_file_path
-    #copy rebuild one
-    rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
-    message_out "rebuild file = ${rebuild_file}"
     
-    sudo cp $rebuild_file /usr/lib/aarch64-linux-gnu/$original_plugin_name
-    sudo ldconfig
+    if [ $gpuArchChecker == "jetson" ]
+    then
+        original_plugin_name=$(ls /usr/lib/aarch64-linux-gnu | grep libnvinfer_plugin.so.${tensorRT_version})
+        #backup original libnvinfer_plugin.so.x.y to backup folder
+        #check original_plugin_name is not "" to prevent copy system folder
+        original_plugin_path=/usr/lib/aarch64-linux-gnu/$original_plugin_name
+        if [ ! -d $original_plugin_path ]
+        then
+            sudo mv $original_plugin_path $backup_file_path
+        fi
+        #copy rebuild one
+        rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
+        message_out "rebuild file = ${rebuild_file}"
+        
+        if [ -e $rebuild_file ]
+        then
+            sudo cp $rebuild_file $original_plugin_path
+        fi
+        sudo ldconfig
+        
+    elif [ $gpuArchChecker == "x86" ]
+    then
+        original_plugin_name=$(ls /usr/lib/x86_64-linux-gnu | grep libnvinfer_plugin.so.${tensorRT_version})
+        message_out "original_plugin_name = ${original_plugin_name}"
+        #backup original libnvinfer_plugin.so.x.y to backup folder
+        #check original_plugin_name is not "" to prevent copy system folder
+        original_plugin_path=/usr/lib/x86_64-linux-gnu/$original_plugin_name
+        if [ ! -d $original_plugin_path ]
+        then
+            sudo mv $original_plugin_path $backup_file_path
+        fi
+        #copy rebuild one
+        rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
+        message_out "rebuild file = ${rebuild_file}"
+        
+        if [ -e $rebuild_file ]
+        then
+            sudo cp $rebuild_file $original_plugin_path
+        fi
+        sudo ldconfig
+        exit
+    else
+        message_out "Not x86 or Jetson device."
+        exit
+    fi
+
+    exit
+    
+    
+    
+    
+
 else
     message_out "Not supported arch and exit installation"
     exit
