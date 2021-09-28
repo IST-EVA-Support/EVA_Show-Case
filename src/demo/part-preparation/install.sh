@@ -1,20 +1,5 @@
 #!/bin/bash
 
-# test_string=$(ls | grep "install")
-# echo $test_string
-# path=/home/paullin/Desktop/EVA_Show-Case/src/demo/part-preparation
-# echo "path = ${path}"
-# 
-# if [ -d $path ]
-# then
-#     echo "it is directory"
-# else
-#     echo "it is not a directory"
-# fi
-# 
-# exit
-
-
 # ModelNetwork=${1:-ssd_mobilenet};
 # modelPruned=${1:-no_pruned}
 modelPruned="no_pruned"
@@ -230,6 +215,7 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         mkdir $backup_folder
     fi
     
+    # move file then copy file
     if [ $gpuArchChecker == "jetson" ]
     then
         original_plugin_name=$(ls /usr/lib/aarch64-linux-gnu | grep libnvinfer_plugin.so.${tensorRT_version})
@@ -242,7 +228,7 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         fi
         #copy rebuild one
         rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
-        message_out "rebuild file = ${rebuild_file}"
+        message_out "rebuild file in jetson = ${rebuild_file}"
         
         if [ -e $rebuild_file ]
         then
@@ -263,7 +249,7 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         fi
         #copy rebuild one
         rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
-        message_out "rebuild file = ${rebuild_file}"
+        message_out "rebuild file in x86 = ${rebuild_file}"
         
         if [ -e $rebuild_file ]
         then
@@ -276,18 +262,13 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         exit
     fi
 
-    exit
-    
-    
-    
-    
-
 else
     message_out "Not supported arch and exit installation"
     exit
 fi
 
 # Install TAO Converter to convert etlt file to engine file
+message_out "Start to Converting..."
 cd $current_path
 arch_jetson_name=("TX2")
 if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
