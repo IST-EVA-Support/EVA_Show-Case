@@ -216,7 +216,7 @@ fi
 
 # Install TAO Converter to convert etlt file to engine file
 cd $current_path
-arch_jetson_name=("TX")
+arch_jetson_name=("TX2")
 if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
     if [ $jetpack_version == "44" ]
     then
@@ -226,8 +226,8 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         
         # unzip it, then delete the zip file
         sudo apt-get -y install unzip
-        unzip -o jp4.4-20210820T231339Z-001.zip
-        rm jp4.4-20210820T231339Z-001.zip
+        unzip -o cuda102-trt71-jp44-0
+        rm cuda102-trt71-jp44-0
         cd jp4.4
         sudo chmod +x tao-converter
         
