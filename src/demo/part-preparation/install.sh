@@ -196,7 +196,10 @@ make nvinfer_plugin -j$(nproc)
     backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
 
     #backup original libnvinfer_plugin.so.x.y
-    mkdir $backup_folder
+    if [ ! -e backup_folder ]
+    then
+        mkdir $backup_folder
+    fi
     sudo mv /usr/lib/aarch64-linux-gnu/$original_plugin_name $backup_file_path
     #copy rebuild one
     rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
