@@ -156,6 +156,7 @@ then
     tensorRT_version=$(python jetsonInfo.py | grep "TensorRT" | cut -c 1-11 --complement | cut -d . -f 1-3)
     jetson_name=$(python jetsonInfo.py | grep "NVIDIA Jetson" | cut -c 1-14 --complement)
     jetpack_version=$(python jetsonInfo.py | grep "JetPack" | cut -c 1-22,26-27 --complement | tr -d .)
+    cd .. | rm -fr jetsonUtilities
     
 elif [ $gpuArchChecker == "x86" ]
 then
@@ -242,8 +243,7 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
         
         
-    elif
-    then
+    else
         message_out "supported jetson device, but does not support this jetpack version: ${$jetpack_version}"
     fi
     
