@@ -16,8 +16,8 @@ message_out "Start installing..."
 # build required plugin
 #install onnx runtime ????
 #https://nvidia.app.box.com/s/bfs688apyvor4eo8sf3y1oqtnarwafww
-message_out "Building geofence plugin..."
-sudo apt -y install libgstreamer-plugins-base1.0-dev
+###message_out "Building geofence plugin..."
+###sudo apt -y install libgstreamer-plugins-base1.0-dev
 ###../../plugins/geofence/geofence-build.sh
 # download video
 if [ -e "Cookie_H264.mov" ]
@@ -27,14 +27,7 @@ else
     message_out "Start download demo video..."
     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/Cookie_H264.mov
 fi
-#### download video area define file
-###if [ -e "alert-def-area-geo.txt" ]
-###then
-###    message_out "alert-def-area-geo.txt exists, skip."
-###else
-###    message_out "Start download area file..."
-###    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/alert-def-area-geo.txt
-###fi
+
 # download model
 if [ $ModelNetwork == "onnx" ]
 then
@@ -59,11 +52,8 @@ then
         wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/adlink-onnx-cookie-labels.txt
     fi
 fi
-# python plugin
-###message_out "Deploy alert plugin..."
-###../../plugins/alert/email/emailAlert-build.sh
-###../../plugins/alert/voice/voiceAlert-build.sh
 
+# python plugin
 message_out "Install related python package"
 pip3 install -r requirements.txt
 sudo apt -y install gstreamer1.0-libav
