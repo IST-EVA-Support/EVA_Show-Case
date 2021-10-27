@@ -19,7 +19,7 @@ Install.sh will perform the following steps:
 Use the path:
 
 ```
-> cd src/demo/cookie
+> cd src/demo/cookie-inspection
 ```
 
 
