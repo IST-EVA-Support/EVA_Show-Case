@@ -36,11 +36,11 @@ then
         message_out "Cookie_detection model exists, skip."
     else
         message_out "Start download model..."
-        wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/Cookie_detection.zip
+        wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/Cookie-inspection.zip
 		# unzip it, then delete the zip file
         sudo apt-get -y install unzip
-        unzip Cookie_detection.zip
-        rm Cookie_detection.zip
+        unzip Cookie-inspection.zip
+        rm Cookie-inspection.zip
     fi
 else
     message_out "Unsupported Model: $ModelNetwork" 
