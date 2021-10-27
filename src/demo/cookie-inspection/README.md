@@ -10,7 +10,7 @@ The path to the respective demo folder includes install.sh and run.sh for each s
 
 Install.sh will perform the following steps:
 
-1. Build the required plug-ins for each showcase and install them into ADLINK EVASDK.
+1. Download the demo video.
 2. Download the inference ONNX model file and label file.
 3. Download the required showcase demo videos and plug-in setup files.
 
@@ -22,7 +22,6 @@ Use the path:
 > cd src/demo/cookie-inspection
 ```
 
-
 Run install.sh with root privileges:
 
 ```
@@ -32,6 +31,13 @@ Run install.sh with root privileges:
 
 This is required to modify the path to the OpenCV library. If you have installed EVA on a non-ADLINK device, please check the requirements in our EVA portal.
 
+<a id="runsh"></a>
+
+After installation, execute run.sh for the pipeline command:
+
+```
+> ./run.sh
+```
 
 
 
@@ -71,10 +77,10 @@ https://azurelessons.com/create-azure-free-account/#Create_Azure_Free_Account
 
 *Creat new project in Custom Vision can be found at the EVA Portal: < Under Construction >
 
-
+<a id="Run-This-Showcase-Through-EVA-IDE"></a>
 ## Run This Showcase Through EVA IDE(For EVASDK 3.5.2 or later)
 
-In this showcase, you can run the pipeline by execute <a href="#runsh">run.sh</a> but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/cookie as root:
+In this showcase, you can run the pipeline by execute <a href="#runsh">run.sh</a> but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/cookie-inspection as root:
 
 ```
 > EVA_ROOT/bin/EVA_IDE
@@ -98,10 +104,5 @@ Then select the pygraph you want to run, here for example select showcase3-onnx.
 
 Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
 
-<a id="note1"></a>
 
-<Note 1> If your IDE can not show/add the plugin node "h264parse" after loading the pygraph file, manually add it into the while list. The file element_list.txt will be generated after running IDE once. 
 
-For Linux, add "+h264parse" in file : /home/USER_ACCOUNT/adlink/eva/IDE/config/element_list.txt. 
-
-For Windows 10, add "+h264parse" in file : C:\ADLINK\eva\IDE\config\element_list.txt

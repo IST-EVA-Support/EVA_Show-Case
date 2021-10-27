@@ -14,11 +14,7 @@ message_out(){
 
 message_out "Start installing..."
 # build required plugin
-#install onnx runtime ????
-#https://nvidia.app.box.com/s/bfs688apyvor4eo8sf3y1oqtnarwafww
-###message_out "Building geofence plugin..."
-###sudo apt -y install libgstreamer-plugins-base1.0-dev
-###../../plugins/geofence/geofence-build.sh
+
 # download video
 if [ -e "Cookie_H264.mov" ]
 then
