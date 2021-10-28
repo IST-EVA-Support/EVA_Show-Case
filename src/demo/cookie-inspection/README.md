@@ -56,7 +56,7 @@ The training materials can be downloaded with the following links.
 
 Training images: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase3/cookie-training-images.zip 
 
-Training notation for ONNX: http://ftp.adlinktech.com/
+Training notation for ONNX: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase3/cookie-training-notation.zip 
 
 Training architecture site list below: 
 

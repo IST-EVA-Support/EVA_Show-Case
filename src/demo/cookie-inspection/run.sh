@@ -19,7 +19,7 @@ then
     if [ $translatorplugin == "adtrans_tinyyolov2_py" ]
     then
         message_out "using plugin: adtrans_tinyyolov2_py"
-		gst-launch-1.0 filesrc location=Cookie_H264.mov ! decodebin ! nvvideoconvert ! videoscale ! capsfilter caps="video/x-raw, height=(int)360, width=(int)640" ! videoconvert ! adonnx mean="0.0,0.0,0.0" model=Cookie-inspection.onnx rgbconv=True ! adtrans_tinyyolov2_py class-num=3 input-height=512 input-width=512 label-file=adlink-onnx-cookie-labels.txt threshold=0.1 ! admetadrawer ! videoconvert ! xvimagesink
+		gst-launch-1.0 filesrc location=Cookie_H264.mov ! decodebin ! nvvideoconvert ! videoconvert ! adonnx mean="0.0,0.0,0.0" model=Cookie-inspection.onnx rgbconv=True ! adtrans_tinyyolov2_py class-num=3 input-height=512 input-width=512 label-file=adlink-onnx-cookie-labels.txt threshold=0.1 ! admetadrawer ! videoconvert ! xvimagesink 
     else
         message_out "input invalid translator plugin name."
     fi
