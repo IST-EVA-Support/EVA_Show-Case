@@ -177,6 +177,7 @@ then
     
     #Get TensorRT version in x86
     tensorRT_version=$(dpkg -l | grep "ii  tensorrt" | cut -c 1-12 --complement | xargs | cut -d - -f 1 | cut -d . -f 1-3)
+    message_out "tensorRT_version = &{tensorRT_version}"
 else
     message_out "not support GPU architecture."
     exit
@@ -245,18 +246,28 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         original_plugin_path=/usr/lib/x86_64-linux-gnu/$original_plugin_name
         if [ ! -d $original_plugin_path ]
         then
+            #if exist libnvinfer_plugin.so.x.y, backup it
             sudo mv $original_plugin_path $backup_file_path
         fi
+        
         #copy rebuild one
         rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
+        if [ -d $original_plugin_path ]
+        then
+            #if not exist libnvinfer_plugin.so.x.y in system, modify the $original_plugin_path
+            message_out "before modify, original_plugin_path = ${original_plugin_path}"
+            original_plugin_path=/usr/lib/x86_64-linux-gnu/$rebuild_file 
+            message_out "after modify, original_plugin_path = ${original_plugin_path}"
+        fi
         message_out "rebuild file in x86 = ${rebuild_file}"
         
         if [ -e $rebuild_file ]
         then
+            message_out "rebuild_file = ${rebuild_file}"
+            message_out "original_plugin_path = ${original_plugin_path}"
             sudo cp $rebuild_file $original_plugin_path
         fi
         sudo ldconfig
-        exit
     else
         message_out "Not x86 or Jetson device."
         exit
@@ -296,97 +307,51 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         
         message_out "Converting pruned model..."
         ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
-        
-        
     else
         message_out "supported jetson device, but does not support this jetpack version: ${$jetpack_version}"
     fi
+elif [ $gpuArchChecker == "x86" ]
+then
+    message_out "=======processing x86 convert============"
+    #message_out "x86 cuda_runtime_version = ${cuda_runtime_version}"
+    #message_out "tensorRT_version = ${tensorRT_version}"
+    #download tao-converter binary, only support cuda10.2/cudnn8.0/tensorrt7.1
+    wget https://developer.nvidia.com/cuda102-trt71
     
+    # unzip it, then delete the zip file
+    sudo apt-get -y install unzip
+    unzip -o cuda102-trt71
+    rm cuda102-trt71
+    cd cuda10.2-trt7.1
+    sudo chmod +x tao-converter
+    
+    #Install openssl library
+    sudo apt-get -y install libssl-dev
+    #Export the following environment variables
+    export TRT_LIB_PATH=”/usr/lib/x86_64-linux-gnu”
+    export TRT_INC_PATH=”/usr/include/x86_64-linux-gnu”
+    
+    message_out "Converting original model..."
+    ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_3400_fp32.engine ../model/dssd_resnet18_epoch_3400.etlt
+        
+    message_out "Converting pruned model..."
+    ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
 else
-    message_out "Not supported device."
+    message_out "Not supported device platform."
 fi
 
 
 
-# # download model
-# if [ $ModelNetwork == "ssd_mobilenet" ]
-# then
-#     if [ -e "mobilenetSSDv2_geofencing.engine" ]
-#     then
-#         message_out "Model exists, skip."
-#     else
-#         if [ -e "geo_fencing_ssd_v2.uff" ]
-#         then 
-#             message_out "uff model file exists."
-#         else    
-#             message_out "Start download model..."
-#             wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/geo_fencing_ssd_v2.zip
-#             # unzip it, then delete the zip file
-#             sudo apt-get -y install unzip
-#             unzip geo_fencing_ssd_v2.zip
-#             rm geo_fencing_ssd_v2.zip
-#         fi
-# 
-#         message_out "Start convert uff model to tensorrt..."    
-#         ../../scripts/optimize_ssd_mobilenet.sh geo_fencing_ssd_v2.uff mobilenetSSDv2_geofencing.engine
-#         message_out "Convert Done."
-#     fi
-# elif [ $ModelNetwork == "yolov3" ]
-# then
-#     if [ -e "adlink-yolov3-geo-fencing.engine" ]
-#     then
-#         message_out "Yolov3 model exists, skip."
-#     else
-#         if [ -e "adlink-yolov3-geo-fencing.onnx" ]
-#         then 
-#             message_out "onnx model file exists."
-#         else    
-#             message_out "Start download model..."
-#             wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing.zip
-#             # unzip it, then delete the zip file
-#             sudo apt-get -y install unzip
-#             unzip adlink-yolov3-geo-fencing.zip
-#             rm adlink-yolov3-geo-fencing.zip
-#         fi
-# 
-#         message_out "Start convert onnx model to tensorrt..."
-#         ../../scripts/optimize_yolov3.sh adlink-yolov3-geo-fencing.onnx adlink-yolov3-geo-fencing.engine        
-#         message_out "Convert Done."
-#     fi
-# else
-#     message_out "Unsupported Model: $ModelNetwork" 
-# fi
-# # download model label file
-# if [ $ModelNetwork == "ssd_mobilenet" ]
-# then
-#     if [ -e "adlink-mobilenetSSDv2-geo-fencing-label.txt" ]
-#     then
-#         message_out "adlink-mobilenetSSDv2-geo-fencing-label.txt exists, skip."
-#     else
-#         message_out "Start download label file..."
-#         wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-mobilenetSSDv2-geo-fencing-label.txt
-#     fi
-# elif [ $ModelNetwork == "yolov3" ]
-# then
-#     if [ -e "adlink-yolov3-geo-fencing-label.txt" ]
-#     then
-#         message_out "adlink-yolov3-geo-fencing-label.txt exists, skip."
-#     else
-#         message_out "Start download label file..."
-#         wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing-label.txt
-#     fi
-# fi
-# # python plugin
-# message_out "Deploy alert plugin..."
-# ../../plugins/alert/email/emailAlert-build.sh
-# ../../plugins/alert/voice/voiceAlert-build.sh
-# 
-# message_out "Install related python package"
-# pip3 install -r requirements.txt
-# sudo apt -y install gstreamer1.0-libav
-# sudo apt-get -y install espeak
-# rm ~/.cache/gstreamer-1.0/regi*
-# 
-# message_out "Installation completed, you could run this demo by execute ./run.sh"
-# message_out "** run mobilenetSSDv2, execute run-win.bat directly."
-# message_out "** run yolov3, run run-win.bat with argument yolov3."
+# python plugin
+cd $current_path
+message_out "Deploy alert plugin..."
+../../plugins/alert/email/emailAlert-build.sh
+../../plugins/alert/voice/voiceAlert-build.sh
+
+message_out "Install related python package"
+pip3 install -r requirements.txt
+sudo apt -y install gstreamer1.0-libav
+sudo apt-get -y install espeak
+rm ~/.cache/gstreamer-1.0/regi*
+
+message_out "Installation completed, you could run this demo by execute ./run.sh"
