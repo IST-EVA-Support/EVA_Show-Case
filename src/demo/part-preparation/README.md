@@ -1,4 +1,4 @@
-# Showcase 4: Components Preparation
+# Showcase 4: Parts Preparation
 
 ## Showcase Requirements
 
