@@ -11,8 +11,13 @@ The path to the respective demo folder includes install.sh and run.sh for this s
 Install.sh will perform the following steps:
 
 1. Build the required plug-ins for this showcase and install them into ADLINK EVASDK.
-2. Download the inference intermediate model file and optimize it to TensorRT format on the local device.
-3. Download the required showcase demo videos and plug-in setup files.
+2. Download required demo videos and inference intermediate model file (*.etlt*) and its label file.
+3. Check cmake version and installed it with minmum required version.
+4. Build TensorRT required feature layers into plugin from NVIDIA *Open Source Software(OSS)*.
+5. Optimize it to TensorRT format (*.engine*) on the local device.
+6. Install required python packages.
+
+For this showcase now only support for NVIDIA device.
 
 ### For this showcase: 
 
@@ -24,7 +29,7 @@ Use the path:
 
 <!---
 
-For Windows, 
+For Windows, (under construct)
 
 ```
 > cd src\demo\part-preparation\windows
@@ -32,15 +37,25 @@ For Windows,
 
 --->
 
+For NEON JNX, please install this demo by:
+
 Run install.sh with root privileges:
 
 ```
 > ./install.sh
 ```
 
+For x86 system, please install this demo by:
+
+Run install.sh with root privileges:
+
+```
+> ./install.sh -g x86
+```
+
 <!---
 
-For Windows:
+For Windows: (under construct)
 
 ```
 > install-win.bat
@@ -50,25 +65,9 @@ For Windows:
 
 This is required to modify the path to the OpenCV library. If you have installed EVA on a non-ADLINK device, please check the requirements in our EVA portal.
 
-This showcase utilizes the DSSD (Deconvolutional Single Shot Detector) and is trained by NVIDIA TAO. Two models which pruned and without pruned are provided. The default used model is model without pruned. If you want to use pruned model,  use the argument below:
-
-```
-> ./install.sh -m pruned
-```
-
 <!---
 
-This showcase default support NVIDIA Jetson series products. If you want to run under x86 device, use the argument below:
-
-```
-> ./install.sh -g x86
-```
-
---->
-
-<!---
-
-For Windows:
+For Windows: (under construct)
 
 ```
 > install-win.bat yolov3
@@ -84,31 +83,25 @@ After installation, execute run.sh for the pipeline command:
 > ./run.sh
 ```
 
+This showcase utilizes the DSSD (Deconvolutional Single Shot Detector) and is trained by NVIDIA TAO. Two models which pruned and without pruned are provided. The default used model is without pruned when running. Use the command below to run pruned model:
+
+```
+> ./run.sh yes
+```
+
 <!---
 
-For Windows:
+For Windows: (under construct)
 
 ```
 > run-win.bat
-```
-
-The mobilenetssdv2 is the default run, if yolov3 is installed, use the argument below:
-
-```
-> ./run.sh yolov3
-```
-
-For Windows:
-
-```
-> run-win.bat yolov3
 ```
 
 --->
 
 Or you can open EVA_IDE and load pygraph then execute, please see the section, [Run This Showcase Through EVA IDE](#Run-This-Showcase-Through-EVA-IDE).
 
-Then you will see the pop-up display window of this showcase as in the example below.
+Then you will see the pop-up display window of this showcase as in the example below. There are three demo videos which will run one after the other.
 
 ![image-showcase1](../../../figures/image-showcase4-correct.png)
 
@@ -124,23 +117,11 @@ The timer starts with orange color means the preparation procedure is working an
 
 The training materials can be downloaded with the following links.
 
-Training images: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-training-images.zip 
+Training images and its label: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase4-5/train-data.zip 
 
-Training notation for mobilenetSSDv2: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-mobilenetSSDv2.zip
+Reference training settings followed by NVIDIA TAO:  http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase4-5/files.zip 
 
-Training notation for yolov3: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-yolov3.zip
-
-Training architecture site list below: 
-
-mobilenetSSDv2: 
-
-https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1.md
-
-https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1_detection_zoo.md, ssd_mobilenet_v2_coco
-
-yolov3: 
-
-https://github.com/AlexeyAB/darknet/tree/Yolo_v3
+Training procedure followed by [NVIDIA Train, Adapt, and Optimize(TAO)](https://developer.nvidia.com/tao-toolkit). The model architecture used for this demo is [Deconvolutional Single Shot Detector(DSSD) provided pretrained by TAO](https://docs.nvidia.com/tao/tao-toolkit/text/object_detection/dssd.html). 
 
 Note: Showcases 4 and 5 use the same training materials.
 
@@ -164,17 +145,27 @@ And you will see the IDE show up as below:
 
 ![EVAIDE](../../../figures/EVAIDE.png)
 
-Then select the pygraph you want to run, here for example select showcase1-mobilenetssdv2.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
+Then select the pygraph you want to run, here for example select showcase4.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
 
-![showcase1-file-load](../../../figures/showcase1-file-load.png)
+![showcase1-file-load](../../../figures/showcase4-file-load.png)
 
-![showcase1-pipeline](../../../figures/showcase1-pipeline.png)
+![showcase1-pipeline](../../../figures/showcase4-pipeline.png)
 
-The settings are default set relevant to this scenario<a href="#note1"><Note 1></a> and one alert require to be set. Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
+For loading other videos, simply change the filesrc element and select the demo video in location property.
+
+![filesrc-node](../../../figures/filesrc-node.png) ![filesrc-node-property-showcase4](C:\Users\User\Desktop\EVA-Showcase\EVA_Show-Case\figures\filesrc-node-property-showcase4.png)
+
+For loading pruned model, simply change the adrt element and select the pruned model in model property.
+
+![filesrc-node](../../../figures/adrt-node.png) ![filesrc-node-property-showcase4](C:\Users\User\Desktop\EVA-Showcase\EVA_Show-Case\figures\adrt-node-property-showcase4.png)
+
+Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
 
 ![emailalert-node](../../../figures/emailalert-node.png) ![emailalert-node-property](../../../figures/emailalert-node-property-showcase1.png)
 
 Provide an email address you want to receive from the alert for this show case in "receiver-address". Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
+
+<!---
 
 <a id="note1"></a>
 
@@ -183,3 +174,5 @@ Provide an email address you want to receive from the alert for this show case i
 For Linux, add "+h264parse" in file : /home/USER_ACCOUNT/adlink/eva/IDE/config/element_list.txt. 
 
 For Windows 10, add "+h264parse" in file : C:\ADLINK\eva\IDE\config\element_list.txt
+
+--->
