@@ -55,26 +55,26 @@ sudo apt -y install libgstreamer-plugins-base1.0-dev
 
 # ####
 # download video
-if [ -e "material-preparation.avi" ]
+if [ -e "material-preparation.mp4" ]
 then
     message_out "Demo video exists, skip."
 else
-    message_out "Start download demo video [material-preparation.avi]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/material-preparation.avi
+    message_out "Start download demo video [material-preparation.mp4]..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/material-preparation.mp4
 fi
-if [ -e "disassembly.avi" ]
+if [ -e "disassembly.mp4" ]
 then
     message_out "Demo video exists, skip."
 else
-    message_out "Start download demo video [disassembly.avi]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/disassembly.avi
+    message_out "Start download demo video [disassembly.mp4]..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/disassembly.mp4
 fi
-if [ -e "order-incorrect.avi" ]
+if [ -e "order-incorrect.mp4" ]
 then
     message_out "Demo video exists, skip."
 else
-    message_out "Start download demo video [order-incorrect.avi]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/order-incorrect.avi
+    message_out "Start download demo video [order-incorrect.mp4]..."
+    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/order-incorrect.mp4
 fi
 # # download video area define file
 # if [ -e "alert-def-area-geo.txt" ]
