@@ -1,10 +1,10 @@
-# Showcase 4: Components Preparation
+# Showcase 5: Parts Assembly
 
 ## Showcase Requirements
 
 Before installing this showcase to the device, please install ADLINK EVASDK and set the EVA environment as necessary.
 
-## Showcase 4 Installation
+## Showcase 5 Installation
 
 The path to the respective demo folder includes install.sh and run.sh for this showcase.
 
@@ -24,7 +24,7 @@ For this showcase now only support for NVIDIA device.
 Use the path:
 
 ```
-> cd src/demo/part-preparation
+> cd src/demo/part-assembly
 ```
 
 <!---
@@ -103,15 +103,67 @@ Or you can open EVA_IDE and load pygraph then execute, please see the section, [
 
 Then you will see the pop-up display window of this showcase as in the example below. There are three demo videos which will run one after the other.
 
-![image-showcase1](../../../figures/image-showcase4-correct.png)
+![image-showcase1](../../../figures/image-showcase5-normal.png)
 
-In the figure above, "container-parts" is the area where each parts must place inside orderly. The order and the number of each part is already defined in SOP(Standard Operating Procedure). Based on this SOP, the algorithm designed four required parts' order from left to right and their numbers. From left to right 2 light-guide-cover, 2 small-board-side-A, 4 screw and 1 wire orderly placed. The timer starts from the first part placed in the "container-parts" and ends when all the parts placed with correct order and numbers. If the operator place the part with wrong order, the "incorrect order!" message will be displayed(See the figure below).
+In the figure above, "container-semi-finished-products" is the area where each parts must place inside. The order and the number of each part is already defined in SOP(Standard Operating Procedure). Based on this SOP, the algorithm designed six required steps orderly:
 
-![image-showcase1](../../../figures/image-showcase4-incorrect.png)
+1. "semi-product in container"
 
-The timer starts with orange color means the preparation procedure is working and ends with green when all parts are ready. This showcase illustrate the procedure of the operator followed the preparation specification in case each part is missed before assemly. Just like the other showcase, once you modified this part-preparation plugin source code, required to rebuild it simply direct to the path [/src/plugins/assembly](/src/plugins/assembly) and run assembly-build.sh for ubuntu system. (Currently not support for windows, windows version of this showcase will provide in later version) The email alert plugin were implemented in python. Once modified the email alert plugin, direct to [/src/plugins/alert/email](/src/plugins/alert/email) and run email-build.sh for ubuntu or email-build.bat for windows 10. The same rebuild procedure for other alert plugins. More detail setting could be found in EVA Portal.
+   This part is default placed and will not gain any time.
+
+2. "2 light-guide-cover(left and right)"
+
+   Each light-guide-cover placed at right and left side individually.
+
+3. "2 small-board-side-B(left and right)"
+
+   These two parts required to placed onto the right and left light-guide-cover.
+
+4. "screw on 4 screws(2 on left, 2 on right)"
+
+   Screw on four screws separately on "small-board-side-B". Two on left and rest on right.
+
+5. "put wire on"
+
+   Put the wire component on the "semi-finished-product".
+
+6. "final visual inspection"
+
+   Final Check step 3 ~ step 5 for common final visual inspection.
+
+The timer starts when the "semi-finished-product" is placed. In the videos, the "semi-finished-product" is default placed so that the timer will start calculating when video is running. If the operator place the part then stop doing anything exceed the defined SOP time.(Here the step 3 must complete in 6 seconds in algorithm) The idling message will display in the rest frame. (See the figure below).
+
+![image-showcase1](../../../figures/image-showcase5-idle.png)
+
+If the step is operating/finished/waiting, the description is outlined in yellow/green/white. When each step is finished, the next step will start to run the timer till the last step is finished. This showcase illustrate the procedure of the operator followed the assembly specification in case the idling is occurred. Just like the other showcase, once you modified this part-assembly plugin source code, required to rebuild it simply direct to the path [/src/plugins/assembly](/src/plugins/assembly) and run assembly-build.sh for ubuntu system. (Currently not support for windows, windows version of this showcase will provide in later version) The email alert plugin were implemented in python. Once modified the email alert plugin, direct to [/src/plugins/alert/email](/src/plugins/alert/email) and run email-build.sh for ubuntu or email-build.bat for windows 10. The same rebuild procedure for other alert plugins. More detail setting could be found in EVA Portal.
 
 *Modified installation details can be found at the EVA Portal: < Under Construction >
+
+## Combination with Part Preparation(showcase 4)
+
+Ultimately, the convenient combination with showcase 4 for illustrating the two SOP algorithm plug and play in EVA. Execute run-combination.sh for the pipeline command:
+
+```
+> ./run-combination.sh
+```
+
+Also, If supposed to run pruned model. Use the command below to run:
+
+```
+> ./run-combination.sh yes
+```
+
+Then, there will display the combination result. Prepare the parts first described in showcase 4 when ready then start calculating the assembly time describe above in this showcase. For simulating the scenario, three showcase 4 and showcase 5 videos are concated into three videos for illustrating which two are normal SOP process and one is the idling situation occurred. 
+
+| Part Preparation                                             | Ready                                                        | Assembly                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="../../../figures/image-showcase5-concat-normal-preparation.png" alt="image-showcase5-concat-normal-preparation" style="zoom: 33%;" /> | <img src="../../../figures/image-showcase5-concat-normal-ready.png" alt="image-showcase5-concat-normal-ready" style="zoom: 33%;" /> | <img src="../../../figures/image-showcase5-concat-normal-assembly.png" alt="image-showcase5-concat-normal-assembly" style="zoom: 33%;" /> |
+
+| Complete                                                     | Idling                                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="../../../figures/image-showcase5-concat-normal-complete.png" alt="image-showcase5-concat-normal-complete" style="zoom:33%;" /> | <img src="../../../figures/image-showcase5-concat-normal-idle.png" alt="image-showcase5-concat-normal-idle" style="zoom:33%;" /> |
+
+The whole procedure are simply illustrated above to show each status. The two plug-ins are connected convenience once the designed algorithm is completed. If more steps are concerned in whole SOP, more customized plug-ins could be designed and plugged into the pipeline much more convenient. 
 
 ## Training Materials
 
@@ -145,11 +197,11 @@ And you will see the IDE show up as below:
 
 ![EVAIDE](../../../figures/EVAIDE.png)
 
-Then select the pygraph you want to run, here for example select showcase4.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
+Then select the pygraph you want to run, here for example select showcase5.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
 
-![showcase1-file-load](../../../figures/showcase4-file-load.png)
+![showcase1-file-load](../../../figures/showcase5-file-load.png)
 
-![showcase1-pipeline](../../../figures/showcase4-pipeline.png)
+![showcase1-pipeline](../../../figures/showcase5-pipeline.png)
 
 For loading other videos, simply change the filesrc element and select the demo video in location property.
 
