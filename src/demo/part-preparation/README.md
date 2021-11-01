@@ -1,4 +1,4 @@
-# Showcase 4: Components Preparation
+# Showcase 4: Parts Preparation
 
 ## Showcase Requirements
 
@@ -127,6 +127,8 @@ Note: Showcases 4 and 5 use the same training materials.
 
 
 
+<a id="Run-This-Showcase-Through-EVA-IDE"></a>
+
 ## Run This Showcase Through EVA IDE(For EVASDK 3.5.2 or later)
 
 In this showcase, you can run the pipeline by execute <a href="#runsh">run.sh</a> but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/part-preparation as root:
@@ -153,11 +155,11 @@ Then select the pygraph you want to run, here for example select showcase4.pygra
 
 For loading other videos, simply change the filesrc element and select the demo video in location property.
 
-![filesrc-node](../../../figures/filesrc-node.png) ![filesrc-node-property-showcase4](C:\Users\User\Desktop\EVA-Showcase\EVA_Show-Case\figures\filesrc-node-property-showcase4.png)
+![filesrc-node](../../../figures/filesrc-node.png) ![filesrc-node-property-showcase4](../../../figures/filesrc-node-property-showcase4.png)
 
 For loading pruned model, simply change the adrt element and select the pruned model in model property.
 
-![filesrc-node](../../../figures/adrt-node.png) ![filesrc-node-property-showcase4](C:\Users\User\Desktop\EVA-Showcase\EVA_Show-Case\figures\adrt-node-property-showcase4.png)
+![filesrc-node](../../../figures/adrt-node.png) ![filesrc-node-property-showcase4](../../../figures/adrt-node-property-showcase4.png)
 
 Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
 
