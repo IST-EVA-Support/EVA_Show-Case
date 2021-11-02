@@ -13,7 +13,7 @@ Install.sh will perform the following steps:
 1. Build the required plug-ins for this showcase and install them into ADLINK EVASDK.
 2. Download required demo videos and inference intermediate model file (*.etlt*) and its label file.
 3. Check cmake version and installed it with minmum required version. (This takes time for building)
-4. Build TensorRT required feature layers into plugin from NVIDIA *Open Source Software(OSS)*.
+4. Build TensorRT required feature layers into plugin from NVIDIA *Open Source Software(OSS)*. (This takes time for building)
 5. Optimize it to TensorRT format (*.engine*) on the local device.
 6. Install required python packages.
 
