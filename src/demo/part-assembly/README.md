@@ -205,11 +205,11 @@ Then select the pygraph you want to run, here for example select showcase5.pygra
 
 For loading other videos, simply change the filesrc element and select the demo video in location property.
 
-![filesrc-node](../../../figures/filesrc-node.png) ![filesrc-node-property-showcase5](C:\Users\User\Desktop\EVA-Showcase\EVA_Show-Case\figures\filesrc-node-property-showcase5.png)
+![filesrc-node](../../../figures/filesrc-node.png) ![filesrc-node-property-showcase5](../../../figures/filesrc-node-property-showcase5.png)
 
 For loading pruned model, simply change the adrt element and select the pruned model in model property.
 
-![filesrc-node](../../../figures/adrt-node.png) ![filesrc-node-property-showcase5](C:\Users\User\Desktop\EVA-Showcase\EVA_Show-Case\figures\adrt-node-property-showcase4.png)
+![filesrc-node](../../../figures/adrt-node.png) ![filesrc-node-property-showcase4](../../../figures/adrt-node-property-showcase4.png)
 
 Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
 
