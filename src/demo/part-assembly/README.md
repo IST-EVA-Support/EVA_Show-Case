@@ -199,23 +199,25 @@ And you will see the IDE show up as below:
 
 Then select the pygraph you want to run, here for example select showcase5.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
 
-![showcase1-file-load](../../../figures/showcase5-file-load.png)
+![showcase5-file-load](../../../figures/showcase5-file-load.png)
 
-![showcase1-pipeline](../../../figures/showcase5-pipeline.png)
+![showcase5-pipeline](../../../figures/showcase5-pipeline.png)
 
 For loading other videos, simply change the filesrc element and select the demo video in location property.
 
-![filesrc-node](../../../figures/filesrc-node.png) ![filesrc-node-property-showcase4](C:\Users\User\Desktop\EVA-Showcase\EVA_Show-Case\figures\filesrc-node-property-showcase4.png)
+![filesrc-node](../../../figures/filesrc-node.png) ![filesrc-node-property-showcase5](C:\Users\User\Desktop\EVA-Showcase\EVA_Show-Case\figures\filesrc-node-property-showcase5.png)
 
 For loading pruned model, simply change the adrt element and select the pruned model in model property.
 
-![filesrc-node](../../../figures/adrt-node.png) ![filesrc-node-property-showcase4](C:\Users\User\Desktop\EVA-Showcase\EVA_Show-Case\figures\adrt-node-property-showcase4.png)
+![filesrc-node](../../../figures/adrt-node.png) ![filesrc-node-property-showcase5](C:\Users\User\Desktop\EVA-Showcase\EVA_Show-Case\figures\adrt-node-property-showcase4.png)
 
 Click on the email_alert node in the pipeline and the property window will show the node properties detail at left side. See the figure below:
 
 ![emailalert-node](../../../figures/emailalert-node.png) ![emailalert-node-property](../../../figures/emailalert-node-property-showcase1.png)
 
 Provide an email address you want to receive from the alert for this show case in "receiver-address". Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
+
+For combination pygraph file, select showcase5-combination.pygraph in this showcase folder through File->Load similarly. Rest modification are the same as showcase5.pygraph described above.
 
 <!---
 

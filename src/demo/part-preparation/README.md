@@ -149,9 +149,9 @@ And you will see the IDE show up as below:
 
 Then select the pygraph you want to run, here for example select showcase4.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
 
-![showcase1-file-load](../../../figures/showcase4-file-load.png)
+![showcase4-file-load](../../../figures/showcase4-file-load.png)
 
-![showcase1-pipeline](../../../figures/showcase4-pipeline.png)
+![showcase4-pipeline](../../../figures/showcase4-pipeline.png)
 
 For loading other videos, simply change the filesrc element and select the demo video in location property.
 
