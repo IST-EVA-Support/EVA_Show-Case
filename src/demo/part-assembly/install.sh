@@ -337,8 +337,8 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         
         # unzip it, then delete the zip file
         sudo apt-get -y install unzip
-        unzip -o tao-converter-jp4.5.zip
-        rm tao-converter-jp4.5.zip
+        unzip -o tao-converter-jp4.5
+        rm tao-converter-jp4.5
         cd jp4.5
         sudo chmod +x tao-converter
         
