@@ -308,9 +308,30 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         
         message_out "Converting pruned model..."
         ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
-    else if [ $jetpack_version == "45" ]
+    elif [ $jetpack_version == "45" ]
     then
         message_out "supported jetson device, jetpack 4.5 and start to convert etlt file..."
+        #download tao-converter binary
+        wget https://developer.nvidia.com/tao-converter-jp4.5
+        
+        # unzip it, then delete the zip file
+        sudo apt-get -y install unzip
+        unzip -o jp4.5-20210823T203614Z-001.zip
+        rm jp4.5-20210823T203614Z-001.zip
+        cd jp4.5
+        sudo chmod +x tao-converter
+        
+        #Install openssl library
+        sudo apt-get -y install libssl-dev
+        #Export the following environment variables
+        export TRT_LIB_PATH=”/usr/lib/aarch64-linux-gnu”
+        export TRT_INC_PATH=”/usr/include/aarch64-linux-gnu”
+        
+        message_out "Converting original model..."
+        ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_3400_fp32.engine ../model/dssd_resnet18_epoch_3400.etlt
+        
+        message_out "Converting pruned model..."
+        ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
     else
         message_out "supported jetson device, but does not support this jetpack version: ${$jetpack_version}"
     fi
