@@ -302,11 +302,12 @@ fi
 # Install TAO Converter to convert etlt file to engine file
 message_out "Start to Converting..."
 cd $current_path
-arch_jetson_name=("TX2")
+arch_jetson_name=("TX2" "Xavier NX (Developer Kit Version)")
+message_out "jetson_name = ${jetson_name}"
 if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
     if [ $jetpack_version == "44" ]
     then
-        message_out "supported jetson device and start to convert etlt file..."
+        message_out "supported jetson device, jetpack 4.4 and start to convert etlt file..."
         #download tao-converter binary
         wget https://developer.nvidia.com/cuda102-trt71-jp44-0
         
@@ -328,6 +329,9 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         
         message_out "Converting pruned model..."
         ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
+    else if [ $jetpack_version == "45" ]
+    then
+        message_out "supported jetson device, jetpack 4.5 and start to convert etlt file..."
     else
         message_out "supported jetson device, but does not support this jetpack version: ${$jetpack_version}"
     fi
