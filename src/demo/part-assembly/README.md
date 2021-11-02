@@ -219,14 +219,14 @@ Provide an email address you want to receive from the alert for this show case i
 
 For combination pygraph file, select showcase5-combination.pygraph in this showcase folder through File->Load similarly. Rest modification are the same as showcase5.pygraph described above.
 
+If your IDE can not show/add the plugin node "partpreparation" or "partassembly" after loading the pygraph file, manually add it into the while list. The file element_list.txt will be generated after running IDE once. 
+
+For Linux, add "assembly" in file : /home/USER_ACCOUNT/adlink/eva/IDE/config/element_list.txt. 
+
 <!---
 
 <a id="note1"></a>
 
-<Note 1> If your IDE can not show/add the plugin node "h264parse" after loading the pygraph file, manually add it into the while list. The file element_list.txt will be generated after running IDE once. 
-
-For Linux, add "+h264parse" in file : /home/USER_ACCOUNT/adlink/eva/IDE/config/element_list.txt. 
-
-For Windows 10, add "+h264parse" in file : C:\ADLINK\eva\IDE\config\element_list.txt
+For Windows 10, add "partpreparation" in file : C:\ADLINK\eva\IDE\config\element_list.txt
 
 --->
