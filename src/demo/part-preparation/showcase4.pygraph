@@ -1,0 +1,1270 @@
+{
+    "name": "root",
+    "category": "",
+    "vars": [],
+    "nodes": [
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "filesrc",
+            "owningGraphName": "root",
+            "name": "filesrc",
+            "uuid": "2d9dd6c2-62bf-4a05-9379-98c94842ebf7",
+            "inputs": [
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "filesrc_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"filesrc\"",
+                    "uuid": "1592e3bc-bce7-40dc-8132-a2f1844a60ec",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "location",
+                    "package": "PyFlowBase",
+                    "fullName": "filesrc_location",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"./material-preparation.mp4\"",
+                    "uuid": "f9ac711b-68bb-4992-9884-abae8775c822",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "location",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "filesrc_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "9b5f4d84-87a5-4a58-825e-77c2060bb342",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "filesrc",
+                            "outPinId": 1,
+                            "rhsNodeName": "decodebin",
+                            "inPinId": 1,
+                            "lhsNodeUid": "2d9dd6c2-62bf-4a05-9379-98c94842ebf7",
+                            "rhsNodeUid": "fc89920c-30c9-46e3-a589-b045a4ad3bf6"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "9b5f4d84-87a5-4a58-825e-77c2060bb342",
+                                "destinationUUID": "4ddb2a42-9cf7-4e5c-9f5f-5bcddd7d9008",
+                                "sourceName": "filesrc_src",
+                                "destinationName": "decodebin_sink",
+                                "uuid": "e033bc85-dbaf-4620-b43e-f9c223c53546",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "filesrc"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">filesrc</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -751.5853658536586,
+            "y": -326.4390243902439
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "decodebin",
+            "owningGraphName": "root",
+            "name": "decodebin",
+            "uuid": "fc89920c-30c9-46e3-a589-b045a4ad3bf6",
+            "inputs": [
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "decodebin_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"decodebin\"",
+                    "uuid": "36a623f3-c2a8-468a-91bb-6fe9d07b1a12",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src_%u",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "decodebin_src_%u",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "12050458-8bde-41e1-a55c-b9a7bf204987",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "decodebin",
+                            "outPinId": 1,
+                            "rhsNodeName": "nvvideoconvert",
+                            "inPinId": 1,
+                            "lhsNodeUid": "fc89920c-30c9-46e3-a589-b045a4ad3bf6",
+                            "rhsNodeUid": "694aed40-9482-418b-90db-cc79ef5518e1"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [
+                        8
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src_%u",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "12050458-8bde-41e1-a55c-b9a7bf204987",
+                                "destinationUUID": "898f65f6-564f-42c4-9467-84781aeae3a2",
+                                "sourceName": "decodebin_src_%u",
+                                "destinationName": "nvvideoconvert_sink",
+                                "uuid": "ea5123eb-75a3-402a-a92d-0cecad71b568",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "decodebin"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">decodebin</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -602.5853658536586,
+            "y": -326.4390243902439
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "nvvideoconvert",
+            "owningGraphName": "root",
+            "name": "nvvideoconvert",
+            "uuid": "694aed40-9482-418b-90db-cc79ef5518e1",
+            "inputs": [
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "nvvideoconvert_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"nvvideoconvert\"",
+                    "uuid": "809a0afe-eddf-4e54-a6c3-65a4261d2f26",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "nvvideoconvert_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "d60e158e-bcdc-4080-a357-065f46d26987",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "nvvideoconvert",
+                            "outPinId": 1,
+                            "rhsNodeName": "videoconvert",
+                            "inPinId": 1,
+                            "lhsNodeUid": "694aed40-9482-418b-90db-cc79ef5518e1",
+                            "rhsNodeUid": "0e74c4dc-1e6e-404d-b697-a26a8f93c2f0"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "d60e158e-bcdc-4080-a357-065f46d26987",
+                                "destinationUUID": "6ed91305-2e93-4fb4-84cd-b41ab7d9d2b7",
+                                "sourceName": "nvvideoconvert_src",
+                                "destinationName": "videoconvert_sink",
+                                "uuid": "f6b78718-ade8-4776-bd47-b08a6ed45b04",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "nvvideoconvert"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 143.0,
+                    "h": 203.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">nvvideoconvert</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -413.5853658536586,
+            "y": -331.4390243902439
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "videoconvert",
+            "owningGraphName": "root",
+            "name": "videoconvert",
+            "uuid": "0e74c4dc-1e6e-404d-b697-a26a8f93c2f0",
+            "inputs": [
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "videoconvert_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"videoconvert\"",
+                    "uuid": "d99292ea-6ef7-4ef6-a7b6-7b38eff28e49",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "videoconvert_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "b9b3b6af-12cc-4c38-8596-525d8dea5f47",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "videoconvert",
+                            "outPinId": 1,
+                            "rhsNodeName": "adrt",
+                            "inPinId": 1,
+                            "lhsNodeUid": "0e74c4dc-1e6e-404d-b697-a26a8f93c2f0",
+                            "rhsNodeUid": "e44a32a8-69a3-46a1-9e6c-a8cc0c498bc1"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "b9b3b6af-12cc-4c38-8596-525d8dea5f47",
+                                "destinationUUID": "a95e21d7-1d54-41d2-b91b-bd855783b477",
+                                "sourceName": "videoconvert_src",
+                                "destinationName": "adrt_sink",
+                                "uuid": "071cd967-4f78-40a0-a951-f01cb904db0c",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "videoconvert"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 134.0,
+                    "h": 233.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">videoconvert</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -233.58536585365857,
+            "y": -332.4390243902439
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "adrt",
+            "owningGraphName": "root",
+            "name": "adrt",
+            "uuid": "e44a32a8-69a3-46a1-9e6c-a8cc0c498bc1",
+            "inputs": [
+                {
+                    "name": "model",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_model",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"./model/dssd_resnet18_epoch_3400_fp32.engine\"",
+                    "uuid": "a195199e-7bff-46e5-80ca-d1febe30ff46",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "model",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"adrt\"",
+                    "uuid": "533358c4-f447-4e01-8c46-d4e155b03030",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "device",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_device",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "0",
+                    "uuid": "5bfa0f31-22e2-45de-9c5e-6c72091bd47b",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "device",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "adrt_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "ac7feda6-f6c9-4fb8-b138-b6a8c0ae3321",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "adrt",
+                            "outPinId": 1,
+                            "rhsNodeName": "adtrans_ssd",
+                            "inPinId": 1,
+                            "lhsNodeUid": "e44a32a8-69a3-46a1-9e6c-a8cc0c498bc1",
+                            "rhsNodeUid": "3411cee2-5d23-4e33-9c87-87bc35e33ae3"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "ac7feda6-f6c9-4fb8-b138-b6a8c0ae3321",
+                                "destinationUUID": "8d3b47a4-daa0-4dc6-8608-961352ed7e47",
+                                "sourceName": "adrt_src",
+                                "destinationName": "adtrans_ssd_sink",
+                                "uuid": "5f98b7c3-1eb9-4b79-93e6-4b37e61bf00e",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "adrt"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 90.0,
+                    "h": 173.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">adrt</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -67.58536585365857,
+            "y": -332.4390243902439
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "adtrans_ssd",
+            "owningGraphName": "root",
+            "name": "adtrans_ssd",
+            "uuid": "3411cee2-5d23-4e33-9c87-87bc35e33ae3",
+            "inputs": [
+                {
+                    "name": "label",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_ssd_label",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"./model/SHMC-label.txt\"",
+                    "uuid": "bea88035-8709-4dfd-9132-c758435ce188",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "label",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "max-count",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_ssd_max-count",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "50",
+                    "uuid": "79eee7bd-8a37-4594-9c29-6c15bea61a4e",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "max-count",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_ssd_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"adtrans_ssd\"",
+                    "uuid": "49a97c56-4f46-4ffe-8a74-5679862c59ad",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "threshold",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_ssd_threshold",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.2",
+                    "uuid": "1cd868f6-75ed-473b-ae4d-994c5a0b49b4",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "threshold",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "adtrans_ssd_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "03cb8570-ddb2-4ebf-be38-7dc8c61c8271",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "adtrans_ssd",
+                            "outPinId": 1,
+                            "rhsNodeName": "partpreparation",
+                            "inPinId": 1,
+                            "lhsNodeUid": "3411cee2-5d23-4e33-9c87-87bc35e33ae3",
+                            "rhsNodeUid": "4137f2c6-29d6-453e-99ed-2bccc20c6abe"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "03cb8570-ddb2-4ebf-be38-7dc8c61c8271",
+                                "destinationUUID": "2f8e3ab0-e1de-4f62-9caa-d06e5aed8756",
+                                "sourceName": "adtrans_ssd_src",
+                                "destinationName": "partpreparation_sink",
+                                "uuid": "623858e4-8887-4484-9531-c9c972cac9fc",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "adtrans_ssd"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 101.0,
+                    "h": 128.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">adtrans_ssd</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": -78.58536585365857,
+            "y": -36.439024390243844
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "partpreparation",
+            "owningGraphName": "root",
+            "name": "partpreparation",
+            "uuid": "4137f2c6-29d6-453e-99ed-2bccc20c6abe",
+            "inputs": [
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "partpreparation_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"partpreparation\"",
+                    "uuid": "1193d4a2-5467-4c43-bb61-09d98533b91f",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "partpreparation_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "e4308fb7-567c-458b-af66-72dba1aea26c",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "partpreparation",
+                            "outPinId": 1,
+                            "rhsNodeName": "email_alert",
+                            "inPinId": 1,
+                            "lhsNodeUid": "4137f2c6-29d6-453e-99ed-2bccc20c6abe",
+                            "rhsNodeUid": "7a36c114-1197-4060-8c5c-1a95038aa49b"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "e4308fb7-567c-458b-af66-72dba1aea26c",
+                                "destinationUUID": "cf701f11-5645-4f49-8e13-15c24577df55",
+                                "sourceName": "partpreparation_src",
+                                "destinationName": "email_alert_sink",
+                                "uuid": "58f5c4c0-9e9c-4e4c-9661-ca8b69bb41bb",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "partpreparation"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 135.0,
+                    "h": 143.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">partpreparation</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 64.41463414634148,
+            "y": -334.4390243902439
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "email_alert",
+            "owningGraphName": "root",
+            "name": "email_alert",
+            "uuid": "7a36c114-1197-4060-8c5c-1a95038aa49b",
+            "inputs": [
+                {
+                    "name": "alert-type",
+                    "package": "PyFlowBase",
+                    "fullName": "email_alert_alert-type",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"order-incorrect\"",
+                    "uuid": "c8c9ba5e-ed77-43db-b437-4d39084bf9e7",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "alert-type",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "email_alert_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"email_alert\"",
+                    "uuid": "7e333af7-aebe-4a6d-bb52-547b9d059c07",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "email_alert_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "d946f23f-9d06-46fe-8c40-e674e1825a74",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "email_alert",
+                            "outPinId": 1,
+                            "rhsNodeName": "voice_alert",
+                            "inPinId": 1,
+                            "lhsNodeUid": "7a36c114-1197-4060-8c5c-1a95038aa49b",
+                            "rhsNodeUid": "279248cc-51a0-4ed9-9732-99a48711d0c6"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "d946f23f-9d06-46fe-8c40-e674e1825a74",
+                                "destinationUUID": "00d02ce7-d333-4824-b067-2e203f1d0a6e",
+                                "sourceName": "email_alert_src",
+                                "destinationName": "voice_alert_sink",
+                                "uuid": "81af5974-f95a-4864-8060-6242edf8c06f",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "email_alert"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 137.0,
+                    "h": 143.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">email_alert</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 233.41463414634154,
+            "y": -333.4390243902439
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "voice_alert",
+            "owningGraphName": "root",
+            "name": "voice_alert",
+            "uuid": "279248cc-51a0-4ed9-9732-99a48711d0c6",
+            "inputs": [
+                {
+                    "name": "alert-type",
+                    "package": "PyFlowBase",
+                    "fullName": "voice_alert_alert-type",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"order-incorrect\"",
+                    "uuid": "63287f69-e6c2-4ee1-9c6e-f2835d60c659",
+                    "linkedTo": [],
+                    "pinIndex": 3,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "alert-type",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "voice_alert_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"voice_alert\"",
+                    "uuid": "9584c64f-3ea3-4707-a5a8-126460dc5e1e",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "speech-content",
+                    "package": "PyFlowBase",
+                    "fullName": "voice_alert_speech-content",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"order-incorrect\"",
+                    "uuid": "6fd7256a-a424-48bf-b46f-d85aeb34e8e3",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "speech-content",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "voice_alert_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "b1bda2b1-514d-49a0-81f0-a99c48dc24df",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "voice_alert",
+                            "outPinId": 1,
+                            "rhsNodeName": "videoconvert1",
+                            "inPinId": 1,
+                            "lhsNodeUid": "279248cc-51a0-4ed9-9732-99a48711d0c6",
+                            "rhsNodeUid": "8dc88b5c-9b68-4cc6-803a-76c1bb56d34a"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "b1bda2b1-514d-49a0-81f0-a99c48dc24df",
+                                "destinationUUID": "235380b3-2511-41ea-bc5b-f97c4ee7912a",
+                                "sourceName": "voice_alert_src",
+                                "destinationName": "videoconvert1_sink",
+                                "uuid": "f0ea68e6-0837-4804-8492-9f747eb53c02",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "voice_alert"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 120.0,
+                    "h": 98.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">voice_alert</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 232.41463414634154,
+            "y": -169.43902439024384
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "videoconvert",
+            "owningGraphName": "root",
+            "name": "videoconvert1",
+            "uuid": "8dc88b5c-9b68-4cc6-803a-76c1bb56d34a",
+            "inputs": [
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "videoconvert1_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"videoconvert1\"",
+                    "uuid": "f9c55d68-3645-4756-ae33-9505b454d645",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "videoconvert1_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "6b5c8a03-96b1-42e1-9f11-d5e6579b320f",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "videoconvert1",
+                            "outPinId": 1,
+                            "rhsNodeName": "ximagesink",
+                            "inPinId": 1,
+                            "lhsNodeUid": "8dc88b5c-9b68-4cc6-803a-76c1bb56d34a",
+                            "rhsNodeUid": "80468e11-b796-4174-bb8e-7a70da902398"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "6b5c8a03-96b1-42e1-9f11-d5e6579b320f",
+                                "destinationUUID": "c77aac0d-01ed-4ce1-bf7e-dbff25a1e42c",
+                                "sourceName": "videoconvert1_src",
+                                "destinationName": "ximagesink_sink",
+                                "uuid": "bf07b354-0e31-4fb3-ab7f-68c74abc2261",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "videoconvert1"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 134.0,
+                    "h": 233.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">videoconvert1</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 406.170731707317,
+            "y": -334.26829268292676
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "ximagesink",
+            "owningGraphName": "root",
+            "name": "ximagesink",
+            "uuid": "80468e11-b796-4174-bb8e-7a70da902398",
+            "inputs": [
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "ximagesink_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"ximagesink\"",
+                    "uuid": "2f9eedf1-3e64-4513-a9cc-4d56b76b36e0",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [],
+            "meta": {
+                "var": {},
+                "label": "ximagesink"
+            },
+            "wrapper": {
+                "collapsed": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">ximagesink</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 583.1463414634146,
+            "y": -330.9512195121951
+        }
+    ],
+    "depth": 1,
+    "isRoot": true,
+    "parentGraphName": "None",
+    "fileVersion": "2.0.1",
+    "activeGraph": "root"
+}
