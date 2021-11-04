@@ -1,13 +1,8 @@
 #!/bin/bash
 
-# ModelNetwork=${1:-ssd_mobilenet};
-# modelPruned=${1:-no_pruned}
 modelPruned="no_pruned"
 
-# echo "ModelNetwork: $ModelNetwork";
-
 # GPU architecture checker
-# gpuArchChecker=${1:-jetson}
 gpuArchChecker="jetson"
 
 # echo "OPTIND starts at $OPTIND"
@@ -16,7 +11,6 @@ while getopts "m:g:?" optname
     case "$optname" in
       "m")
 #         echo "Option $optname is specified"
-#         VAR1=$OPTARG
         modelPruned=$OPTARG
         ;;
       "g")
@@ -32,8 +26,6 @@ while getopts "m:g:?" optname
 
 # echo "modelPruned = ${modelPruned}"
 # echo "gpuArchChecker = ${gpuArchChecker}"
-# echo 
-# exit
 
 LB='\033[1;33m'
 NC='\033[0m' # No Color
@@ -97,14 +89,7 @@ else
     message_out "Start download demo video [prepare-assembly-idle.mp4]..."
     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/prepare-assembly-idle.mp4
 fi
-# # download video area define file
-# if [ -e "alert-def-area-geo.txt" ]
-# then
-#     message_out "alert-def-area-geo.txt exists, skip."
-# else
-#     message_out "Start download area file..."
-#     wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/alert-def-area-geo.txt
-# fi
+
 
 # download model and label zip file
 if [ -e "models.zip" ]
@@ -198,7 +183,7 @@ then
     
     #Get TensorRT version in x86
     tensorRT_version=$(dpkg -l | grep "ii  tensorrt" | cut -c 1-12 --complement | xargs | cut -d - -f 1 | cut -d . -f 1-3)
-    message_out "tensorRT_version = &{tensorRT_version}"
+    message_out "tensorRT_version = ${tensorRT_version}"
 else
     message_out "not support GPU architecture."
     exit
