@@ -174,6 +174,9 @@ then
     message_out "Check x86 device GPU architecture"
     git clone https://github.com/NVIDIA-AI-IOT/deepstream_tao_apps.git
     cd deepstream_tao_apps/TRT-OSS/x86
+    # source the nvcc path
+    export PATH=/usr/local/cuda/bin:$PATH
+    
     nvcc deviceQuery.cpp -o deviceQuery
     GPU_ARCHS=$(./deviceQuery | grep "CUDA Capability Major/Minor version number:" | cut -c 1-49 --complement | tr -d .)
     cuda_runtime_version=$(./deviceQuery | grep "CUDA Driver Version / Runtime Version" | cut -c 1-56 --complement | tr -d .)
