@@ -195,7 +195,7 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     message_out "Backup original libnvinfer_plugin.so.7.x.y and replacing with the rebuild one"
     backup_folder=${HOME}/libnvinfer_plugin_bak
     backup_file=$(date +'%Y-%m-%d_%H-%M-%S')
-    backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
+#     backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
     if [ ! -e backup_folder ]
     then
         mkdir $backup_folder
@@ -205,6 +205,9 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     if [ $gpuArchChecker == "jetson" ]
     then
         original_plugin_name=$(ls /usr/lib/aarch64-linux-gnu | grep libnvinfer_plugin.so.${tensorRT_version})
+        backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
+        message_out "original_plugin_name = ${original_plugin_name}"
+        message_out "backup_file_path = ${backup_file_path}"
         #backup original libnvinfer_plugin.so.x.y to backup folder
         #check original_plugin_name is not "" to prevent copy system folder
         original_plugin_path=/usr/lib/aarch64-linux-gnu/$original_plugin_name
@@ -225,7 +228,9 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     elif [ $gpuArchChecker == "x86" ]
     then
         original_plugin_name=$(ls /usr/lib/x86_64-linux-gnu | grep libnvinfer_plugin.so.${tensorRT_version})
+        backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
         message_out "original_plugin_name = ${original_plugin_name}"
+        message_out "backup_file_path = ${backup_file_path}"
         #backup original libnvinfer_plugin.so.x.y to backup folder
         #check original_plugin_name is not "" to prevent copy system folder
         original_plugin_path=/usr/lib/x86_64-linux-gnu/$original_plugin_name
