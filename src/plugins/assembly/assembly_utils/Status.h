@@ -27,6 +27,7 @@ namespace PROGRESS
     {
     public:
         static PrepareStatus* GetInstance();
+        void ReleaseInstance();
         void SetStatus(Prepare s);
         Prepare GetStatus();
         
