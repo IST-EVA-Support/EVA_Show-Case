@@ -229,7 +229,7 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     if [ $gpuArchChecker == "jetson" ]
     then
         original_plugin_name=$(ls /usr/lib/aarch64-linux-gnu | grep libnvinfer_plugin.so.${tensorRT_version})
-        libnvinfer_plugin.so.${tensorRT_version})
+        libnvinfer_plugin.so.${tensorRT_version}
         backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
         message_out "original_plugin_name = ${original_plugin_name}"
         message_out "backup_file_path = ${backup_file_path}"
