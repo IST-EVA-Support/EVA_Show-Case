@@ -25,6 +25,8 @@ static void gst_partpreparation_get_property (GObject * object, guint property_i
 static void gst_partpreparation_dispose (GObject * object);
 static void gst_partpreparation_finalize (GObject * object);
 
+// static GstStateChangeReturn gst_partpreparation_change_state (GstElement * element, GstStateChange transition);
+
 static gboolean gst_partpreparation_start (GstBaseTransform * trans);
 static gboolean gst_partpreparation_stop (GstBaseTransform * trans);
 static gboolean gst_partpreparation_set_info (GstVideoFilter * filter, GstCaps * incaps, GstVideoInfo * in_info, GstCaps * outcaps, GstVideoInfo * out_info);
@@ -90,6 +92,7 @@ G_DEFINE_TYPE_WITH_CODE(GstPartpreparation, gst_partpreparation, GST_TYPE_VIDEO_
 static void gst_partpreparation_class_init (GstPartpreparationClass * klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+//   GstElementClass *gstelement_class = G_ELEMENT_CLASS (klass);
   GstBaseTransformClass *base_transform_class = GST_BASE_TRANSFORM_CLASS (klass);
   GstVideoFilterClass *video_filter_class = GST_VIDEO_FILTER_CLASS (klass);
 
@@ -121,6 +124,9 @@ static void gst_partpreparation_class_init (GstPartpreparationClass * klass)
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_STATUS_DISPLAY,
                                    g_param_spec_boolean("status-display", "Status-display", "Show current preparation Status.", TRUE, G_PARAM_READWRITE));
   
+  
+//   // Assign status change function to GstElementClass
+//   gstelement_class->change_state = GST_DEBUG_FUNCPTR (gst_partpreparation_change_state);
   
   gobject_class->dispose = gst_partpreparation_dispose;
   gobject_class->finalize = gst_partpreparation_finalize;
@@ -247,6 +253,7 @@ void gst_partpreparation_dispose (GObject * object)
 
   GST_DEBUG_OBJECT (partpreparation, "dispose");
   
+  partpreparation->prepareStatus->ReleaseInstance();
   delete partpreparation->prepareStatus;
 
   /* clean up as possible.  may be called multiple times */
@@ -265,11 +272,60 @@ void gst_partpreparation_finalize (GObject * object)
   G_OBJECT_CLASS (gst_partpreparation_parent_class)->finalize (object);
 }
 
+// // Change state (while overriding and using open/close/start/stop)
+// static GstStateChangeReturn gst_partpreparation_change_state (GstElement * element, GstStateChange transition)
+// {
+//     GstStateChangeReturn ret = GST_STATE_CHANGE_SUCCESS;
+//     switch (transition) 
+//     {
+//         case GST_STATE_CHANGE_NULL_TO_READY:
+//         {
+//             std:: cout << "change_state: NULL_TO_READY" << std::endl;
+//             break;
+//         }
+//         case GST_STATE_CHANGE_READY_TO_PAUSED:
+//             std:: cout << "change_state: READY_TO_PAUSED" << std::endl;
+//             break;
+//         case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
+//             std:: cout << "change_state: PAUSED_TO_PLAYING" << std::endl;
+//             break;
+//         default:
+//             break;
+//     }
+//     switch (transition)
+//     {
+//         case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
+//             std:: cout << "change_state: PLAYING_TO_PAUSED" << std::endl;
+//             break;
+//         case GST_STATE_CHANGE_PAUSED_TO_READY:
+//             std:: cout << "change_state: PAUSED_TO_READY" << std::endl;
+//             break;
+//         case GST_STATE_CHANGE_READY_TO_NULL:
+//             std:: cout << "change_state: READY_TO_NULL" << std::endl;
+//             break;
+//         default:
+//             break;
+//     }
+//     
+//     ret = GST_ELEMENT_CLASS (parent_class)->change_state (element, transition);
+//     return ret;
+//     change_failed:
+//     {
+//        return GST_STATE_CHANGE_FAILURE;
+//     }
+// }
+
 static gboolean gst_partpreparation_start (GstBaseTransform * trans)
 {
   GstPartpreparation *partpreparation = GST_PARTPREPARATION (trans);
 
   GST_DEBUG_OBJECT (partpreparation, "start");
+  
+//   partpreparation->prepareStartTick = 0;
+//   partpreparation->prepareEndTick = 0;
+  partpreparation->prepareStatus = PrepareStatus::GetInstance();
+  
+  std::cout << "<Start part preparation element>" << std::endl;
   
   return TRUE;
 }
@@ -278,7 +334,12 @@ static gboolean gst_partpreparation_stop (GstBaseTransform * trans)
 {
   GstPartpreparation *partpreparation = GST_PARTPREPARATION (trans);
 
+  partpreparation->prepareStartTick = 0;
+  partpreparation->prepareEndTick = 0;
+  
   GST_DEBUG_OBJECT (partpreparation, "stop");
+  
+  std::cout << "<Stop part preparation element>" << std::endl;
 
   return TRUE;
 }

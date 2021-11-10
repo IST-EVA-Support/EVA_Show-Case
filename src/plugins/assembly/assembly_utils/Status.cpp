@@ -27,6 +27,13 @@ PrepareStatus* PrepareStatus::GetInstance()
     return singletonInstance;
 }
 
+void PrepareStatus::ReleaseInstance()
+{
+    if(singletonInstance != NULL)
+        delete singletonInstance;
+    std::cout << "PrepareStatus instance released.\n";
+}
+
 void PrepareStatus::SetStatus(Prepare s)
 {
     status = s;

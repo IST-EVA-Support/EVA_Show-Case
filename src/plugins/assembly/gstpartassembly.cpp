@@ -294,6 +294,8 @@ void gst_partassembly_finalize (GObject * object)
 static gboolean gst_partassembly_start (GstBaseTransform * trans)
 {
   Gstpartassembly *partassembly = GST_PARTASSEMBLY (trans);
+  
+  std::cout << "<Start part assembly element>" << std::endl;
 
   GST_DEBUG_OBJECT (partassembly, "start");
   
@@ -304,6 +306,16 @@ static gboolean gst_partassembly_stop (GstBaseTransform * trans)
 {
   Gstpartassembly *partassembly = GST_PARTASSEMBLY (trans);
 
+  partassembly->priv->alert = false;
+  partassembly->startTick = 0;
+  for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
+  {
+      assemblyActionVector[i] = false;
+      processingTime[i] = 0;
+  }
+  
+  std::cout << "<Stop part assembly element>" << std::endl;
+  
   GST_DEBUG_OBJECT (partassembly, "stop");
 
   return TRUE;
@@ -490,8 +502,6 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
         if((cv::getTickCount() - partassembly->alertTick) / cv::getTickFrequency() > 5)
             partassembly->priv->alert = false;
     
-//     std::cout << "1" << std::endl;
-//     std::cout << "partassembly->priv->indexOfSemiProductContainer = " << partassembly->priv->indexOfSemiProductContainer << std::endl;
     // Check whether materials are in the container and semi-product
     // Get container
     int containerId = partassembly->priv->indexOfSemiProductContainer;
@@ -501,8 +511,6 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
     std::vector<int> rectContainerVector;
     if(partassembly->priv->bomMaterial[containerId]->GetObjectNumber() > 0)
         rectContainerVector = partassembly->priv->bomMaterial[containerId]->GetRectangle(0);
-    
-//     std::cout << "2" << std::endl;
     
     if(rectContainerVector.size() != 4)
     {
