@@ -9,14 +9,6 @@
 #include "gstadmeta.h"
 #include "utils.h"
 
-// *** define the required parts name, their required number and index in the box
-// std::vector<std::string> partNameVector = {"background", "container-parts", 
-//         "container-semi-finished-products", "light-guide-cover", "screw", "screwed-on", 
-//         "semi-finished-products", "small-board-side-A", "small-board-side-B", "wire"};
-// std::vector<int>  partRequiredNumberVector = {0, 1, 0, 2, 4, 0, 0, 2, 0, 1};
-// std::vector<int>  partRequiredIndexVector = {-1, -1, -1, 0, 2, -1, -1, 1, -1, 3}; // -1: omit to check; 0~n: index in box from left to right
-// ***
-
 GST_DEBUG_CATEGORY_STATIC (gst_partpreparation_debug_category);
 #define GST_CAT_DEFAULT gst_partpreparation_debug_category
 
@@ -25,12 +17,10 @@ static void gst_partpreparation_get_property (GObject * object, guint property_i
 static void gst_partpreparation_dispose (GObject * object);
 static void gst_partpreparation_finalize (GObject * object);
 
-// static GstStateChangeReturn gst_partpreparation_change_state (GstElement * element, GstStateChange transition);
-
+static void gst_partpreparation_before_transform (GstBaseTransform * trans, GstBuffer * buffer);
 static gboolean gst_partpreparation_start (GstBaseTransform * trans);
 static gboolean gst_partpreparation_stop (GstBaseTransform * trans);
 static gboolean gst_partpreparation_set_info (GstVideoFilter * filter, GstCaps * incaps, GstVideoInfo * in_info, GstCaps * outcaps, GstVideoInfo * out_info);
-//static GstFlowReturn gst_partpreparation_transform_frame (GstVideoFilter * filter, GstVideoFrame * inframe, GstVideoFrame * outframe);
 static GstFlowReturn gst_partpreparation_transform_frame_ip (GstVideoFilter * filter, GstVideoFrame * frame);
 
 static void mapGstVideoFrame2OpenCVMat(GstPartpreparation *partpreparation, GstVideoFrame *frame, GstMapInfo &info);
@@ -40,22 +30,8 @@ static void drawObjects(GstPartpreparation *partpreparation);
 static void drawInformation(GstPartpreparation *partpreparation);
 static void drawStatus(GstPartpreparation *partpreparation);
 
-// std::string round2String(double d, int r)
-// {
-//     float div = 1;
-//     for(int i = 0 ; i < r ; ++ i)
-//         div *= 10;
-//     
-//     int s = d * div;
-//     float t = s / div;
-//     std::string str = std::to_string (t);
-//     str.erase(str.find_last_not_of('0') + 1, std::string::npos);
-//     return str;
-// }
-
 struct _GstPartPreparationPrivate
 {
-    // Information of each parts
     std::vector<std::string> bomList;
     std::vector<Material*> bomMaterial;
     int indexOfPartContainer;
@@ -92,7 +68,6 @@ G_DEFINE_TYPE_WITH_CODE(GstPartpreparation, gst_partpreparation, GST_TYPE_VIDEO_
 static void gst_partpreparation_class_init (GstPartpreparationClass * klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-//   GstElementClass *gstelement_class = G_ELEMENT_CLASS (klass);
   GstBaseTransformClass *base_transform_class = GST_BASE_TRANSFORM_CLASS (klass);
   GstVideoFilterClass *video_filter_class = GST_VIDEO_FILTER_CLASS (klass);
 
@@ -124,16 +99,12 @@ static void gst_partpreparation_class_init (GstPartpreparationClass * klass)
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_STATUS_DISPLAY,
                                    g_param_spec_boolean("status-display", "Status-display", "Show current preparation Status.", TRUE, G_PARAM_READWRITE));
   
-  
-//   // Assign status change function to GstElementClass
-//   gstelement_class->change_state = GST_DEBUG_FUNCPTR (gst_partpreparation_change_state);
-  
   gobject_class->dispose = gst_partpreparation_dispose;
   gobject_class->finalize = gst_partpreparation_finalize;
+  base_transform_class->before_transform = GST_DEBUG_FUNCPTR(gst_partpreparation_before_transform);
   base_transform_class->start = GST_DEBUG_FUNCPTR (gst_partpreparation_start);
   base_transform_class->stop = GST_DEBUG_FUNCPTR (gst_partpreparation_stop);
   video_filter_class->set_info = GST_DEBUG_FUNCPTR (gst_partpreparation_set_info);
-  //video_filter_class->transform_frame = GST_DEBUG_FUNCPTR (gst_partpreparation_transform_frame);
   video_filter_class->transform_frame_ip = GST_DEBUG_FUNCPTR (gst_partpreparation_transform_frame_ip);
 
 }
@@ -176,6 +147,7 @@ static void gst_partpreparation_init (GstPartpreparation *partpreparation)
     partpreparation->priv->partsDisplay = true;
     partpreparation->priv->informationDisplay = false;
     partpreparation->priv->statusDisplay = true;
+    
     partpreparation->prepareStartTick = 0;
     partpreparation->prepareEndTick = 0;
 }
@@ -272,60 +244,11 @@ void gst_partpreparation_finalize (GObject * object)
   G_OBJECT_CLASS (gst_partpreparation_parent_class)->finalize (object);
 }
 
-// // Change state (while overriding and using open/close/start/stop)
-// static GstStateChangeReturn gst_partpreparation_change_state (GstElement * element, GstStateChange transition)
-// {
-//     GstStateChangeReturn ret = GST_STATE_CHANGE_SUCCESS;
-//     switch (transition) 
-//     {
-//         case GST_STATE_CHANGE_NULL_TO_READY:
-//         {
-//             std:: cout << "change_state: NULL_TO_READY" << std::endl;
-//             break;
-//         }
-//         case GST_STATE_CHANGE_READY_TO_PAUSED:
-//             std:: cout << "change_state: READY_TO_PAUSED" << std::endl;
-//             break;
-//         case GST_STATE_CHANGE_PAUSED_TO_PLAYING:
-//             std:: cout << "change_state: PAUSED_TO_PLAYING" << std::endl;
-//             break;
-//         default:
-//             break;
-//     }
-//     switch (transition)
-//     {
-//         case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
-//             std:: cout << "change_state: PLAYING_TO_PAUSED" << std::endl;
-//             break;
-//         case GST_STATE_CHANGE_PAUSED_TO_READY:
-//             std:: cout << "change_state: PAUSED_TO_READY" << std::endl;
-//             break;
-//         case GST_STATE_CHANGE_READY_TO_NULL:
-//             std:: cout << "change_state: READY_TO_NULL" << std::endl;
-//             break;
-//         default:
-//             break;
-//     }
-//     
-//     ret = GST_ELEMENT_CLASS (parent_class)->change_state (element, transition);
-//     return ret;
-//     change_failed:
-//     {
-//        return GST_STATE_CHANGE_FAILURE;
-//     }
-// }
-
 static gboolean gst_partpreparation_start (GstBaseTransform * trans)
 {
   GstPartpreparation *partpreparation = GST_PARTPREPARATION (trans);
-
-  GST_DEBUG_OBJECT (partpreparation, "start");
-  
-//   partpreparation->prepareStartTick = 0;
-//   partpreparation->prepareEndTick = 0;
   partpreparation->prepareStatus = PrepareStatus::GetInstance();
-  
-  std::cout << "<Start part preparation element>" << std::endl;
+  GST_DEBUG_OBJECT (partpreparation, "start");
   
   return TRUE;
 }
@@ -333,13 +256,11 @@ static gboolean gst_partpreparation_start (GstBaseTransform * trans)
 static gboolean gst_partpreparation_stop (GstBaseTransform * trans)
 {
   GstPartpreparation *partpreparation = GST_PARTPREPARATION (trans);
-
+  partpreparation->prepareStatus->SetStatus(Prepare::NotReady);
+  partpreparation->priv->alert = false;
   partpreparation->prepareStartTick = 0;
   partpreparation->prepareEndTick = 0;
-  
   GST_DEBUG_OBJECT (partpreparation, "stop");
-  
-  std::cout << "<Stop part preparation element>" << std::endl;
 
   return TRUE;
 }
@@ -353,18 +274,15 @@ static gboolean gst_partpreparation_set_info (GstVideoFilter * filter, GstCaps *
   return TRUE;
 }
 
-/* transform */
-// static GstFlowReturn gst_partpreparation_transform_frame (GstVideoFilter * filter, GstVideoFrame * inframe, GstVideoFrame * outframe)
-// {
-//   GstPartpreparation *partpreparation = GST_PARTPREPARATION (filter);
-// 
-//   GST_DEBUG_OBJECT (partpreparation, "transform_frame");
-// 
-//   return GST_FLOW_OK;
-// }
+static void gst_partpreparation_before_transform (GstBaseTransform * trans, GstBuffer * buffer)
+{
+    GstPartpreparation *partpreparation = GST_PARTPREPARATION (trans);
+    if (partpreparation->prepareStatus->GetStatus() == Prepare::NotReady)
+        partpreparation->prepareStartTick = gst_element_get_base_time(GST_ELEMENT (trans));
+}
 
 static GstFlowReturn gst_partpreparation_transform_frame_ip (GstVideoFilter * filter, GstVideoFrame * frame)
-{
+{ 
   GstPartpreparation *partpreparation = GST_PARTPREPARATION (filter);
   GstMapInfo info;
 
@@ -456,6 +374,10 @@ static void getDetectedBox(GstPartpreparation *partpreparation, GstBuffer* buffe
 
 static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
 {
+    // If current is already in Assembly stage, do not check preparation box 
+    if (partpreparation->prepareStatus->GetStatus() == Prepare::Assembly)
+        return;
+    
     // If metadata does not exist, return directly.
     GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
     if (meta == NULL)
@@ -586,8 +508,6 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
             // record end time
             {
                 partpreparation->prepareEndTick = cv::getTickCount();
-                //partpreparation->prepareEndTick - partpreparation->prepareStartTick) / cv::getTickFrequency()
-                //partpreparation->priv->requiredFinishTime
             }
         }
     }

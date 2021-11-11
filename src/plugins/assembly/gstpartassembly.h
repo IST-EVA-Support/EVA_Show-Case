@@ -24,16 +24,13 @@ typedef struct _GstpartassemblyPrivate GstpartassemblyPrivate;
 struct _Gstpartassembly
 {
   GstVideoFilter base_partassembly;
-  
-  /*< private >*/
   GstpartassemblyPrivate *priv;
-  
   cv::Mat srcMat;
   BOM bom;
   bool targetTypeChecked;
   long startTick;
   long alertTick;
-
+  double runningTime;
 };
 
 struct _GstpartassemblyClass
