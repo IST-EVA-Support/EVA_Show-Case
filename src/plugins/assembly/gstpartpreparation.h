@@ -24,17 +24,12 @@ typedef struct _GstPartPreparationPrivate GstPartpreparationPrivate;
 struct _GstPartpreparation
 {
   GstVideoFilter base_partpreparation;
-  
-  /*< private >*/
   GstPartpreparationPrivate *priv;
-  
   cv::Mat srcMat;
   BOM bom;
   PrepareStatus* prepareStatus;
   long prepareStartTick;
   long prepareEndTick;
-//   double runningTime;
-
 };
 
 struct _GstPartpreparationClass
