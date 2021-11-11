@@ -33,6 +33,7 @@ struct _GstPartpreparation
   PrepareStatus* prepareStatus;
   long prepareStartTick;
   long prepareEndTick;
+//   double runningTime;
 
 };
 

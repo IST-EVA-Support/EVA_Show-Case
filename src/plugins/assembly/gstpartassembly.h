@@ -33,7 +33,7 @@ struct _Gstpartassembly
   bool targetTypeChecked;
   long startTick;
   long alertTick;
-
+  double runningTime;
 };
 
 struct _GstpartassemblyClass
