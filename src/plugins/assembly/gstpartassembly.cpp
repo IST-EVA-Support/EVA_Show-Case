@@ -14,6 +14,7 @@
 #include <vector>
 #include "gstadmeta.h"
 #include "utils.h"
+#define NANO_SECOND 1000000000.0
 
 GST_DEBUG_CATEGORY_STATIC (gst_partassembly_debug_category);
 #define GST_CAT_DEFAULT gst_partassembly_debug_category
@@ -23,6 +24,7 @@ static void gst_partassembly_get_property (GObject * object, guint property_id, 
 static void gst_partassembly_dispose (GObject * object);
 static void gst_partassembly_finalize (GObject * object);
 
+static void gst_partassembly_before_transform (GstBaseTransform * trans, GstBuffer * buffer);
 static gboolean gst_partassembly_start (GstBaseTransform * trans);
 static gboolean gst_partassembly_stop (GstBaseTransform * trans);
 static gboolean gst_partassembly_set_info (GstVideoFilter * filter, GstCaps * incaps, GstVideoInfo * in_info, GstCaps * outcaps, GstVideoInfo * out_info);
@@ -45,7 +47,7 @@ std::vector<bool> assemblyActionVector = {
     false,  // final visual inspection: 2 small-board-side-B with 4 screw-on(each small-board-side-B contains 2 screw-on) and 1 wire
     false}; // Complete
 
-std::vector<float> processingTime = {
+std::vector<double> processingTime = {
     0,  // put 1 semi-product in container
     0,  // put 2 light-guide-cover in semi-finished-products(left and right)
     0,  // put 2 small-board-side-B in semi-finished-products(left and right)
@@ -131,10 +133,6 @@ static void gst_partassembly_class_init (GstpartassemblyClass * klass)
   gobject_class->set_property = gst_partassembly_set_property;
   gobject_class->get_property = gst_partassembly_get_property;
   
-  // Install the properties to GObjectClass
-//   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_AREA_DEFINITION,
-//                                    g_param_spec_string ("alert-area-def", "Alert-area-def", "The definition file location of the alert area respect the frame based on the specific resolution.", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
-  
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_TARGET_TYPE,
                                    g_param_spec_string ("target-type", "Target-Type", "The target type name used in this element for processing.", "NONE"/*DEFAULT_TARGET_TYPE*/, (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
   
@@ -147,9 +145,9 @@ static void gst_partassembly_class_init (GstpartassemblyClass * klass)
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_INFORMATION_DISPLAY,
                                    g_param_spec_boolean("information-display", "Information-display", "Show the assembly process status.", TRUE, G_PARAM_READWRITE));
   
-  
   gobject_class->dispose = gst_partassembly_dispose;
   gobject_class->finalize = gst_partassembly_finalize;
+  base_transform_class->before_transform = GST_DEBUG_FUNCPTR(gst_partassembly_before_transform);
   base_transform_class->start = GST_DEBUG_FUNCPTR (gst_partassembly_start);
   base_transform_class->stop = GST_DEBUG_FUNCPTR (gst_partassembly_stop);
   video_filter_class->set_info = GST_DEBUG_FUNCPTR (gst_partassembly_set_info);
@@ -196,11 +194,15 @@ static void gst_partassembly_init (Gstpartassembly *partassembly)
     partassembly->targetTypeChecked = false;
     partassembly->startTick = 0;
     partassembly->alertTick = 0;
-//     partassembly->eventTick = 0;
-//     partassembly->lastEventTick = 0;
+    partassembly->runningTime = 0;
     partassembly->priv->targetType = "NONE\0";//DEFAULT_TARGET_TYPE;
     partassembly->priv->alertType = "idling\0";//DEFAULT_ALERT_TYPE;
-//     partassembly->priv->enterArea = false;
+    
+    for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
+    {
+        assemblyActionVector[i] = false;
+        processingTime[i] = 0;
+    }
 }
 
 void gst_partassembly_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
@@ -295,8 +297,6 @@ static gboolean gst_partassembly_start (GstBaseTransform * trans)
 {
   Gstpartassembly *partassembly = GST_PARTASSEMBLY (trans);
   
-  std::cout << "<Start part assembly element>" << std::endl;
-
   GST_DEBUG_OBJECT (partassembly, "start");
   
   return TRUE;
@@ -307,14 +307,13 @@ static gboolean gst_partassembly_stop (GstBaseTransform * trans)
   Gstpartassembly *partassembly = GST_PARTASSEMBLY (trans);
 
   partassembly->priv->alert = false;
+  partassembly->targetTypeChecked = false;
   partassembly->startTick = 0;
   for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
   {
       assemblyActionVector[i] = false;
       processingTime[i] = 0;
   }
-  
-  std::cout << "<Stop part assembly element>" << std::endl;
   
   GST_DEBUG_OBJECT (partassembly, "stop");
 
@@ -328,6 +327,14 @@ static gboolean gst_partassembly_set_info (GstVideoFilter * filter, GstCaps * in
   GST_DEBUG_OBJECT (partassembly, "set_info");
   
   return TRUE;
+}
+
+static void gst_partassembly_before_transform (GstBaseTransform * trans, GstBuffer * buffer)
+{
+    long base_time = (GST_ELEMENT (trans))->base_time;
+    long current_time = gst_clock_get_time((GST_ELEMENT (trans))->clock);
+    Gstpartassembly *partassembly = GST_PARTASSEMBLY (trans);
+    partassembly->runningTime = (current_time - base_time)/NANO_SECOND;
 }
 
 static GstFlowReturn gst_partassembly_transform_frame_ip (GstVideoFilter * filter, GstVideoFrame * frame)
@@ -412,9 +419,7 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
                     }
                 }
             }
-//             std::cout << "partassembly->targetTypeChecked = " << partassembly->targetTypeChecked << std::endl;
-            
-            
+
             for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
             {
                 adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
@@ -447,7 +452,6 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
     
     // Check overlap if required in the future
     // add the check overlap code here to remove multi-detected objects.
-//     std::cout << "partassembly->priv->indexOfSemiProduct = " << partassembly->priv->indexOfSemiProduct << std::endl;
     if(partassembly->priv->indexOfSemiProduct > 0) // more than one semi-product
         partassembly->priv->bestIndexObjectOfSemiProduct = partassembly->priv->bomMaterial[partassembly->priv->indexOfSemiProduct]->GetBestScoreObjectIndex();
 }
@@ -488,6 +492,9 @@ static bool twoSidesCheck(Gstpartassembly *partassembly, int partIndex, int each
 
 static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
 {
+    // get base time of this element from last startTick
+    long base_time = (GST_ELEMENT (partassembly))->base_time;
+    
     // If metadata does not exist, return directly.
     GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
     if (meta == NULL)
@@ -499,9 +506,9 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
     bool frame_exist = batch.frames.size() > 0 ? true : false;
     
     if(partassembly->priv->alert == true)
-        if((cv::getTickCount() - partassembly->alertTick) / cv::getTickFrequency() > 5)
+        if((gst_clock_get_time((GST_ELEMENT (partassembly))->clock) - base_time)/NANO_SECOND > 5)
             partassembly->priv->alert = false;
-    
+
     // Check whether materials are in the container and semi-product
     // Get container
     int containerId = partassembly->priv->indexOfSemiProductContainer;
@@ -571,20 +578,20 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
         case 0:     // put 1 semi-product in container
         {
             if(processingTime[checkAction] == 0)
-                partassembly->startTick = cv::getTickCount();
+                partassembly->startTick = partassembly->runningTime;
                 
             if(partassembly->priv->bomMaterial[semiProductId]->CheckNumber())
             {
                 partassembly->priv->bomMaterial[semiProductId]->SetIndexInBox(checkAction);
                 assemblyActionVector[checkAction] = true;
                 
-                processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
                 partassembly->startTick = 0;
                 GST_MESSAGE("Put semi-product in container done.");
             }
             else
             {
-                processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
             }
             
             break;
@@ -592,7 +599,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
         case 1:     // put 2 light-guide-cover in semi-finished-products(left and right)
         {
             if(processingTime[checkAction] == 0)
-                partassembly->startTick = cv::getTickCount();
+                partassembly->startTick = partassembly->runningTime;
             
             int id = getPartIndexInBomList(partassembly, "light-guide-cover");
             if(partassembly->priv->bomMaterial[id]->CheckNumber())
@@ -603,21 +610,21 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                 {
                     assemblyActionVector[checkAction] = true;
                     
-                    processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                    processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
                     partassembly->startTick = 0;
                     GST_MESSAGE("Put light-guide-cover done.");
                 }
             }
             else
             {
-                processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
             }
             break;
         }
         case 2:     // put 2 small-board-side-B in semi-finished-products(left and right)
         {
             if(processingTime[checkAction] == 0)
-                partassembly->startTick = cv::getTickCount();
+                partassembly->startTick = partassembly->runningTime;
             
             int id = getPartIndexInBomList(partassembly, "small-board-side-B");
             if(partassembly->priv->bomMaterial[id]->CheckNumber())
@@ -628,23 +635,23 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                 {
                     assemblyActionVector[checkAction] = true;
                     
-                    processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                    processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
                     partassembly->startTick = 0;
                     GST_MESSAGE("Put small-board-side-B done.");
                 }
                 else
-                    processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                    processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
             }
             else
             {
-                processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
             }
             break;
         }
         case 3:     // screw on 4 screws(2 on left, 2 on right)
         {
             if(processingTime[checkAction] == 0)
-                partassembly->startTick = cv::getTickCount();
+                partassembly->startTick = partassembly->runningTime;
 
             int id = getPartIndexInBomList(partassembly, "screwed-on");
             if(partassembly->priv->bomMaterial[id]->CheckNumber())
@@ -655,23 +662,23 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                 {
                     assemblyActionVector[checkAction] = true;
                     
-                    processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                    processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
                     partassembly->startTick = 0;
                     GST_MESSAGE("Screw on screws done.");
                 }
                 else
-                    processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                    processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
             }
             else
             {
-                processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
             }
             break;
         }
         case 4:     // put wire on 
         {
             if(processingTime[checkAction] == 0)
-                partassembly->startTick = cv::getTickCount();
+                partassembly->startTick = partassembly->runningTime;
 
             int id = getPartIndexInBomList(partassembly, "wire");
             if(partassembly->priv->bomMaterial[id]->CheckNumber())
@@ -679,20 +686,20 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                 partassembly->priv->bomMaterial[id]->SetIndexInBox(checkAction);
                 assemblyActionVector[checkAction] = true;
                 
-                processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
                 partassembly->startTick = 0;
                 GST_MESSAGE("Put wire done.");
             }
             else
             {
-                processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
             }
             break;
         }
         case 5:     // final visual inspection: 2 small-board-side-B with 4 screw-on(each small-board-side-B contains 2 screw-on) and 1 wire
         {
             if(processingTime[checkAction] == 0)
-                partassembly->startTick = cv::getTickCount();
+                partassembly->startTick = partassembly->runningTime;
             
             bool checkFinal = true;
             
@@ -712,13 +719,13 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
             {
                 assemblyActionVector[checkAction] = true;  
                 
-                processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
                 partassembly->startTick = 0;
                 GST_MESSAGE("Visual inspection done.");
             }
             else
             {
-                processingTime[checkAction] = (cv::getTickCount() - partassembly->startTick) / cv::getTickFrequency();
+                processingTime[checkAction] = partassembly->runningTime - partassembly->startTick;
             }
             break;
         }
@@ -837,7 +844,7 @@ static void drawStatus(Gstpartassembly *partassembly)
     {
         startY += heightShift;
         totalElapsedTime += processingTime[i];
-        std::string timeString =  " [" + round2String(processingTime[i], 3) + " s]";
+        std::string timeString = " [" + round2String(processingTime[i], 3) + " s]";
         if(!assemblyActionVector[i] && !metProcessingAction)
         {
             metProcessingAction = true;
