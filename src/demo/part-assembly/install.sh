@@ -52,42 +52,42 @@ then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video [long-time-interval.mp4]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/long-time-interval.mp4
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/long-time-interval.mp4
 fi
 if [ -e "normal-assembly.mp4" ]
 then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video [normal-assembly.mp4]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/normal-assembly.mp4
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/normal-assembly.mp4
 fi
 if [ -e "normal-assembly-quick.mp4" ]
 then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video [normal-assembly-quick.mp4]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/normal-assembly-quick.mp4
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/normal-assembly-quick.mp4
 fi
 if [ -e "prepare-assembly-1.mp4" ]
 then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video [prepare-assembly-1.mp4]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/prepare-assembly-1.mp4
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/prepare-assembly-1.mp4
 fi
 if [ -e "prepare-assembly-2.mp4" ]
 then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video [prepare-assembly-2.mp4]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/prepare-assembly-2.mp4
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/prepare-assembly-2.mp4
 fi
 if [ -e "prepare-assembly-idle.mp4" ]
 then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video [prepare-assembly-idle.mp4]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/prepare-assembly-idle.mp4
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/prepare-assembly-idle.mp4
 fi
 
 
@@ -97,7 +97,7 @@ then
     message_out "model.zip exists, skip."
 else
     message_out "Start download model.zip..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/model.zip
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/model.zip
     # unzip it, then delete the zip file
     sudo apt-get -y install unzip
     unzip -o model.zip
@@ -204,7 +204,8 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         rm -fr TensorRT
     fi
     
-    git clone -b 21.03 https://github.com/nvidia/TensorRT
+    #git clone -b 21.03 https://github.com/nvidia/TensorRT
+    git clone -b 20.09 https://github.com/nvidia/TensorRT
     cd TensorRT/
     git submodule update --init --recursive
     export TRT_SOURCE=`pwd`
