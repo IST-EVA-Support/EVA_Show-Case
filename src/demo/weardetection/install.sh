@@ -24,7 +24,7 @@ then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/wear-detection-demo-1.mp4
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/wear-detection-demo-1.mp4
 fi
 # download video area define file
 if [ -e "alert-def-area.txt" ]
@@ -32,7 +32,7 @@ then
     message_out "alert-def-are.txt exists, skip."
 else
     message_out "Start download area file..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/alert-def-area.txt
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/alert-def-area.txt
 fi
 # download model
 if [ $ModelNetwork == "ssd_mobilenet" ]
@@ -46,7 +46,7 @@ then
             message_out "uff model file exists."
         else    
             message_out "Start download model..."
-            wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/geo_fencing_ssd_v2.zip
+            wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/geo_fencing_ssd_v2.zip
             # unzip it, then delete the zip file
             sudo apt-get -y install unzip
             unzip geo_fencing_ssd_v2.zip
@@ -68,7 +68,7 @@ then
             message_out "onnx model file exists."
         else    
             message_out "Start download model..."
-            wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing.zip
+            wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing.zip
             # unzip it, then delete the zip file
             sudo apt-get -y install unzip
             unzip adlink-yolov3-geo-fencing.zip
@@ -90,7 +90,7 @@ then
         message_out "adlink-mobilenetSSDv2-geo-fencing-label.txt exists, skip."
     else
         message_out "Start download label file..."
-        wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-mobilenetSSDv2-geo-fencing-label.txt
+        wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-mobilenetSSDv2-geo-fencing-label.txt
     fi
 elif [ $ModelNetwork == "yolov3" ]
 then
@@ -99,7 +99,7 @@ then
         message_out "adlink-yolov3-geo-fencing-label.txt exists, skip."
     else
         message_out "Start download label file..."
-        wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing-label.txt
+        wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing-label.txt
     fi
 fi
 # python plugin
