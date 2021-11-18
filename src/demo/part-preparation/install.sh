@@ -183,7 +183,8 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         rm -fr TensorRT
     fi
     
-    git clone -b 21.03 https://github.com/nvidia/TensorRT
+    #git clone -b 21.03 https://github.com/nvidia/TensorRT
+    git clone -b 20.09 https://github.com/nvidia/TensorRT
     cd TensorRT/
     git submodule update --init --recursive
     export TRT_SOURCE=`pwd`
