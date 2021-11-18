@@ -21,7 +21,7 @@ then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/Cookie_H264.mov
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/Cookie_H264.mov
 fi
 
 # download model
@@ -32,7 +32,7 @@ then
         message_out "Cookie_detection model exists, skip."
     else
         message_out "Start download model..."
-        wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/Cookie-inspection.zip
+        wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/Cookie-inspection.zip
 		# unzip it, then delete the zip file
         sudo apt-get -y install unzip
         unzip Cookie-inspection.zip
@@ -49,7 +49,7 @@ then
         message_out "adlink-onnx-cookie-labels.txt exists, skip."
     else
         message_out "Start download label file..."
-        wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/adlink-onnx-cookie-labels.txt
+        wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/adlink-onnx-cookie-labels.txt
     fi
 fi
 

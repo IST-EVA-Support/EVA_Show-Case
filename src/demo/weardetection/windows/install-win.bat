@@ -32,7 +32,7 @@ if exist %demofile% (
 	echo "wear-detection-demo-1.mp4" exist!!
 ) else (
 	echo "wear-detection-demo-1.mp4" does not exist
-	set url="https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/wear-detection-demo-1.mp4"
+	set url="https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/wear-detection-demo-1.mp4"
 	call :downloadfile !url!
 	echo download demo video finished!
 )
@@ -46,7 +46,7 @@ if %ModelNetwork% equ ssd_mobilenet (
 	set modelfile=%localPath%\geo_fencing_ssd_v2.uff
 	if not exist !modelfile! (
 		echo "geo_fencing_ssd_v2.uff" does not exist
-		set url="https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/geo_fencing_ssd_v2.zip"
+		set url="https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/geo_fencing_ssd_v2.zip"
 		call :downloadfile !url!
 		echo download demo model finished!
 			
@@ -68,7 +68,7 @@ if %ModelNetwork% equ yolov3 (
 	set modelfile=%localPath%\adlink-yolov3-geo-fencing.onnx
 	if not exist !modelfile! (
 		echo "adlink-yolov3-geo-fencing.onnx" does not exist
-		set url="https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing.zip"
+		set url="https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing.zip"
 		call :downloadfile !url!
 		echo download demo model finished!
 		
@@ -95,7 +95,7 @@ if %ModelNetwork% equ ssd_mobilenet (
 		echo "adlink-mobilenetSSDv2-geo-fencing-label.txt" exist!!
 	) else (
 		echo "adlink-mobilenetSSDv2-geo-fencing-label.txt" does not exist
-		set url="https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-mobilenetSSDv2-geo-fencing-label.txt"
+		set url="https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-mobilenetSSDv2-geo-fencing-label.txt"
 		call :downloadfile !url!
 		echo download geofencing model label file finished!
 	)
@@ -107,7 +107,7 @@ if %ModelNetwork% equ yolov3 (
 		echo "adlink-yolov3-geo-fencing-label.txt" exist!!
 	) else (
 		echo "adlink-yolov3-geo-fencing-label.txt" does not exist
-		set url="https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing-label.txt"
+		set url="https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing-label.txt"
 		call :downloadfile !url!
 		echo download geofencing model label file finished!
 	)
@@ -121,7 +121,7 @@ if exist %defareafile% (
 	echo "alert-def-area.txt" exist!!
 ) else (
 	echo "alert-def-area.txt" does not exist
-	set url="https://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/alert-def-area.txt"
+	set url="https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase2/alert-def-area.txt"
 	call :downloadfile !url!
 	echo download weardetection predefined area file finished!
 )

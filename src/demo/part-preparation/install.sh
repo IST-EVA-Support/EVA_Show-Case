@@ -52,21 +52,21 @@ then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video [material-preparation.mp4]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/material-preparation.mp4
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/material-preparation.mp4
 fi
 if [ -e "disassembly.mp4" ]
 then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video [disassembly.mp4]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/disassembly.mp4
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/disassembly.mp4
 fi
 if [ -e "order-incorrect.mp4" ]
 then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video [order-incorrect.mp4]..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/order-incorrect.mp4
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/order-incorrect.mp4
 fi
 
 
@@ -76,7 +76,7 @@ then
     message_out "model.zip exists, skip."
 else
     message_out "Start download model.zip..."
-    wget http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/model.zip
+    wget http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/model.zip
     # unzip it, then delete the zip file
     sudo apt-get -y install unzip
     unzip -o model.zip
