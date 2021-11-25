@@ -54,9 +54,9 @@ Then you will see the pop-up display window of this showcase as in the example b
 
 The training materials can be downloaded with the following links.
 
-Training images: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase3/cookie-training-images.zip 
+Training images: http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase3/cookie-training-images.zip 
 
-Training notation for ONNX: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase3/cookie-training-notation.zip 
+Training notation for ONNX: http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase3/cookie-training-notation.zip 
 
 Training architecture site list below: 
 
@@ -78,6 +78,7 @@ https://azurelessons.com/create-azure-free-account/#Create_Azure_Free_Account
 *Creat new project in Custom Vision can be found at the EVA Portal: < Under Construction >
 
 <a id="Run-This-Showcase-Through-EVA-IDE"></a>
+
 ## Run This Showcase Through EVA IDE(For EVASDK 3.5.2 or later)
 
 In this showcase, you can run the pipeline by execute <a href="#runsh">run.sh</a> but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/cookie-inspection as root:

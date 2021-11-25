@@ -117,9 +117,9 @@ The timer starts with orange color means the preparation procedure is working an
 
 The training materials can be downloaded with the following links.
 
-Training images and its label: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase4-5/train-data.zip 
+Training images and its label: http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase4-5/train-data.zip 
 
-Reference training settings followed by NVIDIA TAO:  http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase4-5/files.zip 
+Reference training settings followed by NVIDIA TAO:  http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase4-5/files.zip 
 
 Training procedure followed by [NVIDIA Train, Adapt, and Optimize(TAO)](https://developer.nvidia.com/tao-toolkit). The model architecture used for this demo is [Deconvolutional Single Shot Detector(DSSD) provided pretrained by TAO](https://docs.nvidia.com/tao/tao-toolkit/text/object_detection/dssd.html). 
 
