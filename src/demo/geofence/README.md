@@ -96,11 +96,11 @@ The red area denotes the restrict area which defined in alert-def-area-geo.txt d
 
 The training materials can be downloaded with the following links.
 
-Training images: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-training-images.zip 
+Training images: http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-training-images.zip 
 
-Training notation for mobilenetSSDv2: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-mobilenetSSDv2.zip
+Training notation for mobilenetSSDv2: http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-mobilenetSSDv2.zip
 
-Training notation for yolov3: http://ftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-yolov3.zip
+Training notation for yolov3: http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase1-2/geo-fencing-yolov3.zip
 
 Training architecture site list below: 
 
