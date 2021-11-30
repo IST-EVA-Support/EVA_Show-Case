@@ -54,9 +54,9 @@ Then you will see the pop-up display window of this showcase as in the example b
 
 The training materials can be downloaded with the following links.
 
-Training images: http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase3/cookie-training-images.zip 
+Training images: https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase3/cookie-training-images.zip 
 
-Training notation for ONNX: http://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase3/cookie-training-notation.zip 
+Training notation for ONNX: https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/showcase3/cookie-training-notation.zip 
 
 Training architecture site list below: 
 
