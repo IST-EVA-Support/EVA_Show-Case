@@ -148,6 +148,8 @@ static void gst_partpreparation_init (GstPartpreparation *partpreparation)
     partpreparation->priv->informationDisplay = false;
     partpreparation->priv->statusDisplay = true;
     
+    
+    partpreparation->baseTick = 0;
     partpreparation->prepareStartTick = 0;
     partpreparation->prepareEndTick = 0;
 }
@@ -226,7 +228,7 @@ void gst_partpreparation_dispose (GObject * object)
   GST_DEBUG_OBJECT (partpreparation, "dispose");
   
   partpreparation->prepareStatus->ReleaseInstance();
-  delete partpreparation->prepareStatus;
+  //delete partpreparation->prepareStatus;
 
   /* clean up as possible.  may be called multiple times */
 
@@ -256,8 +258,9 @@ static gboolean gst_partpreparation_start (GstBaseTransform * trans)
 static gboolean gst_partpreparation_stop (GstBaseTransform * trans)
 {
   GstPartpreparation *partpreparation = GST_PARTPREPARATION (trans);
-  partpreparation->prepareStatus->SetStatus(Prepare::NotReady);
+  partpreparation->prepareStatus->SetStatus(Prepare::Empty);
   partpreparation->priv->alert = false;
+  partpreparation->baseTick = 0;
   partpreparation->prepareStartTick = 0;
   partpreparation->prepareEndTick = 0;
   GST_DEBUG_OBJECT (partpreparation, "stop");
@@ -277,8 +280,8 @@ static gboolean gst_partpreparation_set_info (GstVideoFilter * filter, GstCaps *
 static void gst_partpreparation_before_transform (GstBaseTransform * trans, GstBuffer * buffer)
 {
     GstPartpreparation *partpreparation = GST_PARTPREPARATION (trans);
-    if (partpreparation->prepareStatus->GetStatus() == Prepare::NotReady)
-        partpreparation->prepareStartTick = gst_element_get_base_time(GST_ELEMENT (trans));
+    if (partpreparation->prepareStatus->GetStatus() == Prepare::Empty)
+        partpreparation->baseTick = gst_element_get_base_time(GST_ELEMENT (trans));
 }
 
 static GstFlowReturn gst_partpreparation_transform_frame_ip (GstVideoFilter * filter, GstVideoFrame * frame)
@@ -475,11 +478,27 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
     delete [] averagePositionInContainerArray;
     
     // If part is placed inside the container, start to count time
+    std::cout << "Status = " << partpreparation->prepareStatus->GetStatusString(partpreparation->prepareStatus->GetStatus()) << ", alert = " << partpreparation->priv->alert << ", totalNumber = " << totalPartsNum << std::endl;
     if(totalPartsNum > 1 && partpreparation->prepareStartTick == 0)
+    {
+        std::cout << "A\n";
         partpreparation->prepareStartTick = cv::getTickCount();
+        partpreparation->prepareStatus->SetStatus(Prepare::NotReady);
+    }
     else if(partpreparation->prepareStatus->GetStatus() == Prepare::NotReady)
+    {
+        std::cout << "B\n";
         partpreparation->prepareEndTick = cv::getTickCount(); // for dynamic display
-        
+    }
+    else if(totalPartsNum == 1 || partpreparation->prepareStatus->GetStatus() == Prepare::DisOrdered)
+    {
+        partpreparation->prepareStatus->SetStatus(Prepare::Empty);
+        partpreparation->priv->alert = false;
+        partpreparation->prepareStartTick = 0;
+        partpreparation->prepareEndTick = 0;
+        std::cout << "Status Reset because the part container is empty or wire number is equal to 1" << std::endl;
+    }
+     
     
     // Check ready or not
     bool numReady = true;
@@ -535,6 +554,7 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
         if(numReady && !orderReady)
         {
             partpreparation->priv->alert = true;
+            partpreparation->prepareStatus->SetStatus(Prepare::DisOrdered);
             
             std::string alertMessage = "," + std::string(partpreparation->priv->alertType) + "<" + return_current_time_and_date() + ">";
         
@@ -633,7 +653,7 @@ static void drawStatus(GstPartpreparation *partpreparation)
         
         cv::putText(partpreparation->srcMat, "Ready!", cv::Point(startX, startY), font, font_scale * 2, cv::Scalar(0, 255, 0), thickness*3, 8, 0);
     }
-    else if(partpreparation->prepareStatus->GetStatus() == Prepare::NotReady)
+    else if(partpreparation->prepareStatus->GetStatus() == Prepare::NotReady || partpreparation->prepareStatus->GetStatus() == Prepare::DisOrdered)
     {
         // elapsed time
         if(partpreparation->prepareStartTick != 0)
@@ -648,6 +668,10 @@ static void drawStatus(GstPartpreparation *partpreparation)
             cv::putText(partpreparation->srcMat, "Not Ready!", cv::Point(startX, startY), font, font_scale * 2, cv::Scalar(15, 185, 255), thickness*3, 8, 0);
         else
             cv::putText(partpreparation->srcMat, "incorrect order!", cv::Point(startX, startY), font, font_scale * 3, cv::Scalar(0, 0, 255), thickness*3, 8, 0);
+    }
+    else if(partpreparation->prepareStatus->GetStatus() == Prepare::Empty)
+    {
+        
     }
     else
         cv::putText(partpreparation->srcMat, "Assembly", cv::Point(startX, startY), font, font_scale * 2, cv::Scalar(0, 255, 255), thickness*3, 8, 0);

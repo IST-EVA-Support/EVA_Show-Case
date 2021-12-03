@@ -28,6 +28,7 @@ struct _GstPartpreparation
   cv::Mat srcMat;
   BOM bom;
   PrepareStatus* prepareStatus;
+  long baseTick;
   long prepareStartTick;
   long prepareEndTick;
 };
