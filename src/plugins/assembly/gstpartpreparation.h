@@ -29,8 +29,11 @@ struct _GstPartpreparation
   BOM bom;
   PrepareStatus* prepareStatus;
   long baseTick;
-  long prepareStartTick;
-  long prepareEndTick;
+  double prepareStartTime;
+  double prepareEndTime;
+  double runningTime;
+  
+  int emptyCounter;
 };
 
 struct _GstPartpreparationClass

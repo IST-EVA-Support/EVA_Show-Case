@@ -58,7 +58,7 @@ std::vector<double> processingTime = {
     
 std::vector<float> processingRegularTime = {
     10,  // put 1 semi-product in container
-    8,  // put 2 light-guide-cover in semi-finished-products(left and right)
+    10,  // put 2 light-guide-cover in semi-finished-products(left and right)
     6,  // put 2 small-board-side-B in semi-finished-products(left and right)
     10, // screw on 4 screws(2 on left, 2 on right)
     5,  // put wire on
@@ -203,6 +203,8 @@ static void gst_partassembly_init (Gstpartassembly *partassembly)
         assemblyActionVector[i] = false;
         processingTime[i] = 0;
     }
+    
+    partassembly->emptyCounter = 0;
 }
 
 void gst_partassembly_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
@@ -315,6 +317,8 @@ static gboolean gst_partassembly_stop (GstBaseTransform * trans)
       processingTime[i] = 0;
   }
   
+  partassembly->emptyCounter = 0;
+  
   GST_DEBUG_OBJECT (partassembly, "stop");
 
   return TRUE;
@@ -416,9 +420,36 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
                             partassembly->targetTypeChecked = true;
                             break;
                         }
+//                         if( i == detectionBoxResultNumber - 1)
+//                             partassembly->targetTypeChecked = false;
                     }
                 }
             }
+//             std::cout << "partassembly->targetTypeChecked = " << partassembly->targetTypeChecked << std::endl;
+
+//             // if partassembly->targetTypeChecked is true, check whether to reset or not
+//             if(partassembly->targetTypeChecked == true)
+//             if(!partassembly->targetTypeChecked) // target-type was set by user
+//             {
+//                 for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
+//                 {
+//                     adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
+//                     // check alert type was set 
+//                     if(detection_result.meta.find("empty") != std::string::npos)
+//                     {
+//                         //std::cout << "**************** reset the assembly parameters ************\n";
+//                         partassembly->priv->alert = false;
+//                         partassembly->targetTypeChecked = false;
+//                         partassembly->startTick = 0;
+//                         for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
+//                         {
+//                             assemblyActionVector[i] = false;
+//                             processingTime[i] = 0;
+//                         }
+//                     }
+//                 }
+//             }
+
 
             for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
             {
@@ -542,6 +573,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
     //Check each material is in the container and required number
     int requiredMaterialNumber = partassembly->priv->bomMaterial.size();
 
+    int totalPartsNum = 0; 
     for(unsigned int materialID = 0; materialID < (uint)requiredMaterialNumber; ++materialID)
     {
         int totalObjectNumber = partassembly->priv->bomMaterial[materialID]->GetObjectNumber();
@@ -557,10 +589,42 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
             if(intersectAreaWithContainer > 0 && intersectAreaWithSemiProduct > 0)
             {
                 numberInSemiProduct++;
+                totalPartsNum++;
                 partassembly->priv->bomMaterial[materialID]->SetPartNumber(numberInSemiProduct);
             }
         }
     }
+    
+    // check is there exist any object in semi-product container.
+    // if only exist semi-product container, reset all parameters and return
+    std::cout << "totalPartsNum = " << totalPartsNum << std::endl;
+    if(totalPartsNum == 2) // 1 container-semi-finished-products + 1 semi-finished-products
+    {
+        
+        if(partassembly->emptyCounter < 80)
+        {
+            partassembly->emptyCounter++;
+            std::cout << "partassembly->emptyCounter = " << partassembly->emptyCounter << std::endl;
+        }
+        else
+        {
+            //std::cout << "**************** nothing in semi-product container ************\n";
+            partassembly->priv->alert = false;
+            partassembly->targetTypeChecked = false;
+            partassembly->startTick = 0;
+            for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
+            {
+                assemblyActionVector[i] = false;
+                processingTime[i] = 0;
+            }
+            partassembly->emptyCounter = 0;
+        
+        
+            return;
+        }
+    }
+    else
+        partassembly->emptyCounter = 0;
     
     //get check assembly action
     int checkAction = -1;

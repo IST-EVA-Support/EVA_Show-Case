@@ -31,6 +31,8 @@ struct _Gstpartassembly
   long startTick;
   long alertTick;
   double runningTime;
+  
+  int emptyCounter;
 };
 
 struct _GstpartassemblyClass

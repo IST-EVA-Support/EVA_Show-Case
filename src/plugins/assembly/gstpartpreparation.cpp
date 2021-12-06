@@ -8,6 +8,7 @@
 #include "gstpartpreparation.h"
 #include "gstadmeta.h"
 #include "utils.h"
+#define NANO_SECOND 1000000000.0
 
 GST_DEBUG_CATEGORY_STATIC (gst_partpreparation_debug_category);
 #define GST_CAT_DEFAULT gst_partpreparation_debug_category
@@ -149,9 +150,11 @@ static void gst_partpreparation_init (GstPartpreparation *partpreparation)
     partpreparation->priv->statusDisplay = true;
     
     
-    partpreparation->baseTick = 0;
-    partpreparation->prepareStartTick = 0;
-    partpreparation->prepareEndTick = 0;
+//     partpreparation->baseTick = 0;
+    partpreparation->prepareStartTime = 0;
+    partpreparation->prepareEndTime = 0;
+    partpreparation->runningTime = 0;
+    partpreparation->emptyCounter = 0;
 }
 
 void gst_partpreparation_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
@@ -260,9 +263,11 @@ static gboolean gst_partpreparation_stop (GstBaseTransform * trans)
   GstPartpreparation *partpreparation = GST_PARTPREPARATION (trans);
   partpreparation->prepareStatus->SetStatus(Prepare::Empty);
   partpreparation->priv->alert = false;
-  partpreparation->baseTick = 0;
-  partpreparation->prepareStartTick = 0;
-  partpreparation->prepareEndTick = 0;
+//   partpreparation->baseTick = 0;
+  partpreparation->prepareStartTime = 0;
+  partpreparation->prepareEndTime = 0;
+  //partpreparation->runningTime = 0;
+  partpreparation->emptyCounter = 0;
   GST_DEBUG_OBJECT (partpreparation, "stop");
 
   return TRUE;
@@ -277,11 +282,27 @@ static gboolean gst_partpreparation_set_info (GstVideoFilter * filter, GstCaps *
   return TRUE;
 }
 
+double getElementLifeTime(GstPartpreparation *partpreparation)
+{
+    long base_time = (GST_ELEMENT (partpreparation))->base_time;
+    long current_time = gst_clock_get_time((GST_ELEMENT (partpreparation))->clock);
+//     partpreparation->runningTime = (current_time - base_time)/NANO_SECOND;
+    return (current_time - base_time)/NANO_SECOND;
+}
+
 static void gst_partpreparation_before_transform (GstBaseTransform * trans, GstBuffer * buffer)
 {
     GstPartpreparation *partpreparation = GST_PARTPREPARATION (trans);
     if (partpreparation->prepareStatus->GetStatus() == Prepare::Empty)
+    {
         partpreparation->baseTick = gst_element_get_base_time(GST_ELEMENT (trans));
+    }
+    
+    //test element life time
+//     long base_time = (GST_ELEMENT (trans))->base_time;
+//     long current_time = gst_clock_get_time((GST_ELEMENT (trans))->clock);
+//     partpreparation->runningTime = (current_time - base_time)/NANO_SECOND;
+   partpreparation->runningTime = getElementLifeTime(partpreparation);
 }
 
 static GstFlowReturn gst_partpreparation_transform_frame_ip (GstVideoFilter * filter, GstVideoFrame * frame)
@@ -378,8 +399,8 @@ static void getDetectedBox(GstPartpreparation *partpreparation, GstBuffer* buffe
 static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
 {
     // If current is already in Assembly stage, do not check preparation box 
-    if (partpreparation->prepareStatus->GetStatus() == Prepare::Assembly)
-        return;
+//     if (partpreparation->prepareStatus->GetStatus() == Prepare::Assembly)
+//         return;
     
     // If metadata does not exist, return directly.
     GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
@@ -392,7 +413,7 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
     bool frame_exist = batch.frames.size() > 0 ? true : false;
     
     if(partpreparation->priv->alert == true)
-        if((cv::getTickCount() - partpreparation->prepareEndTick) / cv::getTickFrequency() > 5)
+        if(partpreparation->runningTime - partpreparation->prepareEndTime > 5)
             partpreparation->priv->alert = false;
         else
             return;
@@ -448,9 +469,24 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
         totalPartsNum += numberInContainer;
     }
     
+    if(totalPartsNum == 1)
+    {
+        partpreparation->emptyCounter++;
+//         std::cout << "partpreparation->emptyCounter = " << partpreparation->emptyCounter << std::endl;
+    }
+    
     // if status is assembly, means already ready before.
     if(partpreparation->prepareStatus->GetStatus() == Prepare::Assembly)
     {
+        if(totalPartsNum == 1 && partpreparation->emptyCounter > 15)
+        {
+            partpreparation->prepareStatus->SetStatus(Prepare::Empty);
+            partpreparation->priv->alert = false;
+            partpreparation->prepareStartTime = 0;
+            partpreparation->prepareEndTime = 0;
+            partpreparation->emptyCounter = 0;
+        }
+        
         return;
     }
 
@@ -478,25 +514,37 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
     delete [] averagePositionInContainerArray;
     
     // If part is placed inside the container, start to count time
-    std::cout << "Status = " << partpreparation->prepareStatus->GetStatusString(partpreparation->prepareStatus->GetStatus()) << ", alert = " << partpreparation->priv->alert << ", totalNumber = " << totalPartsNum << std::endl;
-    if(totalPartsNum > 1 && partpreparation->prepareStartTick == 0)
+//     std::cout << "Status = " << partpreparation->prepareStatus->GetStatusString(partpreparation->prepareStatus->GetStatus()) << ", alert = " << partpreparation->priv->alert << ", totalNumber = " << totalPartsNum << std::endl;
+    if(totalPartsNum > 1 && partpreparation->prepareStartTime == 0)
     {
-        std::cout << "A\n";
-        partpreparation->prepareStartTick = cv::getTickCount();
+//         std::cout << "A\n";
+//         partpreparation->prepareStartTime = partpreparation->runningTime;
+        partpreparation->prepareStartTime = getElementLifeTime(partpreparation);
         partpreparation->prepareStatus->SetStatus(Prepare::NotReady);
     }
     else if(partpreparation->prepareStatus->GetStatus() == Prepare::NotReady)
     {
-        std::cout << "B\n";
-        partpreparation->prepareEndTick = cv::getTickCount(); // for dynamic display
+//         std::cout << "B\n";
+//         partpreparation->prepareEndTime = partpreparation->runningTime; // for dynamic display
+        partpreparation->prepareEndTime = getElementLifeTime(partpreparation); // for dynamic display
     }
     else if(totalPartsNum == 1 || partpreparation->prepareStatus->GetStatus() == Prepare::DisOrdered)
     {
         partpreparation->prepareStatus->SetStatus(Prepare::Empty);
         partpreparation->priv->alert = false;
-        partpreparation->prepareStartTick = 0;
-        partpreparation->prepareEndTick = 0;
-        std::cout << "Status Reset because the part container is empty or wire number is equal to 1" << std::endl;
+        partpreparation->prepareStartTime = 0;
+        partpreparation->prepareEndTime = 0;
+        partpreparation->emptyCounter = 0;
+//         std::cout << "Status Reset because the part container is empty or wire number is equal to 1" << std::endl;
+    }
+    if(totalPartsNum == 1 && partpreparation->prepareStatus->GetStatus() == Prepare::Assembly)
+    {
+//         std::cout << "*** reset from assembly\n";
+        partpreparation->prepareStatus->SetStatus(Prepare::Empty);
+        partpreparation->priv->alert = false;
+        partpreparation->prepareStartTime = 0;
+        partpreparation->prepareEndTime = 0;
+        partpreparation->emptyCounter = 0;
     }
      
     
@@ -526,7 +574,8 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
             partpreparation->prepareStatus->SetStatus(Prepare::Ready);
             // record end time
             {
-                partpreparation->prepareEndTick = cv::getTickCount();
+//                 partpreparation->prepareEndTime = cv::getTickCount();
+                partpreparation->prepareEndTime = getElementLifeTime(partpreparation);
             }
         }
     }
@@ -568,6 +617,15 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
         
             meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
         }
+        
+//         // empty alert to metadata
+//         if(partpreparation->prepareStatus->GetStatus() == Prepare::Empty)
+//         {
+//             std::cout << "write empty to metadata done.\n";
+//             std::string alertMessage = "," + std::string("empty") + "<" + return_current_time_and_date() + ">";
+//         
+//             meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
+//         }
     }
 }
 
@@ -644,9 +702,9 @@ static void drawStatus(GstPartpreparation *partpreparation)
     if(partpreparation->prepareStatus->GetStatus() == Prepare::Ready)
     {
         // calculate preparation time
-        if(partpreparation->prepareStartTick != 0)
+        if(partpreparation->prepareStartTime != 0)
         {
-            double duration = (partpreparation->prepareEndTick - partpreparation->prepareStartTick) / cv::getTickFrequency();
+            double duration = (partpreparation->prepareEndTime - partpreparation->prepareStartTime);
             std::string t = round2String(duration, 3);
             cv::putText(partpreparation->srcMat, "elapsed: " + t + " s", cv::Point(50, 50), font, font_scale, cv::Scalar(0, 255, 0), thickness*2, 8, 0);
         }
@@ -656,9 +714,9 @@ static void drawStatus(GstPartpreparation *partpreparation)
     else if(partpreparation->prepareStatus->GetStatus() == Prepare::NotReady || partpreparation->prepareStatus->GetStatus() == Prepare::DisOrdered)
     {
         // elapsed time
-        if(partpreparation->prepareStartTick != 0)
+        if(partpreparation->prepareStartTime != 0)
         {
-            double elapsedTime = (cv::getTickCount() - partpreparation->prepareStartTick) / cv::getTickFrequency();
+            double elapsedTime = partpreparation->prepareEndTime - partpreparation->prepareStartTime;
             std::string t = round2String(elapsedTime, 3);
             
             cv::putText(partpreparation->srcMat, "elapsed: " + t + " s", cv::Point(50, 50), font, font_scale, cv::Scalar(15, 185, 255), thickness*2, 8, 0);
@@ -675,4 +733,11 @@ static void drawStatus(GstPartpreparation *partpreparation)
     }
     else
         cv::putText(partpreparation->srcMat, "Assembly", cv::Point(startX, startY), font, font_scale * 2, cv::Scalar(0, 255, 255), thickness*3, 8, 0);
+    
+    
+//     // test elapsed time
+//     double elapsed = partpreparation->runningTime;
+//     std::string t = round2String(elapsed, 3);
+//     cv::putText(partpreparation->srcMat, "test running time: " + t + " s", cv::Point(50, 350), font, font_scale, cv::Scalar(0, 255, 0), thickness*2, 8, 0);
+//     std::cout << "test running time = " << t << std::endl;
 }
