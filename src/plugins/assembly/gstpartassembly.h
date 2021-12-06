@@ -32,6 +32,7 @@ struct _Gstpartassembly
   long alertTick;
   double runningTime;
   
+  bool partContainerIsEmpty;
   int emptyCounter;
 };
 

@@ -618,14 +618,14 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
             meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
         }
         
-//         // empty alert to metadata
-//         if(partpreparation->prepareStatus->GetStatus() == Prepare::Empty)
-//         {
-//             std::cout << "write empty to metadata done.\n";
-//             std::string alertMessage = "," + std::string("empty") + "<" + return_current_time_and_date() + ">";
-//         
-//             meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
-//         }
+        // empty alert to metadata
+        if(partpreparation->prepareStatus->GetStatus() == Prepare::Empty)
+        {
+            std::cout << "write empty to metadata done.\n";
+            std::string alertMessage = "," + std::string("empty") + "<" + return_current_time_and_date() + ">";
+        
+            meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
+        }
     }
 }
 

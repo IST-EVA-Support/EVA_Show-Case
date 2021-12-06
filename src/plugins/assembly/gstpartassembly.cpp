@@ -205,6 +205,7 @@ static void gst_partassembly_init (Gstpartassembly *partassembly)
     }
     
     partassembly->emptyCounter = 0;
+    partassembly->partContainerIsEmpty = false;
 }
 
 void gst_partassembly_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
@@ -318,6 +319,7 @@ static gboolean gst_partassembly_stop (GstBaseTransform * trans)
   }
   
   partassembly->emptyCounter = 0;
+  partassembly->partContainerIsEmpty = false;
   
   GST_DEBUG_OBJECT (partassembly, "stop");
 
@@ -427,17 +429,16 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
             }
 //             std::cout << "partassembly->targetTypeChecked = " << partassembly->targetTypeChecked << std::endl;
 
-//             // if partassembly->targetTypeChecked is true, check whether to reset or not
-//             if(partassembly->targetTypeChecked == true)
-//             if(!partassembly->targetTypeChecked) // target-type was set by user
-//             {
-//                 for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
-//                 {
-//                     adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
-//                     // check alert type was set 
-//                     if(detection_result.meta.find("empty") != std::string::npos)
-//                     {
-//                         //std::cout << "**************** reset the assembly parameters ************\n";
+            // if partassembly->targetTypeChecked is true, check whether to reset or not
+            if(partassembly->targetTypeChecked == true)
+            {
+                for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
+                {
+                    adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
+                    // check alert type was set 
+                    if(detection_result.meta.find("empty") != std::string::npos)
+                    {
+                        std::cout << "**************** reset the assembly parameters ************\n";
 //                         partassembly->priv->alert = false;
 //                         partassembly->targetTypeChecked = false;
 //                         partassembly->startTick = 0;
@@ -446,9 +447,10 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
 //                             assemblyActionVector[i] = false;
 //                             processingTime[i] = 0;
 //                         }
-//                     }
-//                 }
-//             }
+                        partassembly->partContainerIsEmpty = true;
+                    }
+                }
+            }
 
 
             for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
@@ -598,16 +600,16 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
     // check is there exist any object in semi-product container.
     // if only exist semi-product container, reset all parameters and return
     std::cout << "totalPartsNum = " << totalPartsNum << std::endl;
-    if(totalPartsNum == 2) // 1 container-semi-finished-products + 1 semi-finished-products
+    if(totalPartsNum == 2 && partassembly->partContainerIsEmpty == true) // 1 container-semi-finished-products + 1 semi-finished-products
     {
         
-        if(partassembly->emptyCounter < 80)
-        {
-            partassembly->emptyCounter++;
-            std::cout << "partassembly->emptyCounter = " << partassembly->emptyCounter << std::endl;
-        }
-        else
-        {
+//         if(partassembly->emptyCounter < 80)
+//         {
+//             partassembly->emptyCounter++;
+//             std::cout << "partassembly->emptyCounter = " << partassembly->emptyCounter << std::endl;
+//         }
+//         else
+//         {
             //std::cout << "**************** nothing in semi-product container ************\n";
             partassembly->priv->alert = false;
             partassembly->targetTypeChecked = false;
@@ -618,13 +620,14 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                 processingTime[i] = 0;
             }
             partassembly->emptyCounter = 0;
+            partassembly->partContainerIsEmpty = false;
         
         
             return;
-        }
+//         }
     }
-    else
-        partassembly->emptyCounter = 0;
+//     else
+//         partassembly->emptyCounter = 0;
     
     //get check assembly action
     int checkAction = -1;
