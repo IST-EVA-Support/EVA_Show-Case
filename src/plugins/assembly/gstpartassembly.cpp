@@ -87,6 +87,8 @@ struct _GstpartassemblyPrivate
     bool alert;
     gchar* targetType;
     gchar* alertType;
+    
+    int resetSeconds;
 };
 
 enum
@@ -95,7 +97,8 @@ enum
     PROP_TARGET_TYPE,
     PROP_ALERT_TYPE,
     PROP_PARTS_DISPLAY,
-    PROP_INFORMATION_DISPLAY
+    PROP_INFORMATION_DISPLAY,
+    PROP_RESET
 };
 
 #define DEBUG_INIT GST_DEBUG_CATEGORY_INIT(GST_CAT_DEFAULT, "gstpartassembly", 0, "debug category for gstpartassembly element");
@@ -145,6 +148,9 @@ static void gst_partassembly_class_init (GstpartassemblyClass * klass)
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_INFORMATION_DISPLAY,
                                    g_param_spec_boolean("information-display", "Information-display", "Show the assembly process status.", TRUE, G_PARAM_READWRITE));
   
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_RESET,
+                                   g_param_spec_int("reset-time", "reset counting duration time", "Reset the counting time every defined seconds when only checking assembly.", 0, 100, 25, G_PARAM_READWRITE));
+  
   gobject_class->dispose = gst_partassembly_dispose;
   gobject_class->finalize = gst_partassembly_finalize;
   base_transform_class->before_transform = GST_DEBUG_FUNCPTR(gst_partassembly_before_transform);
@@ -191,6 +197,7 @@ static void gst_partassembly_init (Gstpartassembly *partassembly)
     partassembly->priv->partsDisplay = true;
     partassembly->priv->informationDisplay = true;
     partassembly->priv->alert = false;
+    partassembly->priv->resetSeconds = 25;
     partassembly->targetTypeChecked = false;
     partassembly->startTick = 0;
     partassembly->alertTick = 0;
@@ -240,6 +247,11 @@ void gst_partassembly_set_property (GObject * object, guint property_id, const G
             GST_MESSAGE("Display assembly information is enabled!");
         break;
     }
+    case PROP_RESET:
+    {
+        partassembly->priv->resetSeconds = g_value_get_int(value);
+        break;
+    }
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
@@ -268,6 +280,9 @@ void gst_partassembly_get_property (GObject * object, guint property_id, GValue 
     case PROP_INFORMATION_DISPLAY:
        g_value_set_boolean(value, partassembly->priv->informationDisplay);
        break;
+    case PROP_RESET:
+        g_value_set_int(value, partassembly->priv->resetSeconds);
+        break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
       break;
@@ -610,7 +625,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
         for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
             totalElapsedTime += processingTime[i];
         
-        if((totalPartsNum == 2 && partassembly->lastTotalNumber > 8) || totalElapsedTime > 25)
+        if((totalPartsNum == 2 && partassembly->lastTotalNumber > 8) || totalElapsedTime > partassembly->priv->resetSeconds)
         {
             partassembly->priv->alert = false;
             partassembly->targetTypeChecked = false;

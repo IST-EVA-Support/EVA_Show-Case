@@ -33,9 +33,7 @@ void PrepareStatus::ReleaseInstance()
     {
         delete singletonInstance;
         singletonInstance = NULL;
-        std::cout << "PrepareStatus instance set NULL.\n";
     }
-    std::cout << "PrepareStatus instance released.\n";
 }
 
 void PrepareStatus::SetStatus(Prepare s)

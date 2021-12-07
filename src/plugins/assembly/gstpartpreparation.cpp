@@ -41,6 +41,7 @@ struct _GstPartPreparationPrivate
     bool partsDisplay;
     bool informationDisplay;
     bool statusDisplay;
+    int emptyCounter;
 };
 
 enum
@@ -49,7 +50,8 @@ enum
     PROP_ALERT_TYPE,
     PROP_PARTS_DISPLAY,
     PROP_INFORMATION_DISPLAY,
-    PROP_STATUS_DISPLAY
+    PROP_STATUS_DISPLAY,
+    PROP_EMPTY_PART_COUNTER
 };
 
 #define DEBUG_INIT GST_DEBUG_CATEGORY_INIT(GST_CAT_DEFAULT, "gstpartpreparation", 0, "debug category for gstpartpreparation element");
@@ -100,6 +102,9 @@ static void gst_partpreparation_class_init (GstPartpreparationClass * klass)
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_STATUS_DISPLAY,
                                    g_param_spec_boolean("status-display", "Status-display", "Show current preparation Status.", TRUE, G_PARAM_READWRITE));
   
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_EMPTY_PART_COUNTER,
+                                   g_param_spec_int("empty-part-frame", "empty part frame number", "Reset the counting time when defined accumulated frame number is reached.", 0, 100, 15, G_PARAM_READWRITE));
+  
   gobject_class->dispose = gst_partpreparation_dispose;
   gobject_class->finalize = gst_partpreparation_finalize;
   base_transform_class->before_transform = GST_DEBUG_FUNCPTR(gst_partpreparation_before_transform);
@@ -148,6 +153,7 @@ static void gst_partpreparation_init (GstPartpreparation *partpreparation)
     partpreparation->priv->partsDisplay = true;
     partpreparation->priv->informationDisplay = false;
     partpreparation->priv->statusDisplay = true;
+    partpreparation->priv->emptyCounter = 15;
     
     partpreparation->baseTick = 0;
     partpreparation->prepareStartTime = 0;
@@ -190,6 +196,11 @@ void gst_partpreparation_set_property (GObject * object, guint property_id, cons
             GST_MESSAGE("Display status is enabled!");
         break;
     }
+    case PROP_EMPTY_PART_COUNTER:
+    {
+        partpreparation->priv->emptyCounter = g_value_get_int(value);
+        break;
+    }
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
@@ -216,6 +227,9 @@ void gst_partpreparation_get_property (GObject * object, guint property_id, GVal
        break;
     case PROP_STATUS_DISPLAY:
        g_value_set_boolean(value, partpreparation->priv->statusDisplay);
+       break;
+    case PROP_EMPTY_PART_COUNTER:
+       g_value_set_int(value, partpreparation->priv->emptyCounter);
        break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -262,11 +276,13 @@ static gboolean gst_partpreparation_stop (GstBaseTransform * trans)
   GstPartpreparation *partpreparation = GST_PARTPREPARATION (trans);
   partpreparation->prepareStatus->SetStatus(Prepare::Empty);
   partpreparation->priv->alert = false;
+  
   partpreparation->baseTick = 0;
   partpreparation->prepareStartTime = 0;
   partpreparation->prepareEndTime = 0;
   partpreparation->runningTime = 0;
   partpreparation->emptyCounter = 0;
+  
   GST_DEBUG_OBJECT (partpreparation, "stop");
 
   return TRUE;
@@ -467,7 +483,7 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
     // if status is assembly, means already ready before.
     if(partpreparation->prepareStatus->GetStatus() == Prepare::Assembly)
     {
-        if(totalPartsNum == 1 && partpreparation->emptyCounter > 15)
+        if(totalPartsNum == 1 && partpreparation->emptyCounter > partpreparation->priv->emptyCounter)
         {
             partpreparation->prepareStatus->SetStatus(Prepare::Empty);
             partpreparation->priv->alert = false;
@@ -517,7 +533,7 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
         partpreparation->priv->alert = false;
         partpreparation->prepareStartTime = 0;
         partpreparation->prepareEndTime = 0;
-        partpreparation->emptyCounter = 0;
+        partpreparation->priv->emptyCounter = 0;
     }
     if(totalPartsNum == 1 && partpreparation->prepareStatus->GetStatus() == Prepare::Assembly)
     {
