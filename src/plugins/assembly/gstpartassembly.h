@@ -31,6 +31,9 @@ struct _Gstpartassembly
   long startTick;
   long alertTick;
   double runningTime;
+  
+  bool partContainerIsEmpty;
+  int lastTotalNumber;
 };
 
 struct _GstpartassemblyClass

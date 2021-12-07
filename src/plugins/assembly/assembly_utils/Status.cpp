@@ -30,8 +30,10 @@ PrepareStatus* PrepareStatus::GetInstance()
 void PrepareStatus::ReleaseInstance()
 {
     if(singletonInstance != NULL)
+    {
         delete singletonInstance;
-    std::cout << "PrepareStatus instance released.\n";
+        singletonInstance = NULL;
+    }
 }
 
 void PrepareStatus::SetStatus(Prepare s)
