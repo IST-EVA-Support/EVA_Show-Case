@@ -20,7 +20,7 @@ namespace BASIC_INFORMATION
 
 namespace PROGRESS
 {
-    enum class Prepare {NotReady, Ready, Assembly};
+    enum class Prepare {Empty, NotReady, DisOrdered, Ready, Assembly};
     enum class Assembly {Empty, Assembling, AssemblyOK};
     
     class PrepareStatus
@@ -30,6 +30,22 @@ namespace PROGRESS
         void ReleaseInstance();
         void SetStatus(Prepare s);
         Prepare GetStatus();
+        const char* GetStatusString(Prepare value)
+        {
+            switch (value) {
+                case Prepare::Empty:
+                    return "Empty";
+                case Prepare::NotReady:
+                    return "NotReady";
+                case Prepare::DisOrdered:
+                    return "DisOrdered";
+                case Prepare::Ready:
+                    return "Ready";
+                case Prepare::Assembly:
+                    return "Assembly";
+            }
+            return "Not Defined";
+        }
         
     protected:
         Prepare status;

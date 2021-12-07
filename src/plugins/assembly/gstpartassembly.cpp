@@ -58,7 +58,7 @@ std::vector<double> processingTime = {
     
 std::vector<float> processingRegularTime = {
     10,  // put 1 semi-product in container
-    8,  // put 2 light-guide-cover in semi-finished-products(left and right)
+    10,  // put 2 light-guide-cover in semi-finished-products(left and right)
     6,  // put 2 small-board-side-B in semi-finished-products(left and right)
     10, // screw on 4 screws(2 on left, 2 on right)
     5,  // put wire on
@@ -87,6 +87,8 @@ struct _GstpartassemblyPrivate
     bool alert;
     gchar* targetType;
     gchar* alertType;
+    
+    int resetSeconds;
 };
 
 enum
@@ -95,7 +97,8 @@ enum
     PROP_TARGET_TYPE,
     PROP_ALERT_TYPE,
     PROP_PARTS_DISPLAY,
-    PROP_INFORMATION_DISPLAY
+    PROP_INFORMATION_DISPLAY,
+    PROP_RESET
 };
 
 #define DEBUG_INIT GST_DEBUG_CATEGORY_INIT(GST_CAT_DEFAULT, "gstpartassembly", 0, "debug category for gstpartassembly element");
@@ -145,6 +148,9 @@ static void gst_partassembly_class_init (GstpartassemblyClass * klass)
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_INFORMATION_DISPLAY,
                                    g_param_spec_boolean("information-display", "Information-display", "Show the assembly process status.", TRUE, G_PARAM_READWRITE));
   
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_RESET,
+                                   g_param_spec_int("reset-time", "reset counting duration time", "Reset the counting time every defined seconds when only checking assembly.", 0, 100, 25, G_PARAM_READWRITE));
+  
   gobject_class->dispose = gst_partassembly_dispose;
   gobject_class->finalize = gst_partassembly_finalize;
   base_transform_class->before_transform = GST_DEBUG_FUNCPTR(gst_partassembly_before_transform);
@@ -191,6 +197,7 @@ static void gst_partassembly_init (Gstpartassembly *partassembly)
     partassembly->priv->partsDisplay = true;
     partassembly->priv->informationDisplay = true;
     partassembly->priv->alert = false;
+    partassembly->priv->resetSeconds = 25;
     partassembly->targetTypeChecked = false;
     partassembly->startTick = 0;
     partassembly->alertTick = 0;
@@ -203,6 +210,9 @@ static void gst_partassembly_init (Gstpartassembly *partassembly)
         assemblyActionVector[i] = false;
         processingTime[i] = 0;
     }
+    
+    partassembly->lastTotalNumber = 0;
+    partassembly->partContainerIsEmpty = false;
 }
 
 void gst_partassembly_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
@@ -237,6 +247,11 @@ void gst_partassembly_set_property (GObject * object, guint property_id, const G
             GST_MESSAGE("Display assembly information is enabled!");
         break;
     }
+    case PROP_RESET:
+    {
+        partassembly->priv->resetSeconds = g_value_get_int(value);
+        break;
+    }
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
@@ -265,6 +280,9 @@ void gst_partassembly_get_property (GObject * object, guint property_id, GValue 
     case PROP_INFORMATION_DISPLAY:
        g_value_set_boolean(value, partassembly->priv->informationDisplay);
        break;
+    case PROP_RESET:
+        g_value_set_int(value, partassembly->priv->resetSeconds);
+        break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
       break;
@@ -314,6 +332,9 @@ static gboolean gst_partassembly_stop (GstBaseTransform * trans)
       assemblyActionVector[i] = false;
       processingTime[i] = 0;
   }
+  
+  partassembly->lastTotalNumber = 0;
+  partassembly->partContainerIsEmpty = false;
   
   GST_DEBUG_OBJECT (partassembly, "stop");
 
@@ -419,6 +440,21 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
                     }
                 }
             }
+
+            // if partassembly->targetTypeChecked is true, check whether to reset or not
+            if(partassembly->targetTypeChecked == true)
+            {
+                for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
+                {
+                    adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
+                    // check alert type was set 
+                    if(detection_result.meta.find("empty") != std::string::npos)
+                    {
+                        partassembly->partContainerIsEmpty = true;
+                    }
+                }
+            }
+
 
             for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
             {
@@ -542,6 +578,7 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
     //Check each material is in the container and required number
     int requiredMaterialNumber = partassembly->priv->bomMaterial.size();
 
+    int totalPartsNum = 0; 
     for(unsigned int materialID = 0; materialID < (uint)requiredMaterialNumber; ++materialID)
     {
         int totalObjectNumber = partassembly->priv->bomMaterial[materialID]->GetObjectNumber();
@@ -557,10 +594,54 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
             if(intersectAreaWithContainer > 0 && intersectAreaWithSemiProduct > 0)
             {
                 numberInSemiProduct++;
+                totalPartsNum++;
                 partassembly->priv->bomMaterial[materialID]->SetPartNumber(numberInSemiProduct);
             }
         }
     }
+    
+    // check is there exist any object in semi-product container.
+    // if only exist semi-product container, reset all parameters and return
+    if(totalPartsNum == 2 && partassembly->partContainerIsEmpty == true) // 1 container-semi-finished-products + 1 semi-finished-products
+    {
+        partassembly->priv->alert = false;
+        partassembly->targetTypeChecked = false;
+        partassembly->startTick = 0;
+        for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
+        {
+            assemblyActionVector[i] = false;
+            processingTime[i] = 0;
+        }
+        partassembly->lastTotalNumber = 0;
+        partassembly->partContainerIsEmpty = false;
+    
+        return;
+    }
+    
+    // If this is single assembly, check the reset criteria
+    if (std::string(partassembly->priv->targetType).compare("NONE") == 0)
+    {
+        double totalElapsedTime = 0;
+        for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
+            totalElapsedTime += processingTime[i];
+        
+        if((totalPartsNum == 2 && partassembly->lastTotalNumber > 8) || totalElapsedTime > partassembly->priv->resetSeconds)
+        {
+            partassembly->priv->alert = false;
+            partassembly->targetTypeChecked = false;
+            partassembly->startTick = 0;
+            for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
+            {
+                assemblyActionVector[i] = false;
+                processingTime[i] = 0;
+            }
+            partassembly->lastTotalNumber = 0;
+            partassembly->partContainerIsEmpty = false;
+            return;
+        }
+    }
+    partassembly->lastTotalNumber = totalPartsNum;
+    
     
     //get check assembly action
     int checkAction = -1;
