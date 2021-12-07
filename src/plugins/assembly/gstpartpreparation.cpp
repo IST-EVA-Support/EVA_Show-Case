@@ -476,9 +476,9 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
     }
     
     if(totalPartsNum == 1)
-    {
         partpreparation->emptyCounter++;
-    }
+    else
+        partpreparation->emptyCounter = 0;
     
     // if status is assembly, means already ready before.
     if(partpreparation->prepareStatus->GetStatus() == Prepare::Assembly)
@@ -533,7 +533,7 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
         partpreparation->priv->alert = false;
         partpreparation->prepareStartTime = 0;
         partpreparation->prepareEndTime = 0;
-        partpreparation->priv->emptyCounter = 0;
+        partpreparation->emptyCounter = 0;
     }
     if(totalPartsNum == 1 && partpreparation->prepareStatus->GetStatus() == Prepare::Assembly)
     {
