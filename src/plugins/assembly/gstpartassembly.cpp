@@ -204,7 +204,7 @@ static void gst_partassembly_init (Gstpartassembly *partassembly)
         processingTime[i] = 0;
     }
     
-    partassembly->emptyCounter = 0;
+    partassembly->lastTotalNumber = 0;
     partassembly->partContainerIsEmpty = false;
 }
 
@@ -318,7 +318,7 @@ static gboolean gst_partassembly_stop (GstBaseTransform * trans)
       processingTime[i] = 0;
   }
   
-  partassembly->emptyCounter = 0;
+  partassembly->lastTotalNumber = 0;
   partassembly->partContainerIsEmpty = false;
   
   GST_DEBUG_OBJECT (partassembly, "stop");
@@ -422,12 +422,9 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
                             partassembly->targetTypeChecked = true;
                             break;
                         }
-//                         if( i == detectionBoxResultNumber - 1)
-//                             partassembly->targetTypeChecked = false;
                     }
                 }
             }
-//             std::cout << "partassembly->targetTypeChecked = " << partassembly->targetTypeChecked << std::endl;
 
             // if partassembly->targetTypeChecked is true, check whether to reset or not
             if(partassembly->targetTypeChecked == true)
@@ -438,15 +435,6 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
                     // check alert type was set 
                     if(detection_result.meta.find("empty") != std::string::npos)
                     {
-                        std::cout << "**************** reset the assembly parameters ************\n";
-//                         partassembly->priv->alert = false;
-//                         partassembly->targetTypeChecked = false;
-//                         partassembly->startTick = 0;
-//                         for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
-//                         {
-//                             assemblyActionVector[i] = false;
-//                             processingTime[i] = 0;
-//                         }
                         partassembly->partContainerIsEmpty = true;
                     }
                 }
@@ -599,18 +587,31 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
     
     // check is there exist any object in semi-product container.
     // if only exist semi-product container, reset all parameters and return
-    std::cout << "totalPartsNum = " << totalPartsNum << std::endl;
     if(totalPartsNum == 2 && partassembly->partContainerIsEmpty == true) // 1 container-semi-finished-products + 1 semi-finished-products
     {
+        partassembly->priv->alert = false;
+        partassembly->targetTypeChecked = false;
+        partassembly->startTick = 0;
+        for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
+        {
+            assemblyActionVector[i] = false;
+            processingTime[i] = 0;
+        }
+        partassembly->lastTotalNumber = 0;
+        partassembly->partContainerIsEmpty = false;
+    
+        return;
+    }
+    
+    // If this is single assembly, check the reset criteria
+    if (std::string(partassembly->priv->targetType).compare("NONE") == 0)
+    {
+        double totalElapsedTime = 0;
+        for(unsigned int i = 0; i < assemblyActionVector.size() - 1 ; ++i)
+            totalElapsedTime += processingTime[i];
         
-//         if(partassembly->emptyCounter < 80)
-//         {
-//             partassembly->emptyCounter++;
-//             std::cout << "partassembly->emptyCounter = " << partassembly->emptyCounter << std::endl;
-//         }
-//         else
-//         {
-            //std::cout << "**************** nothing in semi-product container ************\n";
+        if((totalPartsNum == 2 && partassembly->lastTotalNumber > 8) || totalElapsedTime > 25)
+        {
             partassembly->priv->alert = false;
             partassembly->targetTypeChecked = false;
             partassembly->startTick = 0;
@@ -619,15 +620,13 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                 assemblyActionVector[i] = false;
                 processingTime[i] = 0;
             }
-            partassembly->emptyCounter = 0;
+            partassembly->lastTotalNumber = 0;
             partassembly->partContainerIsEmpty = false;
-        
-        
             return;
-//         }
+        }
     }
-//     else
-//         partassembly->emptyCounter = 0;
+    partassembly->lastTotalNumber = totalPartsNum;
+    
     
     //get check assembly action
     int checkAction = -1;

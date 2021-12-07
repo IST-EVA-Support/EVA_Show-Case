@@ -33,7 +33,7 @@ struct _Gstpartassembly
   double runningTime;
   
   bool partContainerIsEmpty;
-  int emptyCounter;
+  int lastTotalNumber;
 };
 
 struct _GstpartassemblyClass
