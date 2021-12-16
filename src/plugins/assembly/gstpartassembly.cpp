@@ -541,9 +541,17 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
     AdBatch &batch = meta->batch;
     bool frame_exist = batch.frames.size() > 0 ? true : false;
     
+//     if(partassembly->priv->alert == true)
+//         if((gst_clock_get_time((GST_ELEMENT (partassembly))->clock) - base_time)/NANO_SECOND > 5)
+//             partassembly->priv->alert = false;
+    
     if(partassembly->priv->alert == true)
-        if((gst_clock_get_time((GST_ELEMENT (partassembly))->clock) - base_time)/NANO_SECOND > 5)
+    {
+        if(partassembly->runningTime - partassembly->alertTick > 5)
+        {
             partassembly->priv->alert = false;
+        }
+    }
 
     // Check whether materials are in the container and semi-product
     // Get container
@@ -602,7 +610,8 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
     
     // check is there exist any object in semi-product container.
     // if only exist semi-product container, reset all parameters and return
-    if(totalPartsNum == 2 && partassembly->partContainerIsEmpty == true) // 1 container-semi-finished-products + 1 semi-finished-products
+    if((totalPartsNum == 2 && partassembly->partContainerIsEmpty == true) // 1 container-semi-finished-products + 1 semi-finished-products
+        || (totalPartsNum == 2 && partassembly->priv->alert == true)) // when empty and already alert
     {
         partassembly->priv->alert = false;
         partassembly->targetTypeChecked = false;
@@ -832,7 +841,8 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
                 std::string alertMessage = "," + std::string(partassembly->priv->alertType) + "<" + return_current_time_and_date() + ">";
             
                 meta->batch.frames[0].detection_results[containerId].meta += alertMessage;
-                partassembly->alertTick = cv::getTickCount();
+                //partassembly->alertTick = cv::getTickCount();
+                partassembly->alertTick = partassembly->runningTime;
             }
         }
         
