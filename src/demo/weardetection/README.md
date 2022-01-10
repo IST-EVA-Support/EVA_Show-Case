@@ -13,6 +13,7 @@ Install.sh will perform the following steps:
 1. Build the required plug-ins for each showcase and install them into ADLINK EVASDK.
 2. Download the inference intermediate model file and convert it to TensorRT format on the local device.
 3. Download the required showcase demo videos and plug-in setup files.
+### Make sure execute all [steps](https://github.com/IST-EVA-Support/EVA_Show-Case/tree/dev#clone-the-source-code) before installation.
 
 ### For this showcase: 
 
