@@ -13,6 +13,7 @@ Install.sh will perform the following steps:
 1. Download the demo video.
 2. Download the inference ONNX model file and label file.
 3. Download the required showcase demo videos and plug-in setup files.
+### Make sure execute all [steps](https://github.com/IST-EVA-Support/EVA_Show-Case/tree/dev#clone-the-source-code) before installation.
 
 ### For this showcase: 
 
