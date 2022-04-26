@@ -49,7 +49,7 @@ Then you will see the pop-up display window of this showcase as in the example b
 
 ![image-showcase3](../../../figures/image-showcase3.png)
 
-*Modified installation details can be found at the EVA Portal: < Under Construction >
+*Modified installation details can be found at the EVA Portal: https://eva-support.adlinktech.com/
 
 ## Training Materials
 
