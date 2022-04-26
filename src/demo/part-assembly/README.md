@@ -137,7 +137,7 @@ The timer starts when the "semi-finished-product" is placed. In the videos, the 
 
 If the step is operating/finished/waiting, the description is outlined in yellow/green/white. When each step is finished, the next step will start to run the timer till the last step is finished. This showcase illustrate the procedure of the operator followed the assembly specification in case the idling is occurred. Just like the other showcase, once you modified this part-assembly plugin source code, required to rebuild it simply direct to the path [/src/plugins/assembly](/src/plugins/assembly) and run assembly-build.sh for ubuntu system. (Currently not support for windows, windows version of this showcase will provide in later version) The email alert plugin were implemented in python. Once modified the email alert plugin, direct to [/src/plugins/alert/email](/src/plugins/alert/email) and run email-build.sh for ubuntu or email-build.bat for windows 10. The same rebuild procedure for other alert plugins. More detail setting could be found in EVA Portal.
 
-*Modified installation details can be found at the EVA Portal: < Under Construction >
+*Modified installation details can be found at the EVA Portal: https://eva-support.adlinktech.com/
 
 ## Combination with Part Preparation(showcase 4)
 
