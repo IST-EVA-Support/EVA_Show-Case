@@ -111,7 +111,7 @@ In the figure above, "container-parts" is the area where each parts must place i
 
 The timer starts with orange color means the preparation procedure is working and ends with green when all parts are ready. This showcase illustrate the procedure of the operator followed the preparation specification in case each part is missed before assemly. Just like the other showcase, once you modified this part-preparation plugin source code, required to rebuild it simply direct to the path [/src/plugins/assembly](/src/plugins/assembly) and run assembly-build.sh for ubuntu system. (Currently not support for windows, windows version of this showcase will provide in later version) The email alert plugin were implemented in python. Once modified the email alert plugin, direct to [/src/plugins/alert/email](/src/plugins/alert/email) and run email-build.sh for ubuntu or email-build.bat for windows 10. The same rebuild procedure for other alert plugins. More detail setting could be found in EVA Portal.
 
-*Modified installation details can be found at the EVA Portal: < Under Construction >
+*Modified installation details can be found at the EVA Portal: https://eva-support.adlinktech.com/
 
 ## Training Materials
 
