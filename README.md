@@ -24,5 +24,5 @@ Showcases currently available:
 
 Each showcase describes how to install and run the demo. Simply enter the path to each demo showcase you are interested in and run it.
 
-Visit our EVA portal for more information: < Under Construction >
+Visit our EVA portal for more information: https://eva-support.adlinktech.com/
 
