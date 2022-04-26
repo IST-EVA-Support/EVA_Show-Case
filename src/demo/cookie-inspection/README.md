@@ -76,7 +76,7 @@ https://github.com/Azure-Samples/customvision-export-samples/tree/main/samples/p
 *Sign up the Azure Service can be found at this page 
 https://azurelessons.com/create-azure-free-account/#Create_Azure_Free_Account
 
-*Creat new project in Custom Vision can be found at the EVA Portal: < Under Construction >
+*Creat new project in Custom Vision can be found at the EVA Portal: https://eva-support.adlinktech.com/
 
 <a id="Run-This-Showcase-Through-EVA-IDE"></a>
 
