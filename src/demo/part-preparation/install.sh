@@ -194,10 +194,6 @@ message_out "GPU_ARCHS = ${GPU_ARCHS}"
 message_out "tensorRT_version = ${tensorRT_version}"
 message_out "cuda_runtime_version = ${cuda_runtime_version}"
 
-message_out "temp exit......"
-exit
-
-
 cd $current_path
 message_out "GPU_ARCHS = ${GPU_ARCHS}"
 arch_array=("53" "61" "62" "70" "72" "75" "86")
@@ -222,6 +218,9 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     #x86/jetson use same TRT_LIB_DIR
     cmake .. -DGPU_ARCHS=$GPU_ARCHS -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR=`pwd`/out
     make nvinfer_plugin -j$(nproc)
+    
+    message_out "Build OSS finished, and exit."
+    exit
     
     message_out "Backup original libnvinfer_plugin.so.7.x.y and replacing with the rebuild one"
     backup_folder=${HOME}/libnvinfer_plugin_bak
