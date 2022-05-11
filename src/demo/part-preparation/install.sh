@@ -139,8 +139,27 @@ then
     fi
     git clone https://github.com/jetsonhacks/jetsonUtilities
     cd jetsonUtilities/
-    GPU_ARCHS=$(python jetsonInfo.py | grep "CUDA Architecture" | cut -c 1-22 --complement | tr -d .)
-    tensorRT_version=$(python jetsonInfo.py | grep "TensorRT" | cut -c 1-11 --complement | cut -d . -f 1-3)
+    #GPU_ARCHS=$(python jetsonInfo.py | grep "CUDA Architecture" | cut -c 1-22 --complement | tr -d .)
+    if [[ $(python jetsonInfo.py | grep -i "Xavier") != "" ]]
+    then
+        GPU_ARCHS="72"
+    elif [[ $(python jetsonInfo.py | grep -i "TX2") != "" ]]
+    then
+        GPU_ARCHS="62"
+    elif [[ $(python jetsonInfo.py | grep -i "Nano") != "" ]]
+    then
+        GPU_ARCHS="53"
+    elif [[ $(python jetsonInfo.py | grep -i "TX1") != "" ]]
+    then
+        GPU_ARCHS="53"
+    else
+        message_out "Can not know the Jetson platform, and will exit"
+        exit
+    fi
+    
+    
+    #tensorRT_version=$(python jetsonInfo.py | grep "TensorRT" | cut -c 1-11 --complement | cut -d . -f 1-3)
+    tensorRT_version=$(dpkg -l | grep "TensorRT runtime libraries" | awk '{print $3}' | cut -f 1 -d "+" | cut -f 1 -d "-")
     jetson_name=$(python jetsonInfo.py | grep "NVIDIA Jetson" | cut -c 1-14 --complement)
     jetpack_version=$(python jetsonInfo.py | grep "JetPack" | cut -c 1-22,26-27 --complement | tr -d .)
     cd ..
@@ -170,6 +189,14 @@ else
     message_out "not support GPU architecture."
     exit
 fi
+
+message_out "GPU_ARCHS = ${GPU_ARCHS}"
+message_out "tensorRT_version = ${tensorRT_version}"
+message_out "cuda_runtime_version = ${cuda_runtime_version}"
+
+message_out "temp exit......"
+exit
+
 
 cd $current_path
 message_out "GPU_ARCHS = ${GPU_ARCHS}"
