@@ -40,10 +40,10 @@ current_path=`pwd`
 
 
 # Check is in ADLINK EVA container
-sudoString=""
+sudoString="sudo"
 if [ -e "/entrypoint.sh" ]
 then
-    sudoString = "sudo"
+    sudoString = ""
 fi
 message_out "sudo String = ${sudoString}"
 exit
