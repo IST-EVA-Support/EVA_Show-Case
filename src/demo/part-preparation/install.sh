@@ -287,11 +287,11 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         message_out "<< current path = $PWD >>"
         if [ "$tensorRT_version" == "7.1.3" ]
         then
-            rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
+            rebuild_file=$(ls | grep libnvinfer_plugin.so.7.1.3)
             message_out "rebuild file in jetson(7.1.3) = ${rebuild_file}"
         elif [ "$tensorRT_version" == "8.2.1" ]
         then
-            rebuild_file=$(ls | grep libnvinfer_plugin.so.8.*)
+            rebuild_file=$(ls | grep libnvinfer_plugin.so.8.2.1)
             message_out "rebuild file in jetson(8.2.1) = ${rebuild_file}"
         else
             message_out "No rebuild file exist and will exit"
