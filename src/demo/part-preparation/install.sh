@@ -51,7 +51,7 @@ message_out "sudo String = ${sudoString}"
 message_out "Start installing..."
 # build required plugin
 message_out "Building assembly plugin..."
-sudo apt -y install libgstreamer-plugins-base1.0-dev
+${sudoString} apt -y install libgstreamer-plugins-base1.0-dev
 ../../plugins/assembly/assembly-build.sh
 
 
@@ -88,7 +88,7 @@ else
     message_out "Start download model.zip..."
     wget https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/model.zip
     # unzip it, then delete the zip file
-    sudo apt-get -y install unzip
+    ${sudoString} apt-get -y install unzip
     unzip -o model.zip
     rm model.zip
 fi
@@ -125,14 +125,14 @@ fi
 if [ $upgrade_cmake -eq 1 ]
 then
     message_out "Start upgrading cmake to version 3.13"
-    sudo apt remove --purge --auto-remove cmake
+    ${sudoString} apt remove --purge --auto-remove cmake
     wget https://github.com/Kitware/CMake/releases/download/v3.13.5/cmake-3.13.5.tar.gz
     tar xvf cmake-3.13.5.tar.gz
     cd cmake-3.13.5/
     ./configure
     make -j$(nproc)
-    sudo make install
-    sudo ln -s /usr/local/bin/cmake /usr/bin/cmake
+    ${sudoString} make install
+    ${sudoString} ln -s /usr/local/bin/cmake /usr/bin/cmake
 fi
 
 # check device GPU architecture
@@ -279,7 +279,7 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         original_plugin_path=/usr/lib/aarch64-linux-gnu/$original_plugin_name
         if [ ! -d $original_plugin_path ]
         then
-            sudo mv $original_plugin_path $backup_file_path
+            ${sudoString} mv $original_plugin_path $backup_file_path
         fi
         
         #copy rebuild one
@@ -299,9 +299,9 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         
         if [ -e $rebuild_file ]
         then
-            sudo cp $rebuild_file $original_plugin_path
+            ${sudoString} cp $rebuild_file $original_plugin_path
         fi
-        sudo ldconfig
+        ${sudoString} ldconfig
         
     elif [ $gpuArchChecker == "x86" ]
     then
@@ -315,7 +315,7 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         if [ ! -d $original_plugin_path ]
         then
             #if exist libnvinfer_plugin.so.x.y, backup it
-            sudo mv $original_plugin_path $backup_file_path
+            ${sudoString} mv $original_plugin_path $backup_file_path
         fi
         
         #copy rebuild one
@@ -333,9 +333,9 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         then
             message_out "rebuild_file = ${rebuild_file}"
             message_out "original_plugin_path = ${original_plugin_path}"
-            sudo cp $rebuild_file $original_plugin_path
+            ${sudoString} cp $rebuild_file $original_plugin_path
         fi
-        sudo ldconfig
+        ${sudoString} ldconfig
     else
         message_out "Not x86 or Jetson device."
         exit
@@ -359,14 +359,14 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         wget https://developer.nvidia.com/cuda102-trt71-jp44-0
         
         # unzip it, then delete the zip file
-        sudo apt-get -y install unzip
+        ${sudoString} apt-get -y install unzip
         unzip -o cuda102-trt71-jp44-0
         rm cuda102-trt71-jp44-0
         cd jp4.4
-        sudo chmod +x tao-converter
+        ${sudoString} chmod +x tao-converter
         
         #Install openssl library
-        sudo apt-get -y install libssl-dev
+        ${sudoString} apt-get -y install libssl-dev
         #Export the following environment variables
         export TRT_LIB_PATH=”/usr/lib/aarch64-linux-gnu”
         export TRT_INC_PATH=”/usr/include/aarch64-linux-gnu”
@@ -383,14 +383,14 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         wget https://developer.nvidia.com/tao-converter-jp4.5
         
         # unzip it, then delete the zip file
-        sudo apt-get -y install unzip
+        ${sudoString} apt-get -y install unzip
         unzip -o tao-converter-jp4.5
         rm tao-converter-jp4.5
         cd jp4.5
-        sudo chmod +x tao-converter
+        ${sudoString} chmod +x tao-converter
         
         #Install openssl library
-        sudo apt-get -y install libssl-dev
+        ${sudoString} apt-get -y install libssl-dev
         #Export the following environment variables
         export TRT_LIB_PATH=”/usr/lib/aarch64-linux-gnu”
         export TRT_INC_PATH=”/usr/include/aarch64-linux-gnu”
@@ -409,14 +409,14 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
             wget https://developer.nvidia.com/tao-converter-jp4.6
             
             # unzip it, then delete the zip file
-            sudo apt-get -y install unzip
+            ${sudoString} apt-get -y install unzip
             unzip -o tao-converter-jp4.6
             rm tao-converter-jp4.6
             cd tao-converter-jp46-trt8.0.1.6
-            sudo chmod +x tao-converter
+            ${sudoString} chmod +x tao-converter
             
             #Install openssl library
-            sudo apt-get -y install libssl-dev
+            ${sudoString} apt-get -y install libssl-dev
             #Export the following environment variables
             export TRT_LIB_PATH=”/usr/lib/aarch64-linux-gnu”
             export TRT_INC_PATH=”/usr/include/aarch64-linux-gnu”
@@ -442,14 +442,14 @@ then
     wget https://developer.nvidia.com/cuda102-trt71
     
     # unzip it, then delete the zip file
-    sudo apt-get -y install unzip
+    ${sudoString} apt-get -y install unzip
     unzip -o cuda102-trt71
     rm cuda102-trt71
     cd cuda10.2-trt7.1
-    sudo chmod +x tao-converter
+    ${sudoString} chmod +x tao-converter
     
     #Install openssl library
-    sudo apt-get -y install libssl-dev
+    ${sudoString} apt-get -y install libssl-dev
     #Export the following environment variables
     export TRT_LIB_PATH=”/usr/lib/x86_64-linux-gnu”
     export TRT_INC_PATH=”/usr/include/x86_64-linux-gnu”
@@ -473,8 +473,8 @@ message_out "Deploy alert plugin..."
 
 message_out "Install related python package"
 pip3 install -r requirements.txt
-sudo apt -y install gstreamer1.0-libav
-sudo apt-get -y install espeak
+${sudoString} apt -y install gstreamer1.0-libav
+${sudoString} apt-get -y install espeak
 rm ~/.cache/gstreamer-1.0/regi*
 
 message_out "Installation completed, you could run this demo by execute ./run.sh"
