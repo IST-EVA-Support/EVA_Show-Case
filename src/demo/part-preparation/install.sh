@@ -46,7 +46,6 @@ then
     sudoString=""
 fi
 message_out "sudo String = ${sudoString}"
-exit
 
 
 message_out "Start installing..."
