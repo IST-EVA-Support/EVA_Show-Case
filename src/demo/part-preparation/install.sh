@@ -35,6 +35,13 @@ message_out(){
     echo -e "${LB}=> $1${NC}"
 }
 
+# Check is in ADLINK EVA container
+sudoString = ""
+if [-e "/entrypoint.sh"]
+then
+    sudoString = "sudo"
+fi
+
 # Get current path
 current_path=`pwd`
 
@@ -193,6 +200,7 @@ fi
 message_out "GPU_ARCHS = ${GPU_ARCHS}"
 message_out "tensorRT_version = ${tensorRT_version}"
 message_out "cuda_runtime_version = ${cuda_runtime_version}"
+message_out "jetson_name = ${jetson_name}"
 
 cd $current_path
 message_out "GPU_ARCHS = ${GPU_ARCHS}"
@@ -206,23 +214,47 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         rm -fr TensorRT
     fi
     
-    #git clone -b 21.03 https://github.com/nvidia/TensorRT
-    git clone -b 20.09 https://github.com/nvidia/TensorRT
+    if [ $tensorRT_version == "7.1.3" ]
+    then
+        #git clone -b 21.03 https://github.com/nvidia/TensorRT
+        git clone -b 20.09 https://github.com/nvidia/TensorRT
+    elif [ $tensorRT_version == "8.2.1" ]
+    then
+        git clone -b 22.04 https://github.com/nvidia/TensorRT
+    else
+        message_out "This installation currently support TensorRT 7.1.3 and 8.2.1. And will exit the installation."
+        exit
+    fi
     cd TensorRT/
     git submodule update --init --recursive
-    export TRT_SOURCE=`pwd`
+    export TRT_SOURCE='pwd'
     cd $TRT_SOURCE
     mkdir -p build && cd build
     
     # Start to rebuild TensorRT OSS(Open Source Software)
     #x86/jetson use same TRT_LIB_DIR
-    cmake .. -DGPU_ARCHS=$GPU_ARCHS -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR=`pwd`/out
-    make nvinfer_plugin -j$(nproc)
+    if [ $tensorRT_version == "7.1.3" ]
+    then
+        cmake .. -DGPU_ARCHS=$GPU_ARCHS -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR='pwd'/out
+        make nvinfer_plugin -j$(nproc)
+    elif [ $tensorRT_version == "8.2.1" ]
+    then
+        cmake .. -DGPU_ARCHS=$GPU_ARCHS  -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR='pwd'/out -DCUDA_VERSION=10.2 -DCMAKE_PREFIX_PATH=/usr/local/cuda-10.2
+        if [ -e "libnvinfer_plugin.so.8.2.4" ]
+        then
+            cp libnvinfer_plugin.so.8.2.4 libnvinfer_plugin.so.${tensorRT_version}
+        else
+            message_out "There does not exit libnvinfer_plugin.so.${tensorRT_version}, might built error. And will exit"
+            exit
+        fi
+    else
+        message "TensorRT version does not match and will exit installation."
+        exit
+    fi
     
     message_out "Build OSS finished, and exit."
-    exit
     
-    message_out "Backup original libnvinfer_plugin.so.7.x.y and replacing with the rebuild one"
+    message_out "Backup original libnvinfer_plugin.so.7.x.y/libnvinfer_plugin.so.8.x.y and replacing with the rebuild one"
     backup_folder=${HOME}/libnvinfer_plugin_bak
     backup_file=$(date +'%Y-%m-%d_%H-%M-%S')
 #     backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
@@ -245,9 +277,21 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         then
             sudo mv $original_plugin_path $backup_file_path
         fi
+        
         #copy rebuild one
-        rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
-        message_out "rebuild file in jetson = ${rebuild_file}"
+        rebuild_file = ""
+        if [ $tensorRT_version == "7.1.3" ]
+        then
+            rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
+            message_out "rebuild file in jetson = ${rebuild_file}"
+        elif [ $tensorRT_version == "8.2.1" ]
+        then
+            rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
+            message_out "rebuild file in jetson = ${rebuild_file}"
+        else
+            message_out "No rebuild file exist and will exit"
+            exit
+        fi
         
         if [ -e $rebuild_file ]
         then
@@ -301,7 +345,7 @@ fi
 # Install TAO Converter to convert etlt file to engine file
 message_out "Start to Converting..."
 cd $current_path
-arch_jetson_name=("TX2" "Xavier NX (Developer Kit Version)")
+arch_jetson_name=("TX2" "Xavier NX (Developer Kit Version)" "AGX Xavier [32GB]")
 message_out "jetson_name = ${jetson_name}"
 if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
     if [ $jetpack_version == "44" ]
@@ -352,6 +396,36 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         
         message_out "Converting pruned model..."
         ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
+    elif [ $jetpack_version == "UNKNOWN" ]
+    then
+        if [ $sudoString == "" ] # in EVA container
+        then
+            message_out "supported jetson device, jetpack 4.6 and start to convert etlt file..."
+            #download tao-converter binary
+            wget https://developer.nvidia.com/tao-converter-jp4.6
+            
+            # unzip it, then delete the zip file
+            sudo apt-get -y install unzip
+            unzip -o tao-converter-jp4.6
+            rm tao-converter-jp4.6
+            cd tao-converter-jp46-trt8.0.1.6
+            sudo chmod +x tao-converter
+            
+            #Install openssl library
+            sudo apt-get -y install libssl-dev
+            #Export the following environment variables
+            export TRT_LIB_PATH=”/usr/lib/aarch64-linux-gnu”
+            export TRT_INC_PATH=”/usr/include/aarch64-linux-gnu”
+            
+            message_out "Converting original model..."
+            ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_3400_fp32.engine ../model/dssd_resnet18_epoch_3400.etlt
+            
+            message_out "Converting pruned model..."
+            ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
+        else
+            message_out "jetson device but not in container and will exit."
+            exit
+        fi
     else
         message_out "supported jetson device, but does not support this jetpack version: ${$jetpack_version}"
     fi
