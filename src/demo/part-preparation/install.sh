@@ -283,14 +283,14 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         fi
         
         #copy rebuild one
-        rebuild_file = ""
+        rebuild_file=""
         if [ $tensorRT_version == "7.1.3" ]
         then
             rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
             message_out "rebuild file in jetson = ${rebuild_file}"
         elif [ $tensorRT_version == "8.2.1" ]
         then
-            rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
+            rebuild_file=$(ls | grep libnvinfer_plugin.so.8.*)
             message_out "rebuild file in jetson = ${rebuild_file}"
         else
             message_out "No rebuild file exist and will exit"
@@ -402,7 +402,7 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
     elif [ $jetpack_version == "UNKNOWN" ]
     then
-        if [ $sudoString == "" ] # in EVA container
+        if [ $sudoString == " " ] # in EVA container
         then
             message_out "supported jetson device, jetpack 4.6 and start to convert etlt file..."
             #download tao-converter binary
