@@ -43,7 +43,7 @@ current_path=`pwd`
 sudoString="sudo"
 if [ -e "/entrypoint.sh" ]
 then
-    sudoString = ""
+    sudoString=""
 fi
 message_out "sudo String = ${sudoString}"
 exit
