@@ -240,6 +240,7 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     elif [ $tensorRT_version == "8.2.1" ]
     then
         cmake .. -DGPU_ARCHS=$GPU_ARCHS  -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu/ -DCMAKE_C_COMPILER=/usr/bin/gcc -DTRT_BIN_DIR='pwd'/out -DCUDA_VERSION=10.2 -DCMAKE_PREFIX_PATH=/usr/local/cuda-10.2
+        make nvinfer_plugin -j$(nproc)
         if [ -e "libnvinfer_plugin.so.8.2.4" ]
         then
             cp libnvinfer_plugin.so.8.2.4 libnvinfer_plugin.so.${tensorRT_version}
