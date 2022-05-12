@@ -35,15 +35,19 @@ message_out(){
     echo -e "${LB}=> $1${NC}"
 }
 
+# Get current path
+current_path=`pwd`
+
+
 # Check is in ADLINK EVA container
-sudoString = ""
-if [-e "/entrypoint.sh"]
+sudoString=""
+if [ -e "/entrypoint.sh" ]
 then
     sudoString = "sudo"
 fi
+message_out "sudo String = ${sudoString}"
+exit
 
-# Get current path
-current_path=`pwd`
 
 message_out "Start installing..."
 # build required plugin
