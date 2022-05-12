@@ -284,14 +284,15 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
         
         #copy rebuild one
         rebuild_file=""
-        if [ $tensorRT_version == "7.1.3" ]
+        message_out "<< current path = $PWD >>"
+        if [ "$tensorRT_version" == "7.1.3" ]
         then
             rebuild_file=$(ls | grep libnvinfer_plugin.so.7.*)
-            message_out "rebuild file in jetson = ${rebuild_file}"
-        elif [ $tensorRT_version == "8.2.1" ]
+            message_out "rebuild file in jetson(7.1.3) = ${rebuild_file}"
+        elif [ "$tensorRT_version" == "8.2.1" ]
         then
             rebuild_file=$(ls | grep libnvinfer_plugin.so.8.*)
-            message_out "rebuild file in jetson = ${rebuild_file}"
+            message_out "rebuild file in jetson(8.2.1) = ${rebuild_file}"
         else
             message_out "No rebuild file exist and will exit"
             exit
@@ -352,7 +353,7 @@ cd $current_path
 arch_jetson_name=("TX2" "Xavier NX (Developer Kit Version)" "AGX Xavier [32GB]")
 message_out "jetson_name = ${jetson_name}"
 if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
-    if [ $jetpack_version == "44" ]
+    if [ "$jetpack_version" == "44" ]
     then
         message_out "supported jetson device, jetpack 4.4 and start to convert etlt file..."
         #download tao-converter binary
@@ -376,7 +377,7 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         
         message_out "Converting pruned model..."
         ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
-    elif [ $jetpack_version == "45" ]
+    elif [ "$jetpack_version" == "45" ]
     then
         message_out "supported jetson device, jetpack 4.5 and start to convert etlt file..."
         #download tao-converter binary
