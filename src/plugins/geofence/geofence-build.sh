@@ -21,6 +21,15 @@ get_script_dir () {
     echo "$DIR"
 }
 
+# Check is in ADLINK EVA container
+sudoString="sudo"
+if [ -e "/entrypoint.sh" ]
+then
+    sudoString=" "
+fi
+message_out "sudo String = ${sudoString}"
+
+
 # if build folder exist, delete it
 message_out "check ./build folder..."
 if [ -d "./build" ] 
@@ -46,15 +55,15 @@ message_out "check eva plugings folder..."
 if [ -f "/opt/adlink/eva/plugins/libgeofence.so" ]
 then
     message_out "/opt/adlink/eva/plugins/libgeofenc.so exist, will remove it first."
-    sudo rm /opt/adlink/eva/plugins/libgeofence.so
-    message_out "sudo rm /opt/adlink/eva/plugins/libgeofence.so is removed."
+    ${sudoString} rm /opt/adlink/eva/plugins/libgeofence.so
+    message_out "${sudoString} rm /opt/adlink/eva/plugins/libgeofence.so is removed."
 else
     message_out "/opt/adlink/eva/plugins/libgeofence.so does not exist, will copy it"
 fi
 
 # copy built library to eva plugins folder
 message_out "start copying to /opt/adlink/eva/plugins/ ......"
-sudo cp ./build/libgeofence.so /opt/adlink/eva/plugins/.
+${sudoString} cp ./build/libgeofence.so /opt/adlink/eva/plugins/.
 message_out "copy done"
 
 # clear cache of gstreamer
