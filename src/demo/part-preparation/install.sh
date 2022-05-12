@@ -401,40 +401,35 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         
         message_out "Converting pruned model..."
         ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
-        else
-            if [ "$sudoString" == " " ] # in EVA container and TensorRT 8.2.1
-            then
-                message_out "supported jetson device, jetpack 4.6 and start to convert etlt file..."
-                #download tao-converter binary
-                wget https://developer.nvidia.com/tao-converter-jp4.6
-                
-                # unzip it, then delete the zip file
-                ${sudoString} apt-get -y install unzip
-                unzip -o tao-converter-jp4.6
-                rm tao-converter-jp4.6
-                cd tao-converter-jp46-trt8.0.1.6
-                ${sudoString} chmod +x tao-converter
-                
-                #Install openssl library
-                ${sudoString} apt-get -y install libssl-dev
-                #Export the following environment variables
-                export TRT_LIB_PATH=”/usr/lib/aarch64-linux-gnu”
-                export TRT_INC_PATH=”/usr/include/aarch64-linux-gnu”
-                
-                message_out "Converting original model..."
-                ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_3400_fp32.engine ../model/dssd_resnet18_epoch_3400.etlt
-                
-                message_out "Converting pruned model..."
-                ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
-            else    
-                message_out "jetson device but not in container and will exit."
-                exit
-            fi
-        fi
+    elif [ "$sudoString" == " " ] # in EVA container and TensorRT 8.2.1
+    then
+        message_out "supported jetson device, jetpack 4.6 and start to convert etlt file..."
+        #download tao-converter binary
+        wget https://developer.nvidia.com/tao-converter-jp4.6
+        
+        # unzip it, then delete the zip file
+        ${sudoString} apt-get -y install unzip
+        unzip -o tao-converter-jp4.6
+        rm tao-converter-jp4.6
+        cd tao-converter-jp46-trt8.0.1.6
+        ${sudoString} chmod +x tao-converter
+        
+        #Install openssl library
+        ${sudoString} apt-get -y install libssl-dev
+        #Export the following environment variables
+        export TRT_LIB_PATH=”/usr/lib/aarch64-linux-gnu”
+        export TRT_INC_PATH=”/usr/include/aarch64-linux-gnu”
+        
+        message_out "Converting original model..."
+        ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_3400_fp32.engine ../model/dssd_resnet18_epoch_3400.etlt
+        
+        message_out "Converting pruned model..."
+        ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
+        
     else
         message_out "supported jetson device, but does not support this jetpack version: ${jetpack_version}"
     fi
-elif [ $gpuArchChecker == "x86" ]
+elif [ "$gpuArchChecker" == "x86" ]
 then
     message_out "=======processing x86 convert============"
     #message_out "x86 cuda_runtime_version = ${cuda_runtime_version}"
