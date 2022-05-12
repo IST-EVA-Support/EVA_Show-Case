@@ -431,7 +431,7 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
             exit
         fi
     else
-        message_out "supported jetson device, but does not support this jetpack version: ${$jetpack_version}"
+        message_out "supported jetson device, but does not support this jetpack version: ${jetpack_version}"
     fi
 elif [ $gpuArchChecker == "x86" ]
 then
