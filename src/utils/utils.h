@@ -1,3 +1,6 @@
+#ifndef __GST_AD_META_H__
+#include "gstadmeta.h""
+#endif
 
 std::vector<std::string> split(std::string inputString);
 
