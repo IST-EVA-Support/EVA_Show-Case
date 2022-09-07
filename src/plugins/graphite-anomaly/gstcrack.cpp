@@ -34,13 +34,40 @@ static gboolean gst_crack_set_info (GstVideoFilter * filter, GstCaps * incaps, G
 static GstFlowReturn gst_crack_transform_frame_ip (GstVideoFilter * filter, GstVideoFrame * frame);
 
 static void mapGstVideoFrame2OpenCVMat(GstCrack *crack, GstVideoFrame *frame, GstMapInfo &info);
+static void getGraphiteHoleRegion(GstCrack *crack, GstVideoFrame *frame);
 // static void getDetectedPerson(GstCrack *crack, GstBuffer* buffer);
 // static void doAlgorithm(GstCrack *crack, GstBuffer* buffer);
 // static void drawAlertArea(GstCrack *crack);
 
+struct graphiteRegion
+{
+    int x;
+    int y;
+    int width;
+    int height;
+    float confidence;
+    std::string label;
+    
+    graphiteRegion(float x, float y, int width, int height, float confidence, std::string label)
+    {
+        this->x = x;
+        this->y = y;
+        this->width = width;
+        this->height = height;
+        this->confidence = confidence;
+        this->label = label;
+    }
+    
+    void show()
+    {
+        std::cout << "label = " << label << ", (x, y, w, h) = (" << x << ", " << y << ", " << width << ", " << height << "), confidence = " << confidence << std::endl;
+    }
+};
+
 struct _GstCrackPrivate
 {
     std::string query;
+    std::vector<graphiteRegion> detectedROI_vec; 
 //     std::string alert_definition_path;
 //     std::vector<std::vector<double>> ratio_vec;
 //     std::vector<cv::Point> area_point_vec;
@@ -314,9 +341,21 @@ static GstFlowReturn gst_crack_transform_frame_ip (GstVideoFilter * filter, GstV
   // map frame data from stream to crack srcMat
   mapGstVideoFrame2OpenCVMat(crack, frame, info);
   
-  std::cout << crack->priv->query << std::endl;
-  std::vector<QueryResult> results = gst_buffer_adroi_query(frame->buffer, crack->priv->query);
-  std::cout << "\tresults size = " << results.size() << std::endl;
+  
+  // get detected region
+  getGraphiteHoleRegion(crack, frame);
+  // test saved detected region
+  if(crack->priv->detectedROI_vec.size() > 0)
+  {
+    std::cout << "target region number = " << crack->priv->detectedROI_vec.size() << std::endl;
+    for(int i = 0 ; i < crack->priv->detectedROI_vec.size() ; ++i)
+    {
+        graphiteRegion a = crack->priv->detectedROI_vec[i];
+        a.show();
+    }
+  }
+  
+  
   
 //   // get inference detected persons
 //   getDetectedPerson(crack, frame->buffer);
@@ -342,6 +381,64 @@ static void mapGstVideoFrame2OpenCVMat(GstCrack *crack, GstVideoFrame *frame, Gs
     }
     else
         crack->srcMat.data = info.data;
+}
+
+static void getGraphiteHoleRegion(GstCrack *crack, GstVideoFrame *frame)
+{
+    int width = frame->info.width;
+    int height = frame->info.height;
+    
+    crack->priv->detectedROI_vec.clear();
+    
+    if(width*height == 0)
+        return;
+    
+    //std::cout << crack->priv->query << std::endl;
+    std::vector<QueryResult> results = gst_buffer_adroi_query(frame->buffer, crack->priv->query);
+    //std::cout << "\tresults size = " << results.size() << std::endl;
+    
+    // test for getting box coordination
+    for(int i = 0; i < results.size(); ++i)
+    {
+        QueryResult queryResult = results[i];
+        //std::cout << "\t=> rois size = " << queryResult.rois.size() << std::endl;
+        for(auto roi: queryResult.rois)
+        {
+    //         std::string hash;
+    //         const std::string engineID;
+    //         const std::string ID;
+    //         const std::string category;
+    //         const float confidence;
+    //         std::vector<std::string> events;
+    //         std::vector<std::shared_ptr<ROI>> subROIs;
+    //         std::vector<std::shared_ptr<InferenceData>> datas;
+            //std::cout << "\t\thash = " << roi->hash << std::endl;
+            //std::cout << "\t\tengineID = " << roi->engineID << std::endl;
+            //std::cout << "\t\tID = " << roi->ID << std::endl;
+            //std::cout << "\t\tcategory = " << roi->category << std::endl;
+            //std::cout << "\t\tconfidence = " << roi->confidence << std::endl;
+            
+            if(roi->category == "box")
+            {
+                auto box = std::static_pointer_cast<Box>(roi);
+                auto labelInfo = std::static_pointer_cast<Classification>(roi->datas.at(0));
+                //std::cout << "\t\t(x1, y1, x2, y2) = (" << box->x1 << ", " << box->y1 << ", " << box->x2 << ", " << box->y2 << "), label = " << labelInfo->label << ", confidence = " << labelInfo->confidence << std::endl;
+                
+                // add to element private vector
+                if(labelInfo->label.compare("hole-region") == 0)
+                {
+                    int x1 = (int)(width * box->x1);
+                    int y1 = (int)(height * box->y1);
+                    int x2 = (int)(width * box->x2);
+                    int y2 = (int)(height * box->y2);
+                    int w = abs(x2 - x1) + 1;
+                    int h = abs(y2 - y1) + 1;
+                    crack->priv->detectedROI_vec.push_back(graphiteRegion(x1, y1, w, h, labelInfo->confidence, labelInfo->label));
+                }
+            }
+            
+        }
+    }
 }
 
 // static void getDetectedPerson(GstCrack *crack, GstBuffer* buffer)
