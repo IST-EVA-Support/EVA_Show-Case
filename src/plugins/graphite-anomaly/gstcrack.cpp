@@ -36,7 +36,7 @@ static GstFlowReturn gst_crack_transform_frame_ip (GstVideoFilter * filter, GstV
 static void mapGstVideoFrame2OpenCVMat(GstCrack *crack, GstVideoFrame *frame, GstMapInfo &info);
 static void getGraphiteHoleRegion(GstCrack *crack, GstVideoFrame *frame);
 // static void getDetectedPerson(GstCrack *crack, GstBuffer* buffer);
-// static void doAlgorithm(GstCrack *crack, GstBuffer* buffer);
+static void doAlgorithm(GstCrack *crack, GstBuffer* buffer);
 // static void drawAlertArea(GstCrack *crack);
 
 struct graphiteRegion
@@ -157,7 +157,7 @@ static void gst_crack_init (GstCrack *crack)
     crack->priv = (GstCrackPrivate *)gst_crack_get_instance_private (crack);
     
 
-    crack->priv->query = "//yolov4tiny[class in hole-region]";
+    crack->priv->query = "//yolov4tiny[class in holeregion]";
 //     crack->priv->area_display = false;
 //     crack->priv->person_display = false;
 //     crack->priv->alert = false;
@@ -361,7 +361,7 @@ static GstFlowReturn gst_crack_transform_frame_ip (GstVideoFilter * filter, GstV
 //   getDetectedPerson(crack, frame->buffer);
 //   
 //   // do algorithm
-//   doAlgorithm(crack, frame->buffer);
+  doAlgorithm(crack, frame->buffer);
 //   
 //   // draw alert area
 //   drawAlertArea(crack);
@@ -422,10 +422,10 @@ static void getGraphiteHoleRegion(GstCrack *crack, GstVideoFrame *frame)
             {
                 auto box = std::static_pointer_cast<Box>(roi);
                 auto labelInfo = std::static_pointer_cast<Classification>(roi->datas.at(0));
-                //std::cout << "\t\t(x1, y1, x2, y2) = (" << box->x1 << ", " << box->y1 << ", " << box->x2 << ", " << box->y2 << "), label = " << labelInfo->label << ", confidence = " << labelInfo->confidence << std::endl;
+                std::cout << "\t\t(x1, y1, x2, y2) = (" << box->x1 << ", " << box->y1 << ", " << box->x2 << ", " << box->y2 << "), label = " << labelInfo->label << ", confidence = " << labelInfo->confidence << std::endl;
                 
                 // add to element private vector
-                if(labelInfo->label.compare("hole-region") == 0)
+                if(labelInfo->label.compare("holeregion") == 0)
                 {
                     int x1 = (int)(width * box->x1);
                     int y1 = (int)(height * box->y1);
@@ -497,8 +497,27 @@ static void getGraphiteHoleRegion(GstCrack *crack, GstVideoFrame *frame)
 //     }
 // }
 
-// static void doAlgorithm(GstCrack *crack, GstBuffer* buffer)
-// {
+int aa = 0;
+static void doAlgorithm(GstCrack *crack, GstBuffer* buffer)
+{
+    // if there's no detected box in detectedROI_vec, directly returen.
+    int n_detectedROI = crack->priv->detectedROI_vec.size();
+    if(n_detectedROI  == 0)
+        return;
+    
+    for(int i = 0; i < n_detectedROI; ++i)
+    {
+        graphiteRegion box = crack->priv->detectedROI_vec[i];
+        cv::Mat dstMat = crack->srcMat(cv::Rect(box.x, box.y, box.width, box.height));
+        cv::Mat gray_dstMat;
+        cv::cvtColor(dstMat, gray_dstMat, cv::COLOR_BGR2GRAY);
+        cv::Mat cannyMat;
+        cv::Canny(gray_dstMat, cannyMat, 50, 200, 3);
+        
+//         cv::imwrite("crack-images/MVI_2783/" + std::to_string(aa) + ".png", dstMat);
+        aa++;
+    }
+    
 //     // If no region, return directly. Points must larger than 2.
 //     if(crack->priv->area_point_vec.size() <= 2)
 //         return;
@@ -540,7 +559,7 @@ static void getGraphiteHoleRegion(GstCrack *crack, GstVideoFrame *frame)
 //         }
 //         
 //     }
-// }
+}
 
 // static void drawAlertArea(GstCrack *crack)
 // {
