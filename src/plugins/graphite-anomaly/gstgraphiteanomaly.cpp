@@ -18,7 +18,7 @@
 #endif
 
 #include "gstcrack.h"
-// #include "gstgeofencefoot.h"
+#include "gstdrop.h"
 
 GST_DEBUG_CATEGORY_STATIC (graphiteanomaly_debug);
 #define GST_CAT_DEFAULT graphiteanomaly_debug
@@ -29,8 +29,8 @@ static gboolean plugin_init (GstPlugin * plugin)
     GST_DEBUG_CATEGORY_INIT (graphiteanomaly_debug, "[graphiteanomaly debug]", 0, "graphiteanomaly plugins");
     if (!gst_element_register (plugin, "crack", GST_RANK_NONE, GST_TYPE_CRACK))
         return FALSE;
-//     if(!gst_element_register (plugin, "geofencefoot", GST_RANK_NONE, GST_TYPE_GEOFENCEFOOT))
-//         return FALSE;
+    if(!gst_element_register (plugin, "drop", GST_RANK_NONE, GST_TYPE_DROP))
+        return FALSE;
     return TRUE;
 }
 //define the plugin information

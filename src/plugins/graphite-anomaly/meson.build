@@ -103,7 +103,7 @@ gstroimeta_dep = declare_dependency(
 #  )
   
 # Plugin geofence
-plugin_sources = ['gstcrack.cpp', '../../utils/utils.cpp', 'gstgraphiteanomaly.cpp']
+plugin_sources = ['gstcrack.cpp', 'gstdrop.cpp', '../../utils/utils.cpp', 'gstgraphiteanomaly.cpp']
 
 adedge = library('graphiteanomaly',
   plugin_sources,
