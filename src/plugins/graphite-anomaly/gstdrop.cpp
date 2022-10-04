@@ -384,7 +384,7 @@ static gboolean gst_drop_set_info (GstVideoFilter * filter, GstCaps * incaps, Gs
   
   // generate the area mask
   drop->areaMaskMat = cv::Mat::zeros(height, width, CV_8UC1);
-  cv::fillPoly(drop->areaMaskMat, drop->priv->area_point_vec, cv::Scalar(255, 255, 255));
+  cv::fillPoly(drop->areaMaskMat, cv::Mat(drop->priv->area_point_vec), cv::Scalar(255, 255, 255));
   // convert the area mask from gray(CV_8UC1) to RGB space(CV_8UC3).
   cvtColor(drop->areaMaskMat, drop->areaMaskMat, cv::COLOR_GRAY2RGB);
 //   imwrite("foreground/area-mask.jpg", drop->areaMaskMat);
