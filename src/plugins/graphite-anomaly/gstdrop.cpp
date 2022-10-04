@@ -656,10 +656,10 @@ static void doAlgorithm(GstDrop *drop, GstBuffer* buffer)
     }
     
     
-    cv::Mat bgMat;
-    drop->pBackSub->getBackgroundImage(bgMat);
-    imwrite("background/" + std::to_string(i) + "-bg.jpg", bgMat);
-    imwrite("background/" + std::to_string(i) + "-fg.jpg", drop->foregroundMat);
+//     cv::Mat bgMat;
+//     drop->pBackSub->getBackgroundImage(bgMat);
+//     imwrite("background/" + std::to_string(i) + "-bg.jpg", bgMat);
+//     imwrite("background/" + std::to_string(i) + "-fg.jpg", drop->foregroundMat);
     
     
     // median filter to remove noise
