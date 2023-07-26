@@ -9,7 +9,8 @@ import platform
 
 import threading
 import gst_admeta as admeta
-from gi.repository import Gst, GObject, GLib, GstVideo
+import adroi
+from gi.repository import Gst, GObject, GLib, GstVideo, GstBase
 
 
 def voice_alert(content):
@@ -37,7 +38,8 @@ def gst_video_caps_make(fmt):
                                                                                                                            "framerate = " + GstVideo.VIDEO_FPS_RANGE
 
 
-class VoiceAlert(Gst.Element):
+#class VoiceAlert(Gst.Element):
+class VoiceAlert(GstBase.BaseTransform):
     GST_PLUGIN_NAME = 'voice_alert'
 
     __gstmetadata__ = ("Voice Alert",
@@ -59,31 +61,35 @@ class VoiceAlert(Gst.Element):
 
     __gproperties__ = {
         "alert-type": (str, "Alert-type", "Alert type string name.", "BreakIn", GObject.ParamFlags.READWRITE),
-        "speech-content": (str, "Speech-content", "Content of the speech", "", GObject.ParamFlags.READWRITE)}
+        "speech-content": (str, "Speech-content", "Content of the speech", "", GObject.ParamFlags.READWRITE),
+        "query": (str, "Query", "ROI query.", "", GObject.ParamFlags.READWRITE)}
 
     def __init__(self):
         # Initialize properties before Base Class initialization
         self.alertType = ""
         self.speechContent = "Warning Alert"
+        self.query = ""
         self.send_time = time.time()
         self.alert_duration = 5
 
         super(VoiceAlert, self).__init__()
 
-        self.sinkpad = Gst.Pad.new_from_template(self._sinkpadtemplate, 'sink')
+        #self.sinkpad = Gst.Pad.new_from_template(self._sinkpadtemplate, 'sink')
         self.sinkpad.set_chain_function_full(self.chainfunc, None)
         self.sinkpad.set_chain_list_function_full(self.chainlistfunc, None)
-        self.sinkpad.set_event_function_full(self.eventfunc, None)
-        self.add_pad(self.sinkpad)
+        #self.sinkpad.set_event_function_full(self.eventfunc, None)
+        #self.add_pad(self.sinkpad)
 
-        self.srcpad = Gst.Pad.new_from_template(self._srcpadtemplate, 'src')
-        self.srcpad.set_event_function_full(self.srceventfunc, None)
-        self.srcpad.set_query_function_full(self.srcqueryfunc, None)
-        self.add_pad(self.srcpad)
+        #self.srcpad = Gst.Pad.new_from_template(self._srcpadtemplate, 'src')
+        #self.srcpad.set_event_function_full(self.srceventfunc, None)
+        #self.srcpad.set_query_function_full(self.srcqueryfunc, None)
+        #self.add_pad(self.srcpad)
 
     def do_get_property(self, prop: GObject.GParamSpec):
         if prop.name == 'alert-type':
             return self.alertType
+        elif prop.name == 'query':
+            return self.query
         elif prop.name == 'speech-content':
             return self.speechContent
         else:
@@ -92,26 +98,48 @@ class VoiceAlert(Gst.Element):
     def do_set_property(self, prop: GObject.GParamSpec, value):
         if prop.name == 'alert-type':
             self.alertType = str(value)
+        elif prop.name == 'query':
+            self.query = str(value)
         elif prop.name == 'speech-content':
             self.speechContent = str(value)
         else:
             raise AttributeError('unknown property %s' % prop.name)
 
     def chainfunc(self, pad: Gst.Pad, parent, buff: Gst.Buffer) -> Gst.FlowReturn:
-        boxes = admeta.get_detection_box(buff, 0)
+        if self.query is "":
+            boxes = admeta.get_detection_box(buff, 0)
 
-        with boxes as det_box:
-            if det_box is not None:
-                for box in det_box:
-                    metaString = box.meta.decode('utf-8')
-                    #print(metaString)
-                    if self.alertType in metaString:  # Check if this is alert type
+            with boxes as det_box:
+                if det_box is not None:
+                    for box in det_box:
+                        metaString = box.meta.decode('utf-8')
+                        #print(metaString)
+                        if self.alertType in metaString:  # Check if this is alert type
+                            if time.time() - self.send_time > self.alert_duration:  # Check if out of duration
+                                # print("In python element, meta information = ", metaString)
+                                self.send_time = time.time()
+                                voice_thread = threading.Thread(target=voice_alert,
+                                                                args=(self.speechContent,))
+                                voice_thread.start()
+        else:
+            qrs = adroi.gst_buffer_adroi_query(hash(buff), self.query)
+            if qrs is None or len(qrs) == 0:
+                print("query is empty from frame meta in mail_alert.")
+                return self.srcpad.push(buff)
+            for roi in qrs[0].rois:
+                if roi.category == 'box':
+                    if len(roi.events) > 0:
                         if time.time() - self.send_time > self.alert_duration:  # Check if out of duration
-                            # print("In python element, meta information = ", metaString)
+                            eventString = roi.events[0];
+                            #print("In emai_alert, event information = ", eventString)
                             self.send_time = time.time()
-                            voice_thread = threading.Thread(target=voice_alert,
-                                                            args=(self.speechContent,))
-                            voice_thread.start()
+                            if self.alertType in eventString:  # Check if this is alert type
+                                # print("In python element, meta information = ", metaString)
+                                self.send_time = time.time()
+                                voice_thread = threading.Thread(target=voice_alert,
+                                                                args=(self.speechContent,))
+                                voice_thread.start()
+
         return self.srcpad.push(buff)
 
     def chainlistfunc(self, pad: Gst.Pad, parent, buff_list: Gst.BufferList) -> Gst.FlowReturn:

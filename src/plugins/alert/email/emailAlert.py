@@ -10,7 +10,8 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 import threading
 import gst_admeta as admeta
-from gi.repository import Gst, GObject, GLib, GstVideo
+import adroi
+from gi.repository import Gst, GObject, GLib, GstVideo, GstBase
 
 
 def get_alert_message_from_meta_string(meta_string, alert_type):
@@ -34,7 +35,7 @@ def send_mail_image(txt_msg, sender, pwd, receiver, img):
     smtp = smtplib.SMTP("smtp.gmail.com", 587)
     smtp.ehlo()
     smtp.starttls()
-    smtp.login(sender, pwd)
+    smtp.login(sender, 'vbcsekwzsxxbgymh')
     status = smtp.send_message(content)
     if status == {}:
         print("<Alert Mail Sent Successfully!>")
@@ -67,7 +68,8 @@ def gst_video_caps_make(fmt):
                                                                                                                            "framerate = " + GstVideo.VIDEO_FPS_RANGE
 
 
-class EmailAlert(Gst.Element):
+#class EmailAlert(Gst.Element):
+class EmailAlert(GstBase.BaseTransform):
     GST_PLUGIN_NAME = 'email_alert'
 
     __gstmetadata__ = ("Email Alert",
@@ -92,6 +94,7 @@ class EmailAlert(Gst.Element):
         "sender-address": (str, "Sender-address", "Sender's email address.", "", GObject.ParamFlags.READWRITE),
         "receiver-address": (str, "Receiver-address", "Receiver's email address.", "", GObject.ParamFlags.READWRITE),
         "sender-pwd": (str, "Sender-password", "Sender's email password.", "", GObject.ParamFlags.READWRITE),
+        "query": (str, "Query", "ROI query.", "", GObject.ParamFlags.READWRITE),
         "attach-event-image": (bool, "Attach-event-image", "Attach event image to the mail.", True, GObject.ParamFlags.READWRITE)}
 
     def __init__(self):
@@ -100,6 +103,7 @@ class EmailAlert(Gst.Element):
         self.senderAddress = "adlink.eva.alert@gmail.com"
         self.receiverAddress = ""
         self.senderPwd = ""
+        self.query = ""
         self.attachEventImage = True
         self.send_time = time.time()
         self.alert_duration = 5
@@ -107,16 +111,16 @@ class EmailAlert(Gst.Element):
 
         super(EmailAlert, self).__init__()
 
-        self.sinkpad = Gst.Pad.new_from_template(self._sinkpadtemplate, 'sink')
+        #self.sinkpad = Gst.Pad.new_from_template(self._sinkpadtemplate, 'sink')
         self.sinkpad.set_chain_function_full(self.chainfunc, None)
         self.sinkpad.set_chain_list_function_full(self.chainlistfunc, None)
-        self.sinkpad.set_event_function_full(self.eventfunc, None)
-        self.add_pad(self.sinkpad)
+        #self.sinkpad.set_event_function_full(self.eventfunc, None)
+        #self.add_pad(self.sinkpad)
 
-        self.srcpad = Gst.Pad.new_from_template(self._srcpadtemplate, 'src')
-        self.srcpad.set_event_function_full(self.srceventfunc, None)
-        self.srcpad.set_query_function_full(self.srcqueryfunc, None)
-        self.add_pad(self.srcpad)
+        #self.srcpad = Gst.Pad.new_from_template(self._srcpadtemplate, 'src')
+        #self.srcpad.set_event_function_full(self.srceventfunc, None)
+        #self.srcpad.set_query_function_full(self.srcqueryfunc, None)
+        #self.add_pad(self.srcpad)
 
     def do_get_property(self, prop: GObject.GParamSpec):
         if prop.name == 'alert-type':
@@ -127,6 +131,8 @@ class EmailAlert(Gst.Element):
             return self.receiverAddress
         elif prop.name == 'sender-pwd':
             return self.senderPwd
+        elif prop.name == 'query':
+            return self.query
         elif prop.name == 'attach-event-image':
             return self.attachEventImage
         else:
@@ -141,29 +147,66 @@ class EmailAlert(Gst.Element):
             self.receiverAddress = str(value)
         elif prop.name == 'sender-pwd':
             self.senderPwd = str(value)
+        elif prop.name == 'query':
+            self.query = str(value)
         elif prop.name == 'attach-event-image':
             self.attachEventImage = bool(value)
         else:
             raise AttributeError('unknown property %s' % prop.name)
 
     def chainfunc(self, pad: Gst.Pad, parent, buff: Gst.Buffer) -> Gst.FlowReturn:
-        boxes = admeta.get_detection_box(buff, 0)
+    #def do_transform_ip(self, buff: Gst.Buffer) -> Gst.FlowReturn:
+        if self.query == "": 
+            boxes = admeta.get_detection_box(buff, 0)
 
-        with boxes as det_box:
-            if det_box is not None:
-                for box in det_box:
-                    metaString = box.meta.decode('utf-8')
-                    if self.alertType in metaString:  # Check if this is alert type
+            with boxes as det_box:
+                if det_box is not None:
+                    for box in det_box:
+                        metaString = box.meta.decode('utf-8')
+                        if self.alertType in metaString:  # Check if this is alert type
+                            if time.time() - self.send_time > self.alert_duration:  # Check if out of duration
+                                metaString = get_alert_message_from_meta_string(metaString, self.alertType)
+                                #print("In python element, meta information = ", metaString)
+                                self.send_time = time.time()
+                                if self.senderPwd == "":
+                                    self.senderPwd = "xjdtukuldxunugdl"
+
+                                if not self.attachEventImage:
+                                    mail_thread = threading.Thread(target=send_mail_txt,
+                                                                args=(metaString + self.ADLINK_MESSAGE,
+                                                                        self.senderAddress,
+                                                                        self.senderPwd,
+                                                                        self.receiverAddress))
+                                    mail_thread.start()
+                                else:
+                                    img = gst_cv_helper.pad_and_buffer_to_numpy(pad, buff, ro=False)
+                                    uint8_img = np.uint8(img)
+                                    mail_thread = threading.Thread(target=send_mail_image,
+                                                                args=(metaString + self.ADLINK_MESSAGE,
+                                                                        self.senderAddress,
+                                                                        self.senderPwd,
+                                                                        self.receiverAddress,
+                                                                        uint8_img))
+                                    mail_thread.start()
+        else:
+            qrs = adroi.gst_buffer_adroi_query(hash(buff), self.query)
+            if qrs is None or len(qrs) == 0:
+                print("query is empty from frame meta in mail_alert.")
+                return self.srcpad.push(buff)
+            
+            for roi in qrs[0].rois:
+                if roi.category == 'box':
+                    if len(roi.events) > 0:
                         if time.time() - self.send_time > self.alert_duration:  # Check if out of duration
-                            metaString = get_alert_message_from_meta_string(metaString, self.alertType)
-                            #print("In python element, meta information = ", metaString)
+                            eventString = roi.events[0];
+                            #print("In emai_alert, event information = ", eventString)
                             self.send_time = time.time()
                             if self.senderPwd == "":
                                 self.senderPwd = "xjdtukuldxunugdl"
 
                             if not self.attachEventImage:
                                 mail_thread = threading.Thread(target=send_mail_txt,
-                                                               args=(metaString + self.ADLINK_MESSAGE,
+                                                            args=(eventString + self.ADLINK_MESSAGE,
                                                                     self.senderAddress,
                                                                     self.senderPwd,
                                                                     self.receiverAddress))
@@ -172,13 +215,15 @@ class EmailAlert(Gst.Element):
                                 img = gst_cv_helper.pad_and_buffer_to_numpy(pad, buff, ro=False)
                                 uint8_img = np.uint8(img)
                                 mail_thread = threading.Thread(target=send_mail_image,
-                                                               args=(metaString + self.ADLINK_MESSAGE,
-                                                                     self.senderAddress,
-                                                                     self.senderPwd,
-                                                                     self.receiverAddress,
-                                                                     uint8_img))
+                                                            args=(eventString + self.ADLINK_MESSAGE,
+                                                                    self.senderAddress,
+                                                                    self.senderPwd,
+                                                                    self.receiverAddress,
+                                                                    uint8_img))
                                 mail_thread.start()
+                    
         return self.srcpad.push(buff)
+        #return Gst.FlowReturn.OK
 
     def chainlistfunc(self, pad: Gst.Pad, parent, buff_list: Gst.BufferList) -> Gst.FlowReturn:
         return self.srcpad.push(buff_list.get(0))

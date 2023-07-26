@@ -31,8 +31,8 @@ gst_video = declare_dependency(
 	)
    
 ## Declare OpenCV4 dependency
-#opencv_dir = '/usr'
-opencv_dir = get_option('opencv_dir')
+opencv_dir = '/usr'
+#opencv_dir = get_option('opencv_dir')
 libs_cv = []
 req_cv_libs = ['core', 'imgproc', 'video', 'videoio', 'imgcodecs', 'highgui']
 inc_cv = ''
@@ -76,14 +76,29 @@ gstmeta_dep = declare_dependency(
 )
 #### End to declare gstmeta dependency
 
+## add gstadroimeta
+libs_meta2 = []
+libs_meta2 += cc.find_library('gstadroimeta',
+                required : true,
+                dirs : [join_paths(eva_root_dir, 'lib')])
+
+
+inc_meta2 = include_directories(join_paths(eva_root_dir, 'include'))
+
+gstmeta2_dep = declare_dependency(
+  dependencies : libs_meta2,
+  include_directories: inc_meta2,
+)
+#### End to declare gstmeta dependency
+
 #library('geofencebase',
 #    'gstgeofencebase.cpp',
-#    dependencies : [gst, gst_base, gst_video, cv_dep, gstmeta_dep],
+#    dependencies : [gst, gst_base, gst_video, cv_dep, gstmeta_dep, gstmeta2_dep],
 #  )
 
 #library('geofencefoot',
 #    'gstgeofencefoot.cpp',
-#    dependencies : [gst, gst_base, gst_video, cv_dep, gstmeta_dep],
+#    dependencies : [gst, gst_base, gst_video, cv_dep, gstmeta_dep, gstmeta2_dep],
 #  )
   
 # Plugin geofence
@@ -93,7 +108,7 @@ adedge = library('geofence',
   plugin_sources,
   #cpp_args: plugin_cpp_args,
   include_directories : [join_paths('..', '..', 'utils')],
-  dependencies : [gst, gst_base, gst_video, cv_dep, gstmeta_dep],
+  dependencies : [gst, gst_base, gst_video, cv_dep, gstmeta_dep, gstmeta2_dep],
   #install : true,
   #install_dir : plugins_install_dir,
 )
