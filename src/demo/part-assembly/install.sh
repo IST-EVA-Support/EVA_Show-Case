@@ -25,7 +25,7 @@ while getopts "m:g:?" optname
 
 
 # echo "modelPruned = ${modelPruned}"
-# echo "gpuArchChecker = ${gpuArchChecker}"
+echo "gpuArchChecker = ${gpuArchChecker}"
 
 LB='\033[1;33m'
 NC='\033[0m' # No Color
@@ -48,8 +48,10 @@ message_out "sudo String = ${sudoString}"
 
 
 message_out "Start installing..."
+
 # build required plugin
 message_out "Building assembly plugin..."
+${sudoString} apt update
 ${sudoString} apt -y install libgstreamer-plugins-base1.0-dev
 ../../plugins/assembly/assembly-build.sh
 
@@ -173,6 +175,9 @@ then
     if [[ $(python jetsonInfo.py | grep -i "Xavier") != "" ]]
     then
         GPU_ARCHS="72"
+    elif [[ $(python jetsonInfo.py | grep -i "JNX") != "" ]]
+    then
+        GPU_ARCHS="72"
     elif [[ $(python jetsonInfo.py | grep -i "TX2") != "" ]]
     then
         GPU_ARCHS="62"
@@ -191,7 +196,11 @@ then
     #tensorRT_version=$(python jetsonInfo.py | grep "TensorRT" | cut -c 1-11 --complement | cut -d . -f 1-3)
     tensorRT_version=$(dpkg -l | grep "TensorRT runtime libraries" | awk '{print $3}' | cut -f 1 -d "+" | cut -f 1 -d "-")
     jetson_name=$(python jetsonInfo.py | grep "NVIDIA Jetson" | cut -c 1-14 --complement)
-    jetpack_version=$(python jetsonInfo.py | grep "JetPack" | cut -c 1-22,26-27 --complement | tr -d .)
+    if [${jetson_name} == ""]
+    then
+        jetson_name=$(python jetsonInfo.py | grep "NVIDIA" | cut -c 1-7 --complement)
+    fi
+    jetpack_version=$(python jetsonInfo.py | grep "JetPack" | cut -c 1-22,26-27 --complement | tr -d . | tr -d ' ' | tr -d ])
     cd ..
     rm -fr jetsonUtilities
     
@@ -277,9 +286,9 @@ if [[ " ${arch_array[*]} " =~ " ${GPU_ARCHS} " ]]; then
     fi
     
     message_out "Build OSS finished, and exit."
-    
+
     message_out "Backup original libnvinfer_plugin.so.7.x.y/libnvinfer_plugin.so.8.x.y and replacing with the rebuild one"
-    backup_folder=${HOME}/libnvinfer_plugin_bak
+    backup_folder=${current_path}/libnvinfer_plugin_bak
     backup_file=$(date +'%Y-%m-%d_%H-%M-%S')
 #     backup_file_path="${backup_folder}/${original_plugin_name}_${backup_file}.bak"
     if [ ! -e backup_folder ]
@@ -365,11 +374,12 @@ else
     message_out "Not supported arch and exit installation"
     exit
 fi
+message_out "end copy libnvinfer_plugin.so.x.x.x"
 
 # Install TAO Converter to convert etlt file to engine file
 message_out "Start to Converting..."
 cd $current_path
-arch_jetson_name=("TX2" "Xavier NX (Developer Kit Version)" "AGX Xavier [32GB]")
+arch_jetson_name=("TX2" "Xavier NX (Developer Kit Version)" "AGX Xavier [32GB]" "NVIDIA NEON-2000-JNX")
 message_out "jetson_name = ${jetson_name}"
 if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
     if [ "$jetpack_version" == "44" ]
@@ -420,6 +430,31 @@ if [[ " ${arch_jetson_name[*]} " =~ " ${jetson_name} " ]]; then
         
         message_out "Converting pruned model..."
         ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
+    elif [ "$jetpack_version" == "46" ]
+    then
+        message_out "supported jetson device, jetpack 4.6 and start to convert etlt file..."
+        #download tao-converter binary
+        wget https://developer.nvidia.com/tao-converter-jp4.6
+        
+        # unzip it, then delete the zip file
+        ${sudoString} apt-get -y install unzip
+        unzip -o tao-converter-jp4.6
+        rm tao-converter-jp4.6
+        cd tao-converter-jp46-trt8.0.1.6
+        ${sudoString} chmod +x tao-converter
+        
+        #Install openssl library
+        ${sudoString} apt-get -y install libssl-dev
+        #Export the following environment variables
+        export TRT_LIB_PATH=”/usr/lib/aarch64-linux-gnu”
+        export TRT_INC_PATH=”/usr/include/aarch64-linux-gnu”
+        
+        message_out "Converting original model..."
+        ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_3400_fp32.engine ../model/dssd_resnet18_epoch_3400.etlt
+        
+        message_out "Converting pruned model..."
+        ./tao-converter -k NTBzNmJ0b2s3a3VpbGxhNjBqNDN1bmU4Y2o6MDY4YjM3NmUtZTIxYy00ZjQ5LWIzMTYtMmRiNmJhMDBiOGVm -d 3,512,512 -o NMS -m 1 -e ../model/dssd_resnet18_epoch_810_fp32.engine ../model/dssd_resnet18_epoch_810.etlt
+
     elif [ "$sudoString" == " " ] # in EVA container and TensorRT 8.2.1
     then
         message_out "supported jetson device, jetpack 4.6 and start to convert etlt file..."
