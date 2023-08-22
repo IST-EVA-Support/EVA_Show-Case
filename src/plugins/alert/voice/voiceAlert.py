@@ -106,7 +106,7 @@ class VoiceAlert(GstBase.BaseTransform):
             raise AttributeError('unknown property %s' % prop.name)
 
     def chainfunc(self, pad: Gst.Pad, parent, buff: Gst.Buffer) -> Gst.FlowReturn:
-        if self.query is "":
+        if self.query == "":
             boxes = admeta.get_detection_box(buff, 0)
 
             with boxes as det_box:
@@ -124,16 +124,18 @@ class VoiceAlert(GstBase.BaseTransform):
         else:
             qrs = adroi.gst_buffer_adroi_query(hash(buff), self.query)
             if qrs is None or len(qrs) == 0:
-                print("query is empty from frame meta in mail_alert.")
+                print("query is empty from frame meta in voice_alert.")
                 return self.srcpad.push(buff)
             for roi in qrs[0].rois:
                 if roi.category == 'box':
                     if len(roi.events) > 0:
                         if time.time() - self.send_time > self.alert_duration:  # Check if out of duration
-                            eventString = roi.events[0];
+                            #eventString = roi.events[0];
+                            relatedEvents = [s for s in roi.events if self.alertType in s]
                             #print("In emai_alert, event information = ", eventString)
-                            self.send_time = time.time()
-                            if self.alertType in eventString:  # Check if this is alert type
+                            #print("In voice_alert, related events information = ", relatedEvents)
+                            
+                            for metaString in relatedEvents:
                                 # print("In python element, meta information = ", metaString)
                                 self.send_time = time.time()
                                 voice_thread = threading.Thread(target=voice_alert,

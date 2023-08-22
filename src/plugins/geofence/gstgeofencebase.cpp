@@ -388,14 +388,17 @@ static void getDetectedPerson(GstGeofencebase *geofencebase, GstBuffer* buffer)
         }
         
         std::vector<QueryResult> results = gst_buffer_adroi_query(buffer, geofencebase->query);
-        for(unsigned int i = 0; i < results.size(); ++i)
+//         std::cout << "std::vector<QueryResult> results size = " << results.size() << std::endl;
+        for(unsigned int result_index = 0; result_index < results.size(); ++result_index)
         {
-            QueryResult queryResult = results[i];
-            for(auto roi: queryResult.rois)
+            QueryResult queryResult = results[result_index];
+//             std::cout << "rois size = " << queryResult.rois.size() << std::endl;
+            //for(auto roi: queryResult.rois)
+            for(unsigned int i = 0 ; i < queryResult.rois.size() ; ++i)
             {
-                if(roi->category == "box")
+                if(queryResult.rois[i]->category == "box")
                 {
-                    auto box = std::static_pointer_cast<Box>(roi);
+                    auto box = std::static_pointer_cast<Box>(queryResult.rois[i]);
                     
                     int x1 = (int)(width * box->x1);
                     int y1 = (int)(height * box->y1);
@@ -523,12 +526,15 @@ static void doAlgorithm(GstGeofencebase *geofencebase, GstBuffer* buffer, GstPad
                 return;
             }
             
-            auto qrs = f_meta->frame->query("//");
-            if(qrs[0].rois.size() > 0)
+            auto qrs = f_meta->frame->query(geofencebase->query);
+            if(qrs.size() > 0)
             {
-                std::string alertMessage = "," + std::string(geofencebase->priv->alertType) + "<" + return_current_time_and_date() + ">";
-                //qrs[0].rois[0]->engineID = std::string(geofencebase->engineID); //engineID in ROI is constant can not directly set.
-                qrs[0].rois[0]->events.push_back(alertMessage);
+                for(int i = 0; i < geofencebase->priv->map_breakin_person_vec.size(); ++i)
+                {
+                    int id = geofencebase->priv->map_breakin_person_vec[i];
+                    std::string alertMessage = std::string(geofencebase->priv->alertType) + "<" + return_current_time_and_date() + ">";
+                    qrs[0].rois[geofencebase->priv->map_vec[id]]->events.push_back(alertMessage);
+                }
             }
         }
         else

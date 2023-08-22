@@ -19,6 +19,7 @@ def get_alert_message_from_meta_string(meta_string, alert_type):
     for content in alert_message_list:
         if alert_type in content:
             return content
+    return ""
 
 
 
@@ -191,36 +192,40 @@ class EmailAlert(GstBase.BaseTransform):
         else:
             qrs = adroi.gst_buffer_adroi_query(hash(buff), self.query)
             if qrs is None or len(qrs) == 0:
-                print("query is empty from frame meta in mail_alert.")
+                print("query is empty from frame meta in email_alert.")
                 return self.srcpad.push(buff)
             
             for roi in qrs[0].rois:
                 if roi.category == 'box':
                     if len(roi.events) > 0:
                         if time.time() - self.send_time > self.alert_duration:  # Check if out of duration
-                            eventString = roi.events[0];
+                            #eventString = roi.events[0];
+                            relatedEvents = [s for s in roi.events if self.alertType in s]
                             #print("In emai_alert, event information = ", eventString)
-                            self.send_time = time.time()
-                            if self.senderPwd == "":
-                                self.senderPwd = "xjdtukuldxunugdl"
+                            #print("In emai_alert, related events information = ", relatedEvents)
+                            
+                            for metaString in relatedEvents:
+                                self.send_time = time.time()
+                                if self.senderPwd == "":
+                                    self.senderPwd = "xjdtukuldxunugdl"
 
-                            if not self.attachEventImage:
-                                mail_thread = threading.Thread(target=send_mail_txt,
-                                                            args=(eventString + self.ADLINK_MESSAGE,
-                                                                    self.senderAddress,
-                                                                    self.senderPwd,
-                                                                    self.receiverAddress))
-                                mail_thread.start()
-                            else:
-                                img = gst_cv_helper.pad_and_buffer_to_numpy(pad, buff, ro=False)
-                                uint8_img = np.uint8(img)
-                                mail_thread = threading.Thread(target=send_mail_image,
-                                                            args=(eventString + self.ADLINK_MESSAGE,
-                                                                    self.senderAddress,
-                                                                    self.senderPwd,
-                                                                    self.receiverAddress,
-                                                                    uint8_img))
-                                mail_thread.start()
+                                if not self.attachEventImage:
+                                    mail_thread = threading.Thread(target=send_mail_txt,
+                                                                args=(metaString + self.ADLINK_MESSAGE,
+                                                                        self.senderAddress,
+                                                                        self.senderPwd,
+                                                                        self.receiverAddress))
+                                    mail_thread.start()
+                                else:
+                                    img = gst_cv_helper.pad_and_buffer_to_numpy(pad, buff, ro=False)
+                                    uint8_img = np.uint8(img)
+                                    mail_thread = threading.Thread(target=send_mail_image,
+                                                                args=(metaString + self.ADLINK_MESSAGE,
+                                                                        self.senderAddress,
+                                                                        self.senderPwd,
+                                                                        self.receiverAddress,
+                                                                        uint8_img))
+                                    mail_thread.start()
                     
         return self.srcpad.push(buff)
         #return Gst.FlowReturn.OK

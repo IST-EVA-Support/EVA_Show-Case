@@ -564,12 +564,16 @@ static void doAlgorithm(Gstgeofencefoot *geofencefoot, GstBuffer* buffer, GstPad
                 GST_ERROR("Can not acquire adlink ROI batch metadata");
                 return;
             }
-            
-            auto qrs = f_meta->frame->query("//");
-            if(qrs[0].rois.size() > 0)
+
+            auto qrs = f_meta->frame->query(geofencefoot->query);
+            if(qrs.size() > 0)
             {
-                std::string alertMessage = "," + std::string(geofencefoot->priv->alertType) + "<" + return_current_time_and_date() + ">";
-                qrs[0].rois[0]->events.push_back(alertMessage);
+                for(int i = 0; i < geofencefoot->priv->map_breakin_person_vec.size(); ++i)
+                {
+                    int id = geofencefoot->priv->map_breakin_person_vec[i];
+                    std::string alertMessage = std::string(geofencefoot->priv->alertType) + "<" + return_current_time_and_date() + ">";
+                    qrs[0].rois[geofencefoot->priv->map_vec[id]]->events.push_back(alertMessage);
+                }
             }
         }
         else

@@ -12,7 +12,9 @@
 #include <regex>
 #include <string>
 #include <vector>
-#include "gstadmeta.h"
+#include "gstadmeta.h" // for metadata version 1
+#include <gstadroi_frame.h> // for metadata version 2
+#include <gstadroi_batch.h> // for metadata version 2
 
 //#define DEFAULT_ALERT_TYPE "Wear"
 //#define DEFAULT_TARGET_TYPE "NONE"
@@ -34,7 +36,8 @@ static GstFlowReturn gst_weardetection_transform_frame_ip (GstVideoFilter * filt
 
 static void mapGstVideoFrame2OpenCVMat(Gstweardetection *weardetection, GstVideoFrame *frame, GstMapInfo &info);
 static void getDetectedPerson(Gstweardetection *weardetection, GstBuffer* buffer);
-static void doAlgorithm(Gstweardetection *weardetection, GstBuffer* buffer);
+static void wearDetect(Gstweardetection *weardetection);
+static void doAlgorithm(Gstweardetection *weardetection, GstBuffer* buffer, GstPad* pad);
 static void drawAlertInfo(Gstweardetection *weardetection);
 
 struct _GstweardetectionPrivate
@@ -45,6 +48,7 @@ struct _GstweardetectionPrivate
     std::vector<std::vector<cv::Point>> upper_person_vec;
     std::vector<std::vector<cv::Point>> foot_vec;
     std::vector<std::vector<cv::Point>> coat_vec;
+    std::vector<int> map_notWearCoat_person_vec;
     bool wear_display;
     bool alert_display;
     bool alert;
@@ -66,6 +70,8 @@ enum
     PROP_WEAR_DISPLAY,
     PROP_ALERT_DISPLAY,
     PROP_NOT_WEAR_ACCUMULATE_COUNT,
+    PROP_ENGINE_ID,
+    PROP_QUERY,
 };
 
 std::vector<std::string> split(std::string inputString)
@@ -154,6 +160,12 @@ static void gst_weardetection_class_init (GstweardetectionClass * klass)
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_DISPLAY,
                                    g_param_spec_boolean("alert-display", "alert-display", "Show alert box in frame.", TRUE, G_PARAM_READWRITE));
   
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ENGINE_ID,
+                                   g_param_spec_string ("engine-id", "engine-id", "The Inference engine ID, if empty will use plugin name as engine ID.", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+  
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_QUERY,
+                                   g_param_spec_string ("query", "query", "ROI query", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+  
   gobject_class->dispose = gst_weardetection_dispose;
   gobject_class->finalize = gst_weardetection_finalize;
   base_transform_class->start = GST_DEBUG_FUNCPTR (gst_weardetection_start);
@@ -176,9 +188,11 @@ static void gst_weardetection_init (Gstweardetection *weardetection)
     weardetection->priv->alertType = "Wear\0";//DEFAULT_ALERT_TYPE;
     weardetection->priv->coatNotDetectedCounter = 0;
     weardetection->priv->threshold_coatNotDetectedCounter = 20;
-	weardetection->priv->noPeopeleDetectedCounter = 0;
+    weardetection->priv->noPeopeleDetectedCounter = 0;
     weardetection->priv->wear_display = true;
     weardetection->priv->alert_display = true;
+    weardetection->engineID = "";
+    weardetection->query = "";
 }
 
 void gst_weardetection_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
@@ -216,6 +230,16 @@ void gst_weardetection_set_property (GObject * object, guint property_id, const 
         weardetection->priv->threshold_coatNotDetectedCounter = g_value_get_int(value);        
         break;
     }
+    case PROP_ENGINE_ID:
+    {
+        weardetection->engineID = g_value_dup_string(value);
+        break;  
+    }
+    case PROP_QUERY:
+    {
+        weardetection->query = g_value_dup_string(value);
+        break;  
+    }
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
@@ -246,6 +270,12 @@ void gst_weardetection_get_property (GObject * object, guint property_id, GValue
        break;    
     case PROP_NOT_WEAR_ACCUMULATE_COUNT:
        g_value_set_int(value, weardetection->priv->threshold_coatNotDetectedCounter);
+       break;
+    case PROP_ENGINE_ID:
+       g_value_set_string (value, weardetection->engineID);
+       break;
+    case PROP_QUERY:
+       g_value_set_string (value, weardetection->query);
        break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -326,13 +356,10 @@ static GstFlowReturn gst_weardetection_transform_frame_ip (GstVideoFilter * filt
   getDetectedPerson(weardetection, frame->buffer);
   
   // do algorithm
-  doAlgorithm(weardetection, frame->buffer);  
+  doAlgorithm(weardetection, frame->buffer, filter->element.sinkpad);  
   
   // draw alert person
   drawAlertInfo(weardetection);
-  
-  if(weardetection->priv->alert == true)
-      weardetection->priv->coatNotDetectedCounter = 0;
   
   gst_buffer_unmap(frame->buffer, &info);
   return GST_FLOW_OK;
@@ -362,37 +389,51 @@ static void getDetectedPerson(Gstweardetection *weardetection, GstBuffer* buffer
     
     // image boundry 
     cv::Rect boundry(0, 0, weardetection->srcMat.cols, weardetection->srcMat.rows);
+    int width = weardetection->srcMat.cols;
+    int height = weardetection->srcMat.rows;
     
-    
-    GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
-    if (meta == NULL)
-        g_message("Adlink metadata is not exist!");
-    else
+    if(weardetection->query != "") /*if query is not empty, use metadata version 2*/
     {
-        AdBatch &batch = meta->batch;
-        
-        bool frame_exist = batch.frames.size() > 0 ? true : false;
-        if(frame_exist)
+        // check engineID
+        std::string engineID = std::string(weardetection->engineID);
+        if (engineID == "") 
         {
-            VideoFrameData frame_info = batch.frames[0];
-                
-            int detectionBoxResultNumber = frame_info.detection_results.size();
-            int width = weardetection->srcMat.cols;
-            int height = weardetection->srcMat.rows;
+            gchar *name = gst_element_get_name(weardetection);
+            if (engineID == "")
+                name = gst_element_get_name(weardetection);
             
-            for(int i = 0 ; i < detectionBoxResultNumber ; ++i)
+            if (name == NULL)
+                engineID = std::string("weardetection");
+            else
             {
-                adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
-                
-                int x1 = (int)(width * detection_result.x1);
-                int y1 = (int)(height * detection_result.y1);
-                int x2 = (int)(width * detection_result.x2);
-                int y2 = (int)(height * detection_result.y2);
-                
-                if(detection_result.obj_label.compare("person") == 0)
+                engineID = std::string(name);
+                g_free(name);
+            }
+        }
+        
+        std::vector<QueryResult> results = gst_buffer_adroi_query(buffer, weardetection->query);
+        for(unsigned int result_index = 0; result_index < results.size(); ++result_index)
+        {
+            QueryResult queryResult = results[result_index];
+            for(unsigned int i = 0 ; i < queryResult.rois.size() ; ++i)
+            {
+                if(queryResult.rois[i]->category == "box")
                 {
-                    if(detection_result.meta.find(weardetection->priv->targetType) != std::string::npos || std::string(weardetection->priv->targetType).compare("NONE"/*DEFAULT_TARGET_TYPE*/) == 0)
-                    {
+                    if(queryResult.rois[i]->events.size() > 0)
+                        std::cout << "event name = " << queryResult.rois[i]->events[0] << std::endl;
+                    else
+                        continue;
+                    
+                    if(queryResult.rois[i]->events[0].find(weardetection->priv->targetType) != std::string::npos || std::string(weardetection->priv->targetType).compare("NONE"/*DEFAULT_TARGET_TYPE*/) == 0)
+                    { 
+                        auto box = std::static_pointer_cast<Box>(queryResult.rois[i]);
+                        
+                        int x1 = (int)(width * box->x1);
+                        int y1 = (int)(height * box->y1);
+                        int x2 = (int)(width * box->x2);
+                        int y2 = (int)(height * box->y2);
+                        
+                        
                         std::vector<cv::Point> personPoint_vec;
                         personPoint_vec.push_back(cv::Point2d(x1, y1));
                         personPoint_vec.push_back(cv::Point2d(x2, y1));
@@ -419,9 +460,25 @@ static void getDetectedPerson(Gstweardetection *weardetection, GstBuffer* buffer
                         // record the mapping index
                         weardetection->priv->map_vec.push_back(i);
                     }
-                }
-                else if(detection_result.obj_label.compare("coat") == 0)
-                {    
+                }    
+            }
+        }
+        
+        std::vector<QueryResult> results_coat = gst_buffer_adroi_query(buffer, "//adrt[class in coat]");
+        for(unsigned int i = 0; i < results_coat.size(); ++i)
+        {
+            QueryResult queryResult = results_coat[i];
+            for(auto roi: queryResult.rois)
+            {
+                if(roi->category == "box")
+                {
+                    auto box = std::static_pointer_cast<Box>(roi);
+                    
+                    int x1 = (int)(width * box->x1);
+                    int y1 = (int)(height * box->y1);
+                    int x2 = (int)(width * box->x2);
+                    int y2 = (int)(height * box->y2);
+                    
                     std::vector<cv::Point> coatPoint_vec;
                     cv::Rect coatRect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
                     coatRect = coatRect & boundry;
@@ -443,47 +500,125 @@ static void getDetectedPerson(Gstweardetection *weardetection, GstBuffer* buffer
                         double alpha = 0.3;
                         cv::Mat color(roi.size(), CV_8UC3, cv::Scalar(124, 252, 0));
                         cv::addWeighted(color, alpha, roi, 1.0 - alpha , 0.0, roi);
-                    }                                                                           
-                }                
+                    }
+                }
+            }
+        }
+    }
+    else /*if query is empty, use metadata version 1*/
+    {
+        GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
+        if (meta == NULL)
+            g_message("Adlink metadata is not exist!");
+        else
+        {
+            AdBatch &batch = meta->batch;
+            
+            bool frame_exist = batch.frames.size() > 0 ? true : false;
+            if(frame_exist)
+            {
+                VideoFrameData frame_info = batch.frames[0];
+                    
+                int detectionBoxResultNumber = frame_info.detection_results.size();
+                
+                for(int i = 0 ; i < detectionBoxResultNumber ; ++i)
+                {
+                    adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
+                    
+                    int x1 = (int)(width * detection_result.x1);
+                    int y1 = (int)(height * detection_result.y1);
+                    int x2 = (int)(width * detection_result.x2);
+                    int y2 = (int)(height * detection_result.y2);
+                    
+                    if(detection_result.obj_label.compare("person") == 0)
+                    {
+                        if(detection_result.meta.find(weardetection->priv->targetType) != std::string::npos || std::string(weardetection->priv->targetType).compare("NONE"/*DEFAULT_TARGET_TYPE*/) == 0)
+                        {
+                            std::vector<cv::Point> personPoint_vec;
+                            personPoint_vec.push_back(cv::Point2d(x1, y1));
+                            personPoint_vec.push_back(cv::Point2d(x2, y1));
+                            personPoint_vec.push_back(cv::Point2d(x2, y2));
+                            personPoint_vec.push_back(cv::Point2d(x1, y2));
+                            
+                            int head2footHeight = (y2 - y1 + 1) * 0.9;
+                            std::vector<cv::Point> footPoint_vec;
+                            footPoint_vec.push_back(cv::Point2d(x1, y1 + head2footHeight));
+                            footPoint_vec.push_back(cv::Point2d(x2, y1 + head2footHeight));
+                            footPoint_vec.push_back(cv::Point2d(x2, y2));
+                            footPoint_vec.push_back(cv::Point2d(x1, y2));
+                            
+                            std::vector<cv::Point> upper_personPoint_vec;
+                            upper_personPoint_vec.push_back(cv::Point2d(x1, y1));
+                            upper_personPoint_vec.push_back(cv::Point2d(x2, y1));
+                            upper_personPoint_vec.push_back(cv::Point2d(x2, y1 + (y2-y1+1)/4));
+                            upper_personPoint_vec.push_back(cv::Point2d(x1, y1 + (y2-y1+1)/4));
+                            
+                            weardetection->priv->person_vec.push_back(personPoint_vec);
+                            weardetection->priv->foot_vec.push_back(footPoint_vec);
+                            weardetection->priv->upper_person_vec.push_back(upper_personPoint_vec);
+                            
+                            // record the mapping index
+                            weardetection->priv->map_vec.push_back(i);
+                        }
+                    }
+                    else if(detection_result.obj_label.compare("coat") == 0)
+                    {    
+                        std::vector<cv::Point> coatPoint_vec;
+                        cv::Rect coatRect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+                        coatRect = coatRect & boundry;
+                        coatPoint_vec.push_back(cv::Point2d(coatRect.x, coatRect.y));
+                        coatPoint_vec.push_back(cv::Point2d(coatRect.x + coatRect.width - 1, coatRect.y));
+                        coatPoint_vec.push_back(cv::Point2d(coatRect.x + coatRect.width - 1, coatRect.y + coatRect.height - 1));
+                        coatPoint_vec.push_back(cv::Point2d(coatRect.x, coatRect.y + coatRect.height - 1));
+                        
+                        weardetection->priv->coat_vec.push_back(coatPoint_vec);
+
+                        int current_id = weardetection->priv->coat_vec.size() - 1;
+                        
+                        if(weardetection->priv->wear_display)
+                        {
+                            int roiWidth = weardetection->priv->coat_vec[current_id][1].x - weardetection->priv->coat_vec[current_id][0].x + 1;
+                            int roiHeight = weardetection->priv->coat_vec[current_id][2].y - weardetection->priv->coat_vec[current_id][0].y + 1;
+                            cv::Mat roi = weardetection->srcMat(cv::Rect(weardetection->priv->coat_vec[current_id][0].x, weardetection->priv->coat_vec[current_id][0].y, roiWidth, roiHeight));
+                            
+                            double alpha = 0.3;
+                            cv::Mat color(roi.size(), CV_8UC3, cv::Scalar(124, 252, 0));
+                            cv::addWeighted(color, alpha, roi, 1.0 - alpha , 0.0, roi);
+                        }                                                                           
+                    }                
+                }
             }
         }
     }
 }
 
-static void doAlgorithm(Gstweardetection *weardetection, GstBuffer* buffer)
-{    
-    // If metadata does not exist, return directly.
-    GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
-    if (meta == NULL)
-    {
-        g_message("Adlink metadata is not exist!");
-        return;
-    }
-    AdBatch &batch = meta->batch;
-    bool frame_exist = batch.frames.size() > 0 ? true : false;
-    
+static void wearDetect(Gstweardetection *weardetection)
+{
     // Reset region from alarm to normal after 2 seconds.
     if((cv::getTickCount() - weardetection->eventTick)/ cv::getTickFrequency() > 2)
         weardetection->priv->alert = false;
     
+    // Reset break in person index
+    weardetection->priv->map_notWearCoat_person_vec.clear();
+    
     std::vector<cv::Point> intersectionPolygon;
 
-    VideoFrameData frame_info = batch.frames[0];
-    int detectionBoxResultNumber = frame_info.detection_results.size();
     bool personWithCoat = false;
     int num_coat_detected = weardetection->priv->coat_vec.size();
     int num_person_detected = weardetection->priv->person_vec.size();
 	
-	// no people detected check
-	if(num_person_detected == 0)
-		weardetection->priv->noPeopeleDetectedCounter++;
-	else
-		weardetection->priv->noPeopeleDetectedCounter = 0;
-	// if no people detected for a period of time, set no wear coat counter to zero for reset.
-	if(weardetection->priv->noPeopeleDetectedCounter > 30)
-	{
-		weardetection->priv->coatNotDetectedCounter = 0;
-	}
+    // no people detected check
+    if(num_person_detected == 0)
+            weardetection->priv->noPeopeleDetectedCounter++;
+    else
+            weardetection->priv->noPeopeleDetectedCounter = 0;
+    
+    
+    // if no people detected for a period of time, set no wear coat counter to zero for reset.
+    if(weardetection->priv->noPeopeleDetectedCounter > 30)
+    {
+        weardetection->priv->coatNotDetectedCounter = 0;
+    }
 	
     
     for(int id = 0; id < num_person_detected; ++id)
@@ -491,7 +626,7 @@ static void doAlgorithm(Gstweardetection *weardetection, GstBuffer* buffer)
         for(int coatId = 0; coatId < num_coat_detected; ++coatId)
         {
             float intersectArea = cv::intersectConvexConvex(weardetection->priv->coat_vec[coatId], weardetection->priv->upper_person_vec[id], intersectionPolygon, true);
-         
+            
             if(intersectArea > 0)
             {
                 personWithCoat = true; 
@@ -504,18 +639,74 @@ static void doAlgorithm(Gstweardetection *weardetection, GstBuffer* buffer)
         if(!personWithCoat)
             weardetection->priv->coatNotDetectedCounter++; 
         
-
+        // if not waer coat counter exceed threshold, set alert
         if(weardetection->priv->coatNotDetectedCounter > weardetection->priv->threshold_coatNotDetectedCounter)
         {
             weardetection->eventTick = cv::getTickCount();
             weardetection->priv->alert = true;
+            weardetection->priv->coatNotDetectedCounter = 0;
+            weardetection->priv->map_notWearCoat_person_vec.push_back(id);
+        }
+    }
+}
 
+static void doAlgorithm(Gstweardetection *weardetection, GstBuffer* buffer, GstPad* pad)
+{
+    // wear detection
+    wearDetect(weardetection);
+        
+    if(weardetection->priv->alert == true)
+    {
+        weardetection->priv->alert = false;
+        if(weardetection->query != "") // use metadata version 2 for adding event 
+        {
+            auto *f_meta = gst_buffer_acquire_adroi_frame_meta(buffer, pad);
+            if (f_meta == nullptr) 
+            {
+                GST_ERROR("Can not get adlink ROI frame metadata");
+                return;
+            }
+            
+            auto *b_meta = gst_buffer_acquire_adroi_batch_meta(buffer);
+            if (b_meta == nullptr)
+            {
+                GST_ERROR("Can not acquire adlink ROI batch metadata");
+                return;
+            }
+            
+            auto qrs = f_meta->frame->query(weardetection->query);
+            if(qrs.size() > 0)
+            {
+                for(int i = 0; i < weardetection->priv->map_notWearCoat_person_vec.size(); ++i)
+                {
+                    int id = weardetection->priv->map_notWearCoat_person_vec[i];
+                    std::string alertMessage = std::string(weardetection->priv->alertType) + "<" + return_current_time_and_date() + ">";
+                    std::cout << "wear detection alert message = " << alertMessage << std::endl;
+                    qrs[0].rois[weardetection->priv->map_vec[id]]->events.push_back(alertMessage);
+                }
+            }
+        }
+        else // use metadata version 1 for adding event
+        {
+            GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
+            if (meta == NULL)
+            {
+                g_message("Adlink metadata is not exist while doing algorithm!");
+                return;
+            }
+            AdBatch &batch = meta->batch;
+            bool frame_exist = batch.frames.size() > 0 ? true : false;
+            
             // mark the alert data to metadata
             if(frame_exist)
             {
-                // alert message format:",type<time>", must use append.
-                std::string alertMessage = "," + std::string(weardetection->priv->alertType) + "<" + return_current_time_and_date() + ">";
-                meta->batch.frames[0].detection_results[weardetection->priv->map_vec[id]].meta += alertMessage;
+                for(int i = 0; i < weardetection->priv->map_notWearCoat_person_vec.size(); ++i)
+                {
+                    int id = weardetection->priv->map_notWearCoat_person_vec[i];
+                    // alert message format:",type<time>", must use append.
+                    std::string alertMessage = "," + std::string(weardetection->priv->alertType) + "<" + return_current_time_and_date() + ">";
+                    meta->batch.frames[0].detection_results[weardetection->priv->map_vec[id]].meta += alertMessage;
+                }
             }
         }
     }
