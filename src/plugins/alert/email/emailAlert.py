@@ -106,8 +106,8 @@ class EmailAlert(GstBase.BaseTransform):
         self.senderPwd = ""
         self.query = ""
         self.attachEventImage = True
-        self.send_time = time.time()
         self.alert_duration = 5
+        self.send_time = time.time() - self.alert_duration
         self.ADLINK_MESSAGE = "\n\nBest,\nADLINK EMAIL ALERT PLUGIN. https://www.adlinktech.com/"
 
         super(EmailAlert, self).__init__()
@@ -192,17 +192,19 @@ class EmailAlert(GstBase.BaseTransform):
         else:
             qrs = adroi.gst_buffer_adroi_query(hash(buff), self.query)
             if qrs is None or len(qrs) == 0:
-                print("query is empty from frame meta in email_alert.")
+                #print("     query is empty from frame meta in email_alert.")
                 return self.srcpad.push(buff)
             
             for roi in qrs[0].rois:
+                #print("     in email_alert")
                 if roi.category == 'box':
                     if len(roi.events) > 0:
+                        #print("roi.events > 0")
                         if time.time() - self.send_time > self.alert_duration:  # Check if out of duration
                             #eventString = roi.events[0];
                             relatedEvents = [s for s in roi.events if self.alertType in s]
-                            #print("In emai_alert, event information = ", eventString)
-                            #print("In emai_alert, related events information = ", relatedEvents)
+                            #print("     In emai_alert, event information = ", eventString)
+                            #print("     In emai_alert, related events information = ", relatedEvents)
                             
                             for metaString in relatedEvents:
                                 self.send_time = time.time()
