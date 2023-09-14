@@ -6,7 +6,9 @@
 #include <gst/video/video.h>
 #include <gst/video/gstvideofilter.h>
 #include "gstpartpreparation.h"
-#include "gstadmeta.h"
+#include "gstadmeta.h" // for metadata version 1
+#include <gstadroi_frame.h> // for metadata version 2
+#include <gstadroi_batch.h> // for metadata version 2
 #include "utils.h"
 #define NANO_SECOND 1000000000.0
 
@@ -26,7 +28,7 @@ static GstFlowReturn gst_partpreparation_transform_frame_ip (GstVideoFilter * fi
 
 static void mapGstVideoFrame2OpenCVMat(GstPartpreparation *partpreparation, GstVideoFrame *frame, GstMapInfo &info);
 static void getDetectedBox(GstPartpreparation *partpreparation, GstBuffer* buffer);
-static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer);
+static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer, GstPad* pad);
 static void drawObjects(GstPartpreparation *partpreparation);
 static void drawInformation(GstPartpreparation *partpreparation);
 static void drawStatus(GstPartpreparation *partpreparation);
@@ -51,7 +53,9 @@ enum
     PROP_PARTS_DISPLAY,
     PROP_INFORMATION_DISPLAY,
     PROP_STATUS_DISPLAY,
-    PROP_EMPTY_PART_COUNTER
+    PROP_EMPTY_PART_COUNTER,
+    PROP_ENGINE_ID,
+    PROP_QUERY
 };
 
 #define DEBUG_INIT GST_DEBUG_CATEGORY_INIT(GST_CAT_DEFAULT, "gstpartpreparation", 0, "debug category for gstpartpreparation element");
@@ -104,6 +108,12 @@ static void gst_partpreparation_class_init (GstPartpreparationClass * klass)
   
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_EMPTY_PART_COUNTER,
                                    g_param_spec_int("empty-part-frame", "empty part frame number", "Reset the counting time when defined accumulated frame number is reached.", 0, 100, 15, G_PARAM_READWRITE));
+  
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ENGINE_ID,
+                                   g_param_spec_string ("engine-id", "engine-id", "The Inference engine ID, if empty will use plugin name as engine ID.", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+  
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_QUERY,
+                                   g_param_spec_string ("query", "query", "ROI query", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
   
   gobject_class->dispose = gst_partpreparation_dispose;
   gobject_class->finalize = gst_partpreparation_finalize;
@@ -160,6 +170,9 @@ static void gst_partpreparation_init (GstPartpreparation *partpreparation)
     partpreparation->prepareEndTime = 0;
     partpreparation->runningTime = 0;
     partpreparation->emptyCounter = 0;
+    
+    partpreparation->engineID = "";
+    partpreparation->query = "";
 }
 
 void gst_partpreparation_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
@@ -201,6 +214,16 @@ void gst_partpreparation_set_property (GObject * object, guint property_id, cons
         partpreparation->priv->emptyCounter = g_value_get_int(value);
         break;
     }
+    case PROP_ENGINE_ID:
+    {
+        partpreparation->engineID = g_value_dup_string(value);
+        break;  
+    }
+    case PROP_QUERY:
+    {
+        partpreparation->query = g_value_dup_string(value);
+        break;  
+    }
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
@@ -230,6 +253,14 @@ void gst_partpreparation_get_property (GObject * object, guint property_id, GVal
        break;
     case PROP_EMPTY_PART_COUNTER:
        g_value_set_int(value, partpreparation->priv->emptyCounter);
+       break;
+    case PROP_ENGINE_ID:
+       g_value_set_string (value, partpreparation->engineID);
+       //g_value_set_string (value, partpreparation->engineID.c_str());
+       break;
+    case PROP_QUERY:
+       g_value_set_string (value, partpreparation->query);
+       //g_value_set_string (value, partpreparation->query.c_str());
        break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -329,7 +360,7 @@ static GstFlowReturn gst_partpreparation_transform_frame_ip (GstVideoFilter * fi
   getDetectedBox(partpreparation, frame->buffer);
   
   // do algorithm
-  doAlgorithm(partpreparation, frame->buffer);
+  doAlgorithm(partpreparation, frame->buffer, filter->element.sinkpad);
   
   // draw objects
   if(partpreparation->priv->partsDisplay)
@@ -368,35 +399,87 @@ static void getDetectedBox(GstPartpreparation *partpreparation, GstBuffer* buffe
         value->ClearStatus();
     }
     partpreparation->priv->indexOfPartContainer = -1;
+    int width = partpreparation->srcMat.cols;
+    int height = partpreparation->srcMat.rows;
     
-    GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
-    if (meta == NULL)
-        GST_MESSAGE("Adlink metadata is not exist!");
-    else
+    if(partpreparation->query != "") /*if query is not empty, use metadata version 2*/
     {
-        AdBatch &batch = meta->batch;
-        bool frame_exist = batch.frames.size() > 0 ? true : false;
-        if(frame_exist)
+        // check engineID
+        std::string engineID = std::string(partpreparation->engineID);
+        if (engineID == "") 
         {
-            VideoFrameData frame_info = batch.frames[0];
-            int detectionBoxResultNumber = frame_info.detection_results.size();
-            int width = partpreparation->srcMat.cols;
-            int height = partpreparation->srcMat.rows;
-            for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
+            gchar *name = gst_element_get_name(partpreparation);
+            if (engineID == "")
+                name = gst_element_get_name(partpreparation);
+            
+            if (name == NULL)
+                engineID = std::string("partpreparation");
+            else
             {
-                adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
-                std::vector<std::string>::iterator it = std::find(partpreparation->priv->bomList.begin(), partpreparation->priv->bomList.end(), detection_result.obj_label);
-                if(it != partpreparation->priv->bomList.end())
+                engineID = std::string(name);
+                g_free(name);
+            }
+        }
+        
+        std::vector<QueryResult> results = gst_buffer_adroi_query(buffer, partpreparation->query);
+        for(unsigned int result_index = 0; result_index < results.size(); ++result_index)
+        {
+            QueryResult queryResult = results[result_index];
+            //for(auto roi: queryResult.rois)
+            for(unsigned int i = 0 ; i < queryResult.rois.size() ; ++i)
+            {
+                if(queryResult.rois[i]->category == "box")
                 {
-                    int materialIndex = std::distance(partpreparation->priv->bomList.begin(), it);
-                    int x1 = (int)(width * detection_result.x1);
-                    int y1 = (int)(height * detection_result.y1);
-                    int x2 = (int)(width * detection_result.x2);
-                    int y2 = (int)(height * detection_result.y2);
-                    partpreparation->priv->bomMaterial[materialIndex]->Add(x1, y1, x2, y2, detection_result.prob);
-                
-                    if(detection_result.obj_label.compare("container-parts") == 0)
-                        partpreparation->priv->indexOfPartContainer = materialIndex;
+                    auto box = std::static_pointer_cast<Box>(queryResult.rois[i]);
+                    auto labelInfo = std::static_pointer_cast<Classification>(queryResult.rois[i]->datas.at(0));
+
+                    std::string labelName = labelInfo->label;
+                    std::vector<std::string>::iterator it = std::find(partpreparation->priv->bomList.begin(), partpreparation->priv->bomList.end(), labelName);
+                    if(it != partpreparation->priv->bomList.end())
+                    {
+                        int materialIndex = std::distance(partpreparation->priv->bomList.begin(), it);
+                        int x1 = (int)(width * box->x1);
+                        int y1 = (int)(height * box->y1);
+                        int x2 = (int)(width * box->x2);
+                        int y2 = (int)(height * box->y2);
+                        partpreparation->priv->bomMaterial[materialIndex]->Add(x1, y1, x2, y2, labelInfo->confidence);
+                    
+                        if(labelName.compare("container-parts") == 0)
+                            partpreparation->priv->indexOfPartContainer = i;
+                    }
+                }
+            }
+        }
+    }
+    else /*if query is empty, use metadata version 1*/
+    {
+        GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
+        if (meta == NULL)
+            GST_MESSAGE("Adlink metadata is not exist!");
+        else
+        {
+            AdBatch &batch = meta->batch;
+            bool frame_exist = batch.frames.size() > 0 ? true : false;
+            if(frame_exist)
+            {
+                VideoFrameData frame_info = batch.frames[0];
+                int detectionBoxResultNumber = frame_info.detection_results.size();
+                for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
+                {
+                    adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
+                    std::vector<std::string>::iterator it = std::find(partpreparation->priv->bomList.begin(), partpreparation->priv->bomList.end(), detection_result.obj_label);
+                    if(it != partpreparation->priv->bomList.end())
+                    {
+                        int materialIndex = std::distance(partpreparation->priv->bomList.begin(), it);
+                        int x1 = (int)(width * detection_result.x1);
+                        int y1 = (int)(height * detection_result.y1);
+                        int x2 = (int)(width * detection_result.x2);
+                        int y2 = (int)(height * detection_result.y2);
+                        partpreparation->priv->bomMaterial[materialIndex]->Add(x1, y1, x2, y2, detection_result.prob);
+                    
+                        if(detection_result.obj_label.compare("container-parts") == 0)
+                            partpreparation->priv->indexOfPartContainer = materialIndex;
+                    }
                 }
             }
         }
@@ -406,18 +489,8 @@ static void getDetectedBox(GstPartpreparation *partpreparation, GstBuffer* buffe
     // add the check overlap code here to remove multi-detected objects.
 }
 
-static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
+static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer, GstPad* pad)
 {
-    // If metadata does not exist, return directly.
-    GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
-    if (meta == NULL)
-    {
-        g_message("Adlink metadata is not exist!");
-        return;
-    }
-    AdBatch &batch = meta->batch;
-    bool frame_exist = batch.frames.size() > 0 ? true : false;
-    
     if(partpreparation->priv->alert == true)
         if(partpreparation->runningTime - partpreparation->prepareEndTime > 5)
             partpreparation->priv->alert = false;
@@ -592,34 +665,96 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer)
     }
     
     
-    // judge alert
-    if(frame_exist && partpreparation->priv->indexOfPartContainer != -1)
+
+    
+    if(partpreparation->query != "") /*if query is not empty, use metadata version 2*/
     {
-        // incorrect order alert to metadata
-        if(numReady && !orderReady)
+        if(partpreparation->priv->indexOfPartContainer != -1)
         {
-            partpreparation->priv->alert = true;
-            partpreparation->prepareStatus->SetStatus(Prepare::DisOrdered);
+            auto *f_meta = gst_buffer_acquire_adroi_frame_meta(buffer, pad);
+            if (f_meta == nullptr) 
+            {
+                GST_ERROR("Can not get adlink ROI frame metadata");
+                return;
+            }
             
-            std::string alertMessage = "," + std::string(partpreparation->priv->alertType) + "<" + return_current_time_and_date() + ">";
-        
-            meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
+            auto *b_meta = gst_buffer_acquire_adroi_batch_meta(buffer);
+            if (b_meta == nullptr)
+            {
+                GST_ERROR("Can not acquire adlink ROI batch metadata");
+                return;
+            }
+            auto qrs = f_meta->frame->query(partpreparation->query);
+            if(qrs.size() > 0)
+            {
+                // incorrect order alert to metadata
+                if(numReady && !orderReady)
+                {
+                    partpreparation->priv->alert = true;
+                    partpreparation->prepareStatus->SetStatus(Prepare::DisOrdered);
+                    
+                    std::string alertMessage = std::string(partpreparation->priv->alertType) + "<" + return_current_time_and_date() + ">";
+                    qrs[0].rois[partpreparation->priv->indexOfPartContainer]->events.push_back(alertMessage);
+                }
+                
+                // ready alert to metadata
+                if(partpreparation->prepareStatus->GetStatus() == Prepare::Ready)
+                {
+                    std::string alertMessage = "," + std::string("ready") + "<" + return_current_time_and_date() + ">";
+                    qrs[0].rois[partpreparation->priv->indexOfPartContainer]->events.push_back(alertMessage);
+                }
+                
+                // empty alert to metadata
+                if(partpreparation->prepareStatus->GetStatus() == Prepare::Empty)
+                {
+                    std::string alertMessage = "," + std::string("empty") + "<" + return_current_time_and_date() + ">";
+                    qrs[0].rois[partpreparation->priv->indexOfPartContainer]->events.push_back(alertMessage);
+                }
+            }
         }
         
-        // ready alert to metadata
-        if(partpreparation->prepareStatus->GetStatus() == Prepare::Ready)
+    }
+    else /*if query is empty, use metadata version 1*/
+    {
+        // If metadata does not exist, return directly.
+        GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
+        if (meta == NULL)
         {
-            std::string alertMessage = "," + std::string("ready") + "<" + return_current_time_and_date() + ">";
-        
-            meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
+            g_message("Adlink metadata is not exist!");
+            return;
         }
+        AdBatch &batch = meta->batch;
+        bool frame_exist = batch.frames.size() > 0 ? true : false;
         
-        // empty alert to metadata
-        if(partpreparation->prepareStatus->GetStatus() == Prepare::Empty)
+        // judge alert
+        if(frame_exist && partpreparation->priv->indexOfPartContainer != -1)
         {
-            std::string alertMessage = "," + std::string("empty") + "<" + return_current_time_and_date() + ">";
-        
-            meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
+            // incorrect order alert to metadata
+            if(numReady && !orderReady)
+            {
+                partpreparation->priv->alert = true;
+                partpreparation->prepareStatus->SetStatus(Prepare::DisOrdered);
+                
+                std::string alertMessage = "," + std::string(partpreparation->priv->alertType) + "<" + return_current_time_and_date() + ">";
+            
+                meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
+            }
+            
+            // ready alert to metadata
+            if(partpreparation->prepareStatus->GetStatus() == Prepare::Ready)
+            {
+                std::string alertMessage = "," + std::string("ready") + "<" + return_current_time_and_date() + ">";
+            
+                meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
+            }
+            
+            // empty alert to metadata
+            if(partpreparation->prepareStatus->GetStatus() == Prepare::Empty)
+            {
+                std::string alertMessage = "," + std::string("empty") + "<" + return_current_time_and_date() + ">";
+            
+                meta->batch.frames[0].detection_results[partpreparation->priv->indexOfPartContainer].meta += alertMessage;
+            }
         }
     }
 }
