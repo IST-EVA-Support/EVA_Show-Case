@@ -69,8 +69,8 @@ class VoiceAlert(GstBase.BaseTransform):
         self.alertType = ""
         self.speechContent = "Warning Alert"
         self.query = ""
-        self.send_time = time.time()
         self.alert_duration = 5
+        self.send_time = time.time() - self.alert_duration
 
         super(VoiceAlert, self).__init__()
 
