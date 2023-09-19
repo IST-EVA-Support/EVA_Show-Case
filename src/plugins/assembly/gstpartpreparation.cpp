@@ -700,14 +700,14 @@ static void doAlgorithm(GstPartpreparation *partpreparation, GstBuffer* buffer, 
                 // ready alert to metadata
                 if(partpreparation->prepareStatus->GetStatus() == Prepare::Ready)
                 {
-                    std::string alertMessage = "," + std::string("ready") + "<" + return_current_time_and_date() + ">";
+                    std::string alertMessage = std::string("ready") + "<" + return_current_time_and_date() + ">";
                     qrs[0].rois[partpreparation->priv->indexOfPartContainer]->events.push_back(alertMessage);
                 }
                 
                 // empty alert to metadata
                 if(partpreparation->prepareStatus->GetStatus() == Prepare::Empty)
                 {
-                    std::string alertMessage = "," + std::string("empty") + "<" + return_current_time_and_date() + ">";
+                    std::string alertMessage = std::string("empty") + "<" + return_current_time_and_date() + ">";
                     qrs[0].rois[partpreparation->priv->indexOfPartContainer]->events.push_back(alertMessage);
                 }
             }
