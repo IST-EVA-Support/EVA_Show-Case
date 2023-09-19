@@ -8,31 +8,31 @@ message_out(){
     echo -e "${LB}=> $1${NC}"
 }
 
-ModelPruned=${1:-no};
+metadata_version=${1:-2};
 
-message_out "Start running part preparation demo..."
+message_out "Start running part assembly demo..."
 
-if [ $ModelPruned == "no" ]
+if [ $metadata_version == "2" ]
 then
-    message_out "[without pruned model] run first demo video"
-    gst-launch-1.0 filesrc location=normal-assembly.mp4 ! decodebin ! nvvideoconvert ! videoconvert ! adrt model=model/dssd_resnet18_epoch_3400_fp32.engine device=0 ! adtrans_ssd max-count=50 label= model/SHMC-label.txt threshold=0.2 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait
+    message_out "[metadata version 2] run first demo video"
+    gst-launch-1.0 filesrc location=normal-assembly.mp4 ! decodebin ! videoconvert ! adrt model=yolov4-608.engine scale=0.0039 rgbconv=True mean="0 0 0" ! adtrans_yolo topology=1 label=SHMC-label.txt class-num=10 blob-size="76,38,19" mask="(0,1,2),(3,4,5),(6,7,8)" anchor="(12,16),(19,36),(40,28),(36,75),(76,55),(72,146),(142,110),(192,243),(459,401)" use-sigmoid=True input-width=608 input-height=608 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait
     
-    message_out "[without pruned model] run second demo video"
-    gst-launch-1.0 filesrc location=normal-assembly-quick.mp4 ! decodebin ! nvvideoconvert ! videoconvert ! adrt model=model/dssd_resnet18_epoch_3400_fp32.engine device=0 ! adtrans_ssd max-count=50 label= model/SHMC-label.txt threshold=0.2 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait 
+    message_out "[metadata version 2] run second demo video"
+    gst-launch-1.0 filesrc location=normal-assembly-quick.mp4 ! decodebin ! videoconvert ! adrt model=yolov4-608.engine scale=0.0039 rgbconv=True mean="0 0 0" ! adtrans_yolo topology=1 label=SHMC-label.txt class-num=10 blob-size="76,38,19" mask="(0,1,2),(3,4,5),(6,7,8)" anchor="(12,16),(19,36),(40,28),(36,75),(76,55),(72,146),(142,110),(192,243),(459,401)" use-sigmoid=True input-width=608 input-height=608 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait 
     
-    message_out "[without pruned model] run third demo video"
-    gst-launch-1.0 filesrc location=long-time-interval.mp4 ! decodebin ! nvvideoconvert ! videoconvert ! adrt model=model/dssd_resnet18_epoch_3400_fp32.engine device=0 ! adtrans_ssd max-count=50 label= model/SHMC-label.txt threshold=0.2 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait
+    message_out "[metadata version 2] run third demo video"
+    gst-launch-1.0 filesrc location=long-time-interval.mp4 ! decodebin ! videoconvert ! adrt model=yolov4-608.engine scale=0.0039 rgbconv=True mean="0 0 0" ! adtrans_yolo topology=1 label=SHMC-label.txt class-num=10 blob-size="76,38,19" mask="(0,1,2),(3,4,5),(6,7,8)" anchor="(12,16),(19,36),(40,28),(36,75),(76,55),(72,146),(142,110),(192,243),(459,401)" use-sigmoid=True input-width=608 input-height=608 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait
     
-elif [ $ModelPruned == "yes" ]
+elif [ $metadata_version == "1" ]
 then
-    message_out "[pruned model] run first demo video"
-    gst-launch-1.0 filesrc location=normal-assembly.mp4 ! decodebin ! nvvideoconvert ! videoconvert ! adrt model=model/dssd_resnet18_epoch_810_fp32.engine device=0 ! adtrans_ssd max-count=50 label= model/SHMC-label.txt threshold=0.2 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait
+    message_out "[metadata version 1] run first demo video"
+    gst-launch-1.0 filesrc location=normal-assembly.mp4 ! decodebin ! videoconvert ! adrt model=yolov4-608.engine scale=0.0039 rgbconv=True mean="0 0 0" ! adtrans_yolo topology=1 label=SHMC-label.txt class-num=10 blob-size="76,38,19" mask="(0,1,2),(3,4,5),(6,7,8)" anchor="(12,16),(19,36),(40,28),(36,75),(76,55),(72,146),(142,110),(192,243),(459,401)" use-sigmoid=True input-width=608 input-height=608 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait
     
-    message_out "[pruned model] run second demo video"
-    gst-launch-1.0 filesrc location=normal-assembly-quick.mp4 ! decodebin ! nvvideoconvert ! videoconvert ! adrt model=model/dssd_resnet18_epoch_810_fp32.engine device=0 ! adtrans_ssd max-count=50 label= model/SHMC-label.txt threshold=0.2 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait
+    message_out "[metadata version 1] run second demo video"
+    gst-launch-1.0 filesrc location=normal-assembly-quick.mp4 ! decodebin ! videoconvert ! adrt model=yolov4-608.engine scale=0.0039 rgbconv=True mean="0 0 0" ! adtrans_yolo topology=1 label=SHMC-label.txt class-num=10 blob-size="76,38,19" mask="(0,1,2),(3,4,5),(6,7,8)" anchor="(12,16),(19,36),(40,28),(36,75),(76,55),(72,146),(142,110),(192,243),(459,401)" use-sigmoid=True input-width=608 input-height=608 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait
     
-    message_out "[pruned model] run third demo video"
-    gst-launch-1.0 filesrc location=long-time-interval.mp4 ! decodebin ! nvvideoconvert ! videoconvert ! adrt model=model/dssd_resnet18_epoch_810_fp32.engine device=0 ! adtrans_ssd max-count=50 label= model/SHMC-label.txt threshold=0.2 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait
+    message_out "[metadata version 1] run third demo video"
+    gst-launch-1.0 filesrc location=long-time-interval.mp4 ! decodebin ! videoconvert ! adrt model=yolov4-608.engine scale=0.0039 rgbconv=True mean="0 0 0" ! adtrans_yolo topology=1 label=SHMC-label.txt class-num=10 blob-size="76,38,19" mask="(0,1,2),(3,4,5),(6,7,8)" anchor="(12,16),(19,36),(40,28),(36,75),(76,55),(72,146),(142,110),(192,243),(459,401)" use-sigmoid=True input-width=608 input-height=608 ! partassembly alert-type=idling ! voice_alert alert-type=idling speech-content="idling" ! videoconvert ! xvimagesink & wait
 
 else
     message_out "input invalid parameter."
