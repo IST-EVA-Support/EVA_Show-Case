@@ -83,11 +83,6 @@ After installation, execute run.sh for the pipeline command:
 > ./run.sh
 ```
 
-This showcase utilizes the DSSD (Deconvolutional Single Shot Detector) and is trained by NVIDIA TAO. Two models which pruned and without pruned are provided. The default used model is without pruned when running. Use the command below to run pruned model:
-
-```
-> ./run.sh yes
-```
 
 <!---
 
@@ -147,11 +142,6 @@ Ultimately, the convenient combination with showcase 4 for illustrating the two 
 > ./run-combination.sh
 ```
 
-Also, If supposed to run pruned model. Use the command below to run:
-
-```
-> ./run-combination.sh yes
-```
 
 Then, there will display the combination result. Prepare the parts first described in showcase 4 when ready then start calculating the assembly time describe above in this showcase. For simulating the scenario, three showcase 4 and showcase 5 videos are concated into three videos for illustrating which two are normal SOP process and one is the idling situation occurred. 
 
