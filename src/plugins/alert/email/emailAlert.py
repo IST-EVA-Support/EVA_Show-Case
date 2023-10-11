@@ -159,7 +159,7 @@ class EmailAlert(Gst.Element):
                             #print("In python element, meta information = ", metaString)
                             self.send_time = time.time()
                             if self.senderPwd == "":
-                                self.senderPwd = "vbcsekwzsxxbgymh"
+                                self.senderPwd = "xjdtukuldxunugdl"
 
                             if not self.attachEventImage:
                                 mail_thread = threading.Thread(target=send_mail_txt,
