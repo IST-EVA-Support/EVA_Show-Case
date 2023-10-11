@@ -21,12 +21,21 @@ get_script_dir () {
     echo "$DIR"
 }
 
+# Check is in ADLINK EVA container
+sudoString="sudo"
+if [ -e "/entrypoint.sh" ]
+then
+    sudoString=" "
+fi
+message_out "sudo String = ${sudoString}"
+
+
 # if the python file has already exist in eva plugins/python folder, remove it
 message_out "check python plugings folder..."
 if [ -f "/opt/adlink/eva/plugins/python/voiceAlert.py" ]
 then
     message_out "/opt/adlink/eva/plugins/python/voiceAlert.py exist, will remove it first."
-    sudo rm /opt/adlink/eva/plugins/python/voiceAlert.py
+    ${sudoString} rm /opt/adlink/eva/plugins/python/voiceAlert.py
     message_out "/opt/adlink/eva/plugins/python/voiceAlert.py is removed."
 else
     message_out "/opt/adlink/eva/plugins/python/voiceAlert.py does not exist, will copy it"
@@ -34,7 +43,7 @@ fi
 
 # Start copy python plugings
 message_out "Start to copy python voice_alert plugin to eva plugins/python folder..."
-sudo cp $(get_script_dir)/voiceAlert.py /opt/adlink/eva/plugins/python/.
+${sudoString} cp $(get_script_dir)/voiceAlert.py /opt/adlink/eva/plugins/python/.
 message_out "Copy done."
 
 # re-source the eva environment setup_eva_envs.sh to scan the python plugins

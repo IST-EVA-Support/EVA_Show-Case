@@ -12,6 +12,15 @@ message_out(){
     echo -e "${LB}=> $1${NC}"
 }
 
+# Check is in ADLINK EVA container
+sudoString="sudo"
+if [ -e "/entrypoint.sh" ]
+then
+    sudoString=" "
+fi
+message_out "sudo String = ${sudoString}"
+
+
 message_out "Start installing..."
 # build required plugin
 
@@ -34,7 +43,7 @@ then
         message_out "Start download model..."
         wget https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase3/Cookie-inspection.zip
 		# unzip it, then delete the zip file
-        sudo apt-get -y install unzip
+        ${sudoString} apt-get -y install unzip
         unzip Cookie-inspection.zip
         rm Cookie-inspection.zip
     fi
@@ -56,7 +65,7 @@ fi
 # python plugin
 message_out "Install related python package"
 pip3 install -r requirements.txt
-sudo apt -y install gstreamer1.0-libav
+${sudoString} apt -y install gstreamer1.0-libav
 pip3 install Pillow
 rm ~/.cache/gstreamer-1.0/regi*
 
