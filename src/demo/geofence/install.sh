@@ -24,7 +24,11 @@ message_out "sudo String = ${sudoString}"
 message_out "Start installing..."
 # build required plugin
 message_out "Building geofence plugin..."
+${sudoString} apt -y update
 ${sudoString} apt -y install libgstreamer-plugins-base1.0-dev
+${sudoString} apt -y install libopencv-dev python3-opencv
+${sudoString} apt -y install wget
+${sudoString} apt -y install libnvinfer-bin
 ../../plugins/geofence/geofence-build.sh
 # download video
 if [ -e "geo-fencing-demo.mp4" ]

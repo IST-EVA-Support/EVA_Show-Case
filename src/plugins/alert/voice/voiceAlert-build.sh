@@ -29,6 +29,8 @@ then
 fi
 message_out "sudo String = ${sudoString}"
 
+# install ALSA Utilities package(contains various utilities which are useful for controlling your sound card.)
+${sudoString} apt install -y alsa-utils
 
 # if the python file has already exist in eva plugins/python folder, remove it
 message_out "check python plugings folder..."

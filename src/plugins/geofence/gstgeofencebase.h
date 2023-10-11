@@ -27,6 +27,8 @@ struct _GstGeofencebase
   cv::Mat srcMat;
   long eventTick;
   long lastEventTick;
+  gchar* engineID;
+  gchar* query;
 
 };
 

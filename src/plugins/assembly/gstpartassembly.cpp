@@ -12,7 +12,9 @@
 #include <regex>
 #include <string>
 #include <vector>
-#include "gstadmeta.h"
+#include "gstadmeta.h" // for metadata version 1
+#include <gstadroi_frame.h> // for metadata version 2
+#include <gstadroi_batch.h> // for metadata version 2
 #include "utils.h"
 #define NANO_SECOND 1000000000.0
 
@@ -34,7 +36,7 @@ static void mapGstVideoFrame2OpenCVMat(Gstpartassembly *partassembly, GstVideoFr
 static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer);
 static int getPartIndexInBomList(Gstpartassembly *partassembly, const std::string& partName);
 static bool twoSidesCheck(Gstpartassembly *partassembly, int partIndex, int eachSideExistNumber);
-static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer);
+static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer, GstPad* pad);
 static void drawObjects(Gstpartassembly *partassembly);
 static void drawStatus(Gstpartassembly *partassembly);
 
@@ -98,7 +100,9 @@ enum
     PROP_ALERT_TYPE,
     PROP_PARTS_DISPLAY,
     PROP_INFORMATION_DISPLAY,
-    PROP_RESET
+    PROP_RESET,
+    PROP_ENGINE_ID,
+    PROP_QUERY
 };
 
 #define DEBUG_INIT GST_DEBUG_CATEGORY_INIT(GST_CAT_DEFAULT, "gstpartassembly", 0, "debug category for gstpartassembly element");
@@ -150,6 +154,12 @@ static void gst_partassembly_class_init (GstpartassemblyClass * klass)
   
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_RESET,
                                    g_param_spec_int("reset-time", "reset counting duration time", "Reset the counting time every defined seconds when only checking assembly.", 0, 100, 25, G_PARAM_READWRITE));
+  
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ENGINE_ID,
+                                   g_param_spec_string ("engine-id", "engine-id", "The Inference engine ID, if empty will use plugin name as engine ID.", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+  
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_QUERY,
+                                   g_param_spec_string ("query", "query", "ROI query", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
   
   gobject_class->dispose = gst_partassembly_dispose;
   gobject_class->finalize = gst_partassembly_finalize;
@@ -213,6 +223,9 @@ static void gst_partassembly_init (Gstpartassembly *partassembly)
     
     partassembly->lastTotalNumber = 0;
     partassembly->partContainerIsEmpty = false;
+    
+    partassembly->engineID = "";
+    partassembly->query = "";
 }
 
 void gst_partassembly_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
@@ -252,6 +265,16 @@ void gst_partassembly_set_property (GObject * object, guint property_id, const G
         partassembly->priv->resetSeconds = g_value_get_int(value);
         break;
     }
+    case PROP_ENGINE_ID:
+    {
+        partassembly->engineID = g_value_dup_string(value);
+        break;  
+    }
+    case PROP_QUERY:
+    {
+        partassembly->query = g_value_dup_string(value);
+        break;  
+    }
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
@@ -282,6 +305,14 @@ void gst_partassembly_get_property (GObject * object, guint property_id, GValue 
        break;
     case PROP_RESET:
         g_value_set_int(value, partassembly->priv->resetSeconds);
+        break;
+    case PROP_ENGINE_ID:
+        g_value_set_string (value, partassembly->engineID);
+        //g_value_set_string (value, partassembly->engineID.c_str());
+        break;
+    case PROP_QUERY:
+        g_value_set_string (value, partassembly->query);
+        //g_value_set_string (value, partassembly->query.c_str());
         break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -372,7 +403,7 @@ static GstFlowReturn gst_partassembly_transform_frame_ip (GstVideoFilter * filte
   getDetectedBox(partassembly, frame->buffer);
   
   // do algorithm
-  doAlgorithm(partassembly, frame->buffer);  
+  doAlgorithm(partassembly, frame->buffer, filter->element.sinkpad);  
   
   // draw part objects
   if(partassembly->priv->partsDisplay)
@@ -407,79 +438,200 @@ static void getDetectedBox(Gstpartassembly *partassembly, GstBuffer* buffer)
         value->ClearStatus();
     }
     partassembly->priv->indexOfSemiProductContainer = -1;
+    int width = partassembly->srcMat.cols;
+    int height = partassembly->srcMat.rows;
     
-    GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
-    if (meta == NULL)
-        GST_MESSAGE("Adlink metadata is not exist!");
-    else
+    
+    if(partassembly->query != "") /*if query is not empty, use metadata version 2*/
     {
-        AdBatch &batch = meta->batch;
-        bool frame_exist = batch.frames.size() > 0 ? true : false;
-        if(frame_exist)
+        // check engineID
+        std::string engineID = std::string(partassembly->engineID);
+        if (engineID == "") 
         {
-            VideoFrameData frame_info = batch.frames[0];
-            int detectionBoxResultNumber = frame_info.detection_results.size();
-            int width = partassembly->srcMat.cols;
-            int height = partassembly->srcMat.rows;
+            gchar *name = gst_element_get_name(partassembly);
+            if (engineID == "")
+                name = gst_element_get_name(partassembly);
             
-            // full iterated all object to find "container-parts" exists alert-type(target-type used in this element)
-            if(partassembly->targetTypeChecked == false)
+            if (name == NULL)
+                engineID = std::string("partassembly");
+            else
             {
-                partassembly->targetTypeChecked = (std::string(partassembly->priv->targetType).compare("NONE"/*DEFAULT_TARGET_TYPE*/) == 0);
-                if(!partassembly->targetTypeChecked) // target-type was set by user
+                engineID = std::string(name);
+                g_free(name);
+            }
+        }
+        
+        // full iterated all object to find "container-parts" exists alert-type(target-type used in this element)
+        if(partassembly->targetTypeChecked == false)
+        {
+            partassembly->targetTypeChecked = (std::string(partassembly->priv->targetType).compare("NONE"/*DEFAULT_TARGET_TYPE*/) == 0);
+            if(!partassembly->targetTypeChecked) // target-type was set by user
+            {
+                std::vector<QueryResult> results = gst_buffer_adroi_query(buffer, partassembly->query);
+                for(unsigned int result_index = 0; result_index < results.size(); ++result_index)
+                {
+                    QueryResult queryResult = results[result_index];
+                    //for(auto roi: queryResult.rois)
+                    for(unsigned int i = 0 ; i < queryResult.rois.size() ; ++i)
+                    {
+                        if(queryResult.rois[i]->category == "box")
+                        {
+                            auto box = std::static_pointer_cast<Box>(queryResult.rois[i]);
+                            //auto labelInfo = std::static_pointer_cast<Classification>(queryResult.rois[i]->datas.at(0));
+                            
+                            for(auto event: box->events)
+                            {
+                                if(event.find(partassembly->priv->targetType) != std::string::npos)
+                                {
+                                    partassembly->targetTypeChecked = true;
+                                    break;
+                                }
+                            }
+                            if(partassembly->targetTypeChecked)
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // if partassembly->targetTypeChecked is true, check whether to reset or not
+        if(partassembly->targetTypeChecked == true)
+        {
+            std::vector<QueryResult> results = gst_buffer_adroi_query(buffer, partassembly->query);
+            for(unsigned int result_index = 0; result_index < results.size(); ++result_index)
+            {
+                QueryResult queryResult = results[result_index];
+                //for(auto roi: queryResult.rois)
+                for(unsigned int i = 0 ; i < queryResult.rois.size() ; ++i)
+                {
+                    if(queryResult.rois[i]->category == "box")
+                    {
+                        auto box = std::static_pointer_cast<Box>(queryResult.rois[i]);
+                        //auto labelInfo = std::static_pointer_cast<Classification>(queryResult.rois[i]->datas.at(0));
+                        
+                        for(auto event: box->events)
+                            if(event.find("empty") != std::string::npos)
+                                partassembly->partContainerIsEmpty = true;
+                    }
+                }
+            }
+        }
+        
+        
+        if(partassembly->targetTypeChecked)
+        {
+            std::vector<QueryResult> results = gst_buffer_adroi_query(buffer, partassembly->query);
+            for(unsigned int result_index = 0; result_index < results.size(); ++result_index)
+            {
+                QueryResult queryResult = results[result_index];
+                //for(auto roi: queryResult.rois)
+                for(unsigned int i = 0 ; i < queryResult.rois.size() ; ++i)
+                {
+                    if(queryResult.rois[i]->category == "box")
+                    {
+                        auto box = std::static_pointer_cast<Box>(queryResult.rois[i]);
+                        auto labelInfo = std::static_pointer_cast<Classification>(queryResult.rois[i]->datas.at(0));
+                        
+                        std::string labelName = labelInfo->label;
+                        int materialIndex = getPartIndexInBomList(partassembly, labelName);
+                        if(materialIndex != -1)
+                        {
+                            int x1 = (int)(width * box->x1);
+                            int y1 = (int)(height * box->y1);
+                            int x2 = (int)(width * box->x2);
+                            int y2 = (int)(height * box->y2);
+                            partassembly->priv->bomMaterial[materialIndex]->Add(x1, y1, x2, y2, labelInfo->confidence);
+                            
+                            // container index
+                            if(labelName.compare("container-semi-finished-products") == 0)
+                                partassembly->priv->indexOfSemiProductContainer = materialIndex;
+                            
+                            // semi-product index
+                            if(labelName.compare("semi-finished-products") == 0)
+                                partassembly->priv->indexOfSemiProduct = materialIndex;
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+    else /*if query is empty, use metadata version 1*/
+    {
+        GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
+        if (meta == NULL)
+            GST_MESSAGE("Adlink metadata is not exist!");
+        else
+        {
+            AdBatch &batch = meta->batch;
+            bool frame_exist = batch.frames.size() > 0 ? true : false;
+            if(frame_exist)
+            {
+                VideoFrameData frame_info = batch.frames[0];
+                int detectionBoxResultNumber = frame_info.detection_results.size();
+    //             int width = partassembly->srcMat.cols;
+    //             int height = partassembly->srcMat.rows;
+                
+                // full iterated all object to find "container-parts" exists alert-type(target-type used in this element)
+                if(partassembly->targetTypeChecked == false)
+                {
+                    partassembly->targetTypeChecked = (std::string(partassembly->priv->targetType).compare("NONE"/*DEFAULT_TARGET_TYPE*/) == 0);
+                    if(!partassembly->targetTypeChecked) // target-type was set by user
+                    {
+                        for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
+                        {
+                            adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
+                            // check alert type was set 
+                            if(detection_result.meta.find(partassembly->priv->targetType) != std::string::npos)
+                            {
+                                partassembly->targetTypeChecked = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // if partassembly->targetTypeChecked is true, check whether to reset or not
+                if(partassembly->targetTypeChecked == true)
                 {
                     for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
                     {
                         adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
                         // check alert type was set 
-                        if(detection_result.meta.find(partassembly->priv->targetType) != std::string::npos)
+                        if(detection_result.meta.find("empty") != std::string::npos)
                         {
-                            partassembly->targetTypeChecked = true;
-                            break;
+                            partassembly->partContainerIsEmpty = true;
                         }
                     }
                 }
-            }
 
-            // if partassembly->targetTypeChecked is true, check whether to reset or not
-            if(partassembly->targetTypeChecked == true)
-            {
+
                 for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
                 {
                     adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
-                    // check alert type was set 
-                    if(detection_result.meta.find("empty") != std::string::npos)
-                    {
-                        partassembly->partContainerIsEmpty = true;
-                    }
-                }
-            }
-
-
-            for(unsigned int i = 0 ; i < (uint)detectionBoxResultNumber ; ++i)
-            {
-                adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
-                
-                // check target type is required or set
-                if(partassembly->targetTypeChecked)
-                {
-                    int materialIndex = getPartIndexInBomList(partassembly, detection_result.obj_label);
-
-                    if(materialIndex != -1)
-                    {
-                        int x1 = (int)(width * detection_result.x1);
-                        int y1 = (int)(height * detection_result.y1);
-                        int x2 = (int)(width * detection_result.x2);
-                        int y2 = (int)(height * detection_result.y2);
-                        partassembly->priv->bomMaterial[materialIndex]->Add(x1, y1, x2, y2, detection_result.prob);
                     
-                        // container index
-                        if(detection_result.obj_label.compare("container-semi-finished-products") == 0)
-                            partassembly->priv->indexOfSemiProductContainer = materialIndex;
+                    // check target type is required or set
+                    if(partassembly->targetTypeChecked)
+                    {
+                        int materialIndex = getPartIndexInBomList(partassembly, detection_result.obj_label);
+
+                        if(materialIndex != -1)
+                        {
+                            int x1 = (int)(width * detection_result.x1);
+                            int y1 = (int)(height * detection_result.y1);
+                            int x2 = (int)(width * detection_result.x2);
+                            int y2 = (int)(height * detection_result.y2);
+                            partassembly->priv->bomMaterial[materialIndex]->Add(x1, y1, x2, y2, detection_result.prob);
                         
-                        // semi-product index
-                        if(detection_result.obj_label.compare("semi-finished-products") == 0)
-                            partassembly->priv->indexOfSemiProduct = materialIndex;
+                            // container index
+                            if(detection_result.obj_label.compare("container-semi-finished-products") == 0)
+                                partassembly->priv->indexOfSemiProductContainer = materialIndex;
+                            
+                            // semi-product index
+                            if(detection_result.obj_label.compare("semi-finished-products") == 0)
+                                partassembly->priv->indexOfSemiProduct = materialIndex;
+                        }
                     }
                 }
             }
@@ -526,20 +678,20 @@ static bool twoSidesCheck(Gstpartassembly *partassembly, int partIndex, int each
     return sideCheck;
 }
 
-static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
+static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer, GstPad* pad)
 {
     // get base time of this element from last startTick
     long base_time = (GST_ELEMENT (partassembly))->base_time;
     
-    // If metadata does not exist, return directly.
-    GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
-    if (meta == NULL)
-    {
-        g_message("Adlink metadata is not exist!");
-        return;
-    }
-    AdBatch &batch = meta->batch;
-    bool frame_exist = batch.frames.size() > 0 ? true : false;
+//     // If metadata does not exist, return directly.
+//     GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
+//     if (meta == NULL)
+//     {
+//         g_message("Adlink metadata is not exist!");
+//         return;
+//     }
+//     AdBatch &batch = meta->batch;
+//     bool frame_exist = batch.frames.size() > 0 ? true : false;
     
 //     if(partassembly->priv->alert == true)
 //         if((gst_clock_get_time((GST_ELEMENT (partassembly))->clock) - base_time)/NANO_SECOND > 5)
@@ -828,30 +980,92 @@ static void doAlgorithm(Gstpartassembly *partassembly, GstBuffer* buffer)
             break;
     }
     
-    if(frame_exist && containerId != -1)
+    
+    
+    if(partassembly->query != "") /*if query is not empty, use metadata version 2*/
     {
-        // Check regular time
-        for(unsigned int i = 0; i < assemblyActionVector.size() ; ++i)
+        if(containerId != -1)
         {
-            if(processingTime[i] > processingRegularTime[i] && partassembly->priv->alert == false)
+            auto *f_meta = gst_buffer_acquire_adroi_frame_meta(buffer, pad);
+            if (f_meta == nullptr) 
             {
-                GST_MESSAGE("put idling alert message.");
-                partassembly->priv->alert = true;
-                
-                std::string alertMessage = "," + std::string(partassembly->priv->alertType) + "<" + return_current_time_and_date() + ">";
+                GST_ERROR("Can not get adlink ROI frame metadata");
+                return;
+            }
             
-                meta->batch.frames[0].detection_results[containerId].meta += alertMessage;
-                //partassembly->alertTick = cv::getTickCount();
-                partassembly->alertTick = partassembly->runningTime;
+            auto *b_meta = gst_buffer_acquire_adroi_batch_meta(buffer);
+            if (b_meta == nullptr)
+            {
+                GST_ERROR("Can not acquire adlink ROI batch metadata");
+                return;
+            }
+            auto qrs = f_meta->frame->query(partassembly->query);
+            
+            if(qrs.size() > 0)
+            {
+                // Check regular time
+                for(unsigned int i = 0; i < assemblyActionVector.size() ; ++i)
+                {
+                    if(processingTime[i] > processingRegularTime[i] && partassembly->priv->alert == false)
+                    {
+                        GST_MESSAGE("put idling alert message.");
+                        partassembly->priv->alert = true;
+                        
+                        std::string alertMessage = std::string(partassembly->priv->alertType) + "<" + return_current_time_and_date() + ">";
+                        qrs[0].rois[containerId]->events.push_back(alertMessage);
+                        
+                        //partassembly->alertTick = cv::getTickCount();
+                        partassembly->alertTick = partassembly->runningTime;
+                    }
+                }
+                
+                // If completed, set alert
+                if(checkAction == assemblyActionVector.size() - 1)
+                {
+                    std::string alertMessage = std::string("Completed") + "<" + return_current_time_and_date() + ">";
+                    qrs[0].rois[containerId]->events.push_back(alertMessage);
+                    GST_MESSAGE("put Completed alert message.");
+                }
             }
         }
-        
-        // If completed, set alert
-        if(checkAction == assemblyActionVector.size() - 1)
+    }
+    else /*if query is empty, use metadata version 1*/
+    {
+        // If metadata does not exist, return directly.
+        GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
+        if (meta == NULL)
         {
-            std::string alertMessage = "," + std::string("Completed") + "<" + return_current_time_and_date() + ">";
-            meta->batch.frames[0].detection_results[containerId].meta += alertMessage;
-            GST_MESSAGE("put Completed alert message.");
+            g_message("Adlink metadata is not exist!");
+            return;
+        }
+        AdBatch &batch = meta->batch;
+        bool frame_exist = batch.frames.size() > 0 ? true : false;
+    
+        if(frame_exist && containerId != -1)
+        {
+            // Check regular time
+            for(unsigned int i = 0; i < assemblyActionVector.size() ; ++i)
+            {
+                if(processingTime[i] > processingRegularTime[i] && partassembly->priv->alert == false)
+                {
+                    GST_MESSAGE("put idling alert message.");
+                    partassembly->priv->alert = true;
+                    
+                    std::string alertMessage = "," + std::string(partassembly->priv->alertType) + "<" + return_current_time_and_date() + ">";
+                
+                    meta->batch.frames[0].detection_results[containerId].meta += alertMessage;
+                    //partassembly->alertTick = cv::getTickCount();
+                    partassembly->alertTick = partassembly->runningTime;
+                }
+            }
+            
+            // If completed, set alert
+            if(checkAction == assemblyActionVector.size() - 1)
+            {
+                std::string alertMessage = "," + std::string("Completed") + "<" + return_current_time_and_date() + ">";
+                meta->batch.frames[0].detection_results[containerId].meta += alertMessage;
+                GST_MESSAGE("put Completed alert message.");
+            }
         }
     }
 }

@@ -69,6 +69,21 @@ libs_meta += cc.find_library('gstadmeta',
 
 inc_meta = include_directories(join_paths(eva_root_dir, 'include'))
 
+## add gstadroimeta
+libs_meta2 = []
+libs_meta2 += cc.find_library('gstadroimeta',
+                required : true,
+                dirs : [join_paths(eva_root_dir, 'lib')])
+
+
+inc_meta2 = include_directories(join_paths(eva_root_dir, 'include'))
+
+gstmeta2_dep = declare_dependency(
+  dependencies : libs_meta2,
+  include_directories: inc_meta2,
+)
+#### End to declare gstmeta dependency
+
 gstmeta_dep = declare_dependency(
   dependencies : libs_meta,
   include_directories: inc_meta,
@@ -77,5 +92,5 @@ gstmeta_dep = declare_dependency(
 
 library('weardetection',
     'gstweardetection.cpp',
-    dependencies : [gst, gst_base, gst_video, cv_dep, gstmeta_dep],
+    dependencies : [gst, gst_base, gst_video, cv_dep, gstmeta_dep, gstmeta2_dep],
   )

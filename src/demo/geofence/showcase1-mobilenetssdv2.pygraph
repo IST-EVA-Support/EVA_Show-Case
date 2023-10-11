@@ -12,29 +12,6 @@
             "uuid": "f4af12b6-ee21-4fc8-a5ed-ea2e7185df85",
             "inputs": [
                 {
-                    "name": "name",
-                    "package": "PyFlowBase",
-                    "fullName": "filesrc_name",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"filesrc\"",
-                    "uuid": "cc1eee6c-a17a-4c17-aac6-3250a8dee790",
-                    "linkedTo": [],
-                    "pinIndex": 1,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "name",
-                        "wires": {}
-                    }
-                },
-                {
                     "name": "location",
                     "package": "PyFlowBase",
                     "fullName": "filesrc_location",
@@ -54,6 +31,29 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "location",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "filesrc_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"filesrc\"",
+                    "uuid": "cc1eee6c-a17a-4c17-aac6-3250a8dee790",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
                         "wires": {}
                     }
                 }
@@ -89,10 +89,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "dfc9437a-f2e5-4dcd-b3c3-b660695d1c41",
-                                "destinationUUID": "8ff2c108-b148-4f18-b017-de2f7ce68817",
+                                "destinationUUID": "d9b5a38c-9a0f-49dd-88d4-cdf26fedabaf",
                                 "sourceName": "filesrc_src",
                                 "destinationName": "qtdemux_sink",
-                                "uuid": "cf1aa497-c7d1-4179-9927-e48debd8d9ad",
+                                "uuid": "a908e1df-02a3-4a62-a56a-3be5003205e6",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -188,10 +188,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "1d276cc4-6212-40d8-b2f7-354fed3eae96",
-                                "destinationUUID": "062bf8fd-4051-48f1-82d6-201f0fad0b1f",
+                                "destinationUUID": "5714b4ba-3fb0-41a9-8234-3f628dd7bc4d",
                                 "sourceName": "qtdemux_video_%u",
                                 "destinationName": "h264parse_sink",
-                                "uuid": "2d4068fb-4702-4eb1-8e4c-494731024093",
+                                "uuid": "df04e3f2-c4d5-4104-bcfa-029da7766e38",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -331,10 +331,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "0aead57f-4a1a-4bd2-867d-83258c658fb2",
-                                "destinationUUID": "c51452f4-124e-46ba-b471-47303b5e0da8",
+                                "destinationUUID": "0f0b22db-16f4-423a-a0d3-634d4e5d3474",
                                 "sourceName": "h264parse_src",
                                 "destinationName": "avdec_h264_sink",
-                                "uuid": "e82f4a67-7520-46fd-81c5-91c8c1c6394f",
+                                "uuid": "a3078a29-d7ed-431a-bf87-85115a0367a3",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -432,10 +432,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "6c97f1d6-b80b-4dc2-9108-3c7726066b09",
-                                "destinationUUID": "18093972-f353-4585-9930-ca2fe1643bba",
+                                "destinationUUID": "a4d12c2b-cea0-4b8f-938b-2cee1ca2651b",
                                 "sourceName": "avdec_h264_src",
                                 "destinationName": "videoconvert_sink",
-                                "uuid": "729c5296-39e4-4060-8d4d-eb8c3271f908",
+                                "uuid": "2e33cae3-89bf-40fe-926d-e802d43f6604",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -533,10 +533,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "ae124509-8d06-4233-a1b0-9febd03fc927",
-                                "destinationUUID": "8ec1ec0f-01f9-4eaf-96bb-46be5015dab7",
+                                "destinationUUID": "433ae0c7-43ce-4ff3-b660-d4e32cff06a2",
                                 "sourceName": "videoconvert_src",
                                 "destinationName": "adrt_sink",
-                                "uuid": "ea456911-a0ec-4fff-990a-13b0a950c67d",
+                                "uuid": "5755590f-323c-4f07-abb2-a0b71e202772",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -579,29 +579,6 @@
             "name": "adrt",
             "uuid": "1841dcf2-06bb-4fe9-8d83-49f1ab13d1ee",
             "inputs": [
-                {
-                    "name": "device",
-                    "package": "PyFlowBase",
-                    "fullName": "adrt_device",
-                    "dataType": "IntPin",
-                    "direction": 0,
-                    "value": "0",
-                    "uuid": "a224e630-1064-4511-a128-542aee9772a0",
-                    "linkedTo": [],
-                    "pinIndex": 5,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "device",
-                        "wires": {}
-                    }
-                },
                 {
                     "name": "name",
                     "package": "PyFlowBase",
@@ -649,15 +626,15 @@
                     }
                 },
                 {
-                    "name": "mean",
+                    "name": "model",
                     "package": "PyFlowBase",
-                    "fullName": "adrt_mean",
+                    "fullName": "adrt_model",
                     "dataType": "StringPin",
                     "direction": 0,
-                    "value": "\"127 127 127\"",
-                    "uuid": "d357b913-c380-4dfc-8b78-3824aa1eefd1",
+                    "value": "\"./mobilenetSSDv2_geofencing.engine\"",
+                    "uuid": "1e370594-f9cc-41c3-9f1b-56449975ae4b",
                     "linkedTo": [],
-                    "pinIndex": 8,
+                    "pinIndex": 4,
                     "options": [
                         256
                     ],
@@ -667,7 +644,30 @@
                     "alwaysDict": false,
                     "wrapper": {
                         "bLabelHidden": false,
-                        "displayName": "mean",
+                        "displayName": "model",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "query",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_query",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"//\"",
+                    "uuid": "2be43008-c133-47f5-98a7-ac8e9020a2a1",
+                    "linkedTo": [],
+                    "pinIndex": 10,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "query",
                         "wires": {}
                     }
                 },
@@ -695,15 +695,15 @@
                     }
                 },
                 {
-                    "name": "model",
+                    "name": "device",
                     "package": "PyFlowBase",
-                    "fullName": "adrt_model",
-                    "dataType": "StringPin",
+                    "fullName": "adrt_device",
+                    "dataType": "IntPin",
                     "direction": 0,
-                    "value": "\"./mobilenetSSDv2_geofencing.engine\"",
-                    "uuid": "1e370594-f9cc-41c3-9f1b-56449975ae4b",
+                    "value": "0",
+                    "uuid": "a224e630-1064-4511-a128-542aee9772a0",
                     "linkedTo": [],
-                    "pinIndex": 4,
+                    "pinIndex": 5,
                     "options": [
                         256
                     ],
@@ -713,7 +713,53 @@
                     "alwaysDict": false,
                     "wrapper": {
                         "bLabelHidden": false,
-                        "displayName": "model",
+                        "displayName": "device",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "engine-id",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_engine-id",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"adrt\"",
+                    "uuid": "4a6e3c88-8b2d-44d4-8087-0c2dbea72e25",
+                    "linkedTo": [],
+                    "pinIndex": 11,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "engine-id",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "mean",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_mean",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"127 127 127\"",
+                    "uuid": "d357b913-c380-4dfc-8b78-3824aa1eefd1",
+                    "linkedTo": [],
+                    "pinIndex": 8,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "mean",
                         "wires": {}
                     }
                 }
@@ -749,10 +795,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "492ee988-a0a3-4b5b-b86d-44644a87846e",
-                                "destinationUUID": "daed48b2-3709-4752-acd4-3e8cce81df98",
+                                "destinationUUID": "760826eb-cacb-48c8-b98f-96f436c04a5a",
                                 "sourceName": "adrt_src",
                                 "destinationName": "adtrans_ssd_sink",
-                                "uuid": "38145895-daab-409c-9088-7afb3dfdeb55",
+                                "uuid": "18e3314f-6253-4562-af45-17fca69a3ca4",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -796,29 +842,6 @@
             "uuid": "89aeaa48-7ef8-431a-a7ec-d3832f9cfb50",
             "inputs": [
                 {
-                    "name": "name",
-                    "package": "PyFlowBase",
-                    "fullName": "adtrans_ssd_name",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"adtrans_ssd\"",
-                    "uuid": "231c295d-e3b6-455d-b61b-a14999662213",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "name",
-                        "wires": {}
-                    }
-                },
-                {
                     "name": "threshold",
                     "package": "PyFlowBase",
                     "fullName": "adtrans_ssd_threshold",
@@ -842,29 +865,6 @@
                     }
                 },
                 {
-                    "name": "max-count",
-                    "package": "PyFlowBase",
-                    "fullName": "adtrans_ssd_max-count",
-                    "dataType": "IntPin",
-                    "direction": 0,
-                    "value": "5",
-                    "uuid": "6602ccf6-1c49-4a82-a403-c4e99b9e9142",
-                    "linkedTo": [],
-                    "pinIndex": 4,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "max-count",
-                        "wires": {}
-                    }
-                },
-                {
                     "name": "label",
                     "package": "PyFlowBase",
                     "fullName": "adtrans_ssd_label",
@@ -884,6 +884,52 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "label",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_ssd_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"adtrans_ssd\"",
+                    "uuid": "231c295d-e3b6-455d-b61b-a14999662213",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "max-count",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_ssd_max-count",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "5",
+                    "uuid": "6602ccf6-1c49-4a82-a403-c4e99b9e9142",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "max-count",
                         "wires": {}
                     }
                 }
@@ -919,10 +965,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "cbb0b939-ea03-4691-823b-66b476d7b54b",
-                                "destinationUUID": "9d64dfe9-f2bf-4ce5-9362-5f1e25eedfb8",
+                                "destinationUUID": "55daf99d-cc89-478b-9629-395b812b7910",
                                 "sourceName": "adtrans_ssd_src",
                                 "destinationName": "geofencebase_sink",
-                                "uuid": "3bd02ea8-865c-4331-baee-23b6f70229cf",
+                                "uuid": "38e31886-b360-4945-be51-72f1e89df536",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -966,15 +1012,15 @@
             "uuid": "64966af0-e2e6-426a-9e66-dec89110c052",
             "inputs": [
                 {
-                    "name": "alert-area-def",
+                    "name": "area-display",
                     "package": "PyFlowBase",
-                    "fullName": "geofencebase_alert-area-def",
-                    "dataType": "StringPin",
+                    "fullName": "geofencebase_area-display",
+                    "dataType": "BoolPin",
                     "direction": 0,
-                    "value": "\"./alert-def-area-geo.txt\"",
-                    "uuid": "cab069af-2f40-4169-a06f-7093faabaa6d",
+                    "value": "true",
+                    "uuid": "060cd463-47d9-48a1-a1f0-122c2ac2e3fd",
                     "linkedTo": [],
-                    "pinIndex": 4,
+                    "pinIndex": 5,
                     "options": [
                         256
                     ],
@@ -984,7 +1030,30 @@
                     "alwaysDict": false,
                     "wrapper": {
                         "bLabelHidden": false,
-                        "displayName": "alert-area-def",
+                        "displayName": "area-display",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "person-display",
+                    "package": "PyFlowBase",
+                    "fullName": "geofencebase_person-display",
+                    "dataType": "BoolPin",
+                    "direction": 0,
+                    "value": "true",
+                    "uuid": "64c96ed1-a7c1-4d09-aa79-15fc18872aac",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "person-display",
                         "wires": {}
                     }
                 },
@@ -1012,15 +1081,15 @@
                     }
                 },
                 {
-                    "name": "area-display",
+                    "name": "query",
                     "package": "PyFlowBase",
-                    "fullName": "geofencebase_area-display",
-                    "dataType": "BoolPin",
+                    "fullName": "geofencebase_query",
+                    "dataType": "StringPin",
                     "direction": 0,
-                    "value": "true",
-                    "uuid": "060cd463-47d9-48a1-a1f0-122c2ac2e3fd",
+                    "value": "\"//adrt[class in person]\"",
+                    "uuid": "2c10a18f-9c6b-4574-b72d-e9e02462007b",
                     "linkedTo": [],
-                    "pinIndex": 5,
+                    "pinIndex": 9,
                     "options": [
                         256
                     ],
@@ -1030,7 +1099,30 @@
                     "alwaysDict": false,
                     "wrapper": {
                         "bLabelHidden": false,
-                        "displayName": "area-display",
+                        "displayName": "query",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "alert-area-def",
+                    "package": "PyFlowBase",
+                    "fullName": "geofencebase_alert-area-def",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"./alert-def-area-geo.txt\"",
+                    "uuid": "cab069af-2f40-4169-a06f-7093faabaa6d",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "alert-area-def",
                         "wires": {}
                     }
                 },
@@ -1054,29 +1146,6 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "alert-type",
-                        "wires": {}
-                    }
-                },
-                {
-                    "name": "person-display",
-                    "package": "PyFlowBase",
-                    "fullName": "geofencebase_person-display",
-                    "dataType": "BoolPin",
-                    "direction": 0,
-                    "value": "true",
-                    "uuid": "64c96ed1-a7c1-4d09-aa79-15fc18872aac",
-                    "linkedTo": [],
-                    "pinIndex": 6,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "person-display",
                         "wires": {}
                     }
                 }
@@ -1112,10 +1181,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "1a8cb6f4-ba1f-40e8-9770-3ecf1abb8c5b",
-                                "destinationUUID": "18840209-772d-4372-ba95-c8b56ff6563e",
+                                "destinationUUID": "e1dfcc55-fb9a-4b4e-93b0-f9e9909888e6",
                                 "sourceName": "geofencebase_src",
                                 "destinationName": "email_alert_sink",
-                                "uuid": "e031ef92-3b5c-447e-8531-abf6ef75a367",
+                                "uuid": "508073c4-8973-4b2a-bc28-8f882a7be451",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1213,10 +1282,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "9a14e703-045f-40ac-a2f3-799e85d34766",
-                                "destinationUUID": "063560ee-1e63-4f54-98db-4c21902d607c",
+                                "destinationUUID": "050a52db-739d-4633-909f-54b5b6765266",
                                 "sourceName": "videoconvert1_src",
                                 "destinationName": "ximagesink_sink",
-                                "uuid": "14b2d08f-386d-43cc-b4fd-46e538fc5175",
+                                "uuid": "09ffda71-5164-467f-b05a-6db4e91996ef",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1310,6 +1379,52 @@
             "uuid": "03e6c7c2-82ae-4009-8f40-12ba1ec46eb1",
             "inputs": [
                 {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "email_alert_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"email_alert\"",
+                    "uuid": "b02d4e74-e9d3-4018-b7ab-ebbc18bf9da6",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "query",
+                    "package": "PyFlowBase",
+                    "fullName": "email_alert_query",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"//adrt\"",
+                    "uuid": "cbd1bd76-5754-4439-adb5-3814ffc13242",
+                    "linkedTo": [],
+                    "pinIndex": 6,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "query",
+                        "wires": {}
+                    }
+                },
+                {
                     "name": "alert-type",
                     "package": "PyFlowBase",
                     "fullName": "email_alert_alert-type",
@@ -1354,29 +1469,6 @@
                         "displayName": "receiver-address",
                         "wires": {}
                     }
-                },
-                {
-                    "name": "name",
-                    "package": "PyFlowBase",
-                    "fullName": "email_alert_name",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"email_alert\"",
-                    "uuid": "b02d4e74-e9d3-4018-b7ab-ebbc18bf9da6",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "name",
-                        "wires": {}
-                    }
                 }
             ],
             "outputs": [
@@ -1410,10 +1502,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "e99fbc81-0352-4e19-8b1f-22cf5cc430f1",
-                                "destinationUUID": "b331437f-2221-4d21-82bc-0993cd835572",
+                                "destinationUUID": "d7eefa44-4e08-4fe2-9d2f-29ec26739db1",
                                 "sourceName": "email_alert_src",
                                 "destinationName": "voice_alert_sink",
-                                "uuid": "a6f095ae-0b11-4343-9577-fbab89fc370d",
+                                "uuid": "03109f9b-7159-4ce2-96fd-d71acf012816",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1434,7 +1526,7 @@
             "wrapper": {
                 "resize": {
                     "w": 140.0,
-                    "h": 143.0
+                    "h": 172.0
                 },
                 "collapsed": false,
                 "peeped": false,
@@ -1446,7 +1538,7 @@
                 }
             },
             "x": 33.096537902993205,
-            "y": -103.23535567232949
+            "y": -97.23535567232949
         },
         {
             "package": "PyFlowGstreamer",
@@ -1476,6 +1568,29 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "alert-type",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "query",
+                    "package": "PyFlowBase",
+                    "fullName": "voice_alert_query",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"//adrt\"",
+                    "uuid": "1451a78e-3e70-4b1f-afae-49a8cb1fc2e3",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "query",
                         "wires": {}
                     }
                 },
@@ -1534,10 +1649,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "fd9062a6-6532-48f9-885a-9a4cab166765",
-                                "destinationUUID": "97137d87-d17f-4658-9fad-9e77c47c9e2c",
+                                "destinationUUID": "68ce6916-521d-4fb2-9f82-f8e3d15019df",
                                 "sourceName": "voice_alert_src",
                                 "destinationName": "videoconvert1_sink",
-                                "uuid": "ed8dbd96-dc85-4e90-ba23-6d18ab4fedba",
+                                "uuid": "80f9ee64-45a9-4849-88cb-c3d1d9fa4cb3",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1558,7 +1673,7 @@
             "wrapper": {
                 "resize": {
                     "w": 120.0,
-                    "h": 98.0
+                    "h": 130.0
                 },
                 "collapsed": false,
                 "peeped": false,
