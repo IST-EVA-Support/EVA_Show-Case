@@ -27,6 +27,8 @@ struct _Gstgeofencefoot
   cv::Mat srcMat;
   long eventTick;
   long lastEventTick;
+  gchar* engineID;
+  gchar* query;
 
 };
 

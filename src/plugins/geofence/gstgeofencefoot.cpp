@@ -12,7 +12,9 @@
 #include <regex>
 #include <string>
 #include <vector>
-#include "gstadmeta.h"
+#include "gstadmeta.h" // for metadata version 1
+#include <gstadroi_frame.h> // for metadata version 2
+#include <gstadroi_batch.h> // for metadata version 2
 #include "utils.h"
 
 //#define DEFAULT_ALERT_TYPE "BreakIn"
@@ -33,7 +35,8 @@ static GstFlowReturn gst_geofencefoot_transform_frame_ip (GstVideoFilter * filte
 
 static void mapGstVideoFrame2OpenCVMat(Gstgeofencefoot *geofencefoot, GstVideoFrame *frame, GstMapInfo &info);
 static void getDetectedPerson(Gstgeofencefoot *geofencefoot, GstBuffer* buffer);
-static void doAlgorithm(Gstgeofencefoot *geofencefoot, GstBuffer* buffer);
+static void breakInDetection(Gstgeofencefoot *geofencebase);
+static void doAlgorithm(Gstgeofencefoot *geofencefoot, GstBuffer* buffer, GstPad* pad);
 static void drawArea(Gstgeofencefoot *geofencefoot);
 static void drawAlertPerson(Gstgeofencefoot *geofencefoot);
 
@@ -49,9 +52,10 @@ struct _GstgeofencefootPrivate
     bool person_display;
     bool alert;
     std::vector<int> map_vec;
+    std::vector<int> map_breakin_person_vec;
     //std::string alertType;
 	gchar* alertType;
-    bool enterArea;
+    //bool enterArea;
 };
 
 enum
@@ -60,7 +64,9 @@ enum
     PROP_ALERT_AREA_DEFINITION,
     PROP_ALERT_AREA_DISPLAY,
     PROP_ALERT_PERSON_DISPLAY,
-    PROP_ALERT_TYPE,    
+    PROP_ALERT_TYPE,  
+    PROP_ENGINE_ID,
+    PROP_QUERY,
 };
 
 #define DEBUG_INIT GST_DEBUG_CATEGORY_INIT(GST_CAT_DEFAULT, "gstgeofencefoot", 0, "debug category for gstgeofencefoot element");
@@ -111,6 +117,12 @@ static void gst_geofencefoot_class_init (GstgeofencefootClass * klass)
   g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ALERT_PERSON_DISPLAY,
                                    g_param_spec_boolean("person-display", "Person-display", "Show inferenced person region in frame.", FALSE, G_PARAM_READWRITE));
   
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_ENGINE_ID,
+                                   g_param_spec_string ("engine-id", "engine-id", "The Inference engine ID, if empty will use plugin name as engine ID.", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+  
+  g_object_class_install_property (G_OBJECT_CLASS (klass), PROP_QUERY,
+                                   g_param_spec_string ("query", "query", "ROI query", "", (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)));
+  
   
   gobject_class->dispose = gst_geofencefoot_dispose;
   gobject_class->finalize = gst_geofencefoot_finalize;
@@ -132,7 +144,9 @@ static void gst_geofencefoot_init (Gstgeofencefoot *geofencefoot)
     geofencefoot->eventTick = 0;
     geofencefoot->lastEventTick = 0;
     geofencefoot->priv->alertType = "BreakIn\0";//DEFAULT_ALERT_TYPE;
-    geofencefoot->priv->enterArea = false;
+    //geofencefoot->priv->enterArea = false;
+    geofencefoot->engineID = "";
+    geofencefoot->query = "";
 }
 
 void gst_geofencefoot_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec)
@@ -190,6 +204,16 @@ void gst_geofencefoot_set_property (GObject * object, guint property_id, const G
             GST_MESSAGE("Display inferenced person is enabled!");
         break;
     }
+    case PROP_ENGINE_ID:
+    {
+        geofencefoot->engineID = g_value_dup_string(value);
+        break;  
+    }
+    case PROP_QUERY:
+    {
+        geofencefoot->query = g_value_dup_string(value);
+        break;  
+    }
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
@@ -216,6 +240,14 @@ void gst_geofencefoot_get_property (GObject * object, guint property_id, GValue 
        break;
     case PROP_ALERT_PERSON_DISPLAY:
        g_value_set_boolean(value, geofencefoot->priv->person_display);
+       break;
+    case PROP_ENGINE_ID:
+       g_value_set_string (value, geofencefoot->engineID);
+       //g_value_set_string (value, geofencefoot->engineID.c_str());
+       break;
+    case PROP_QUERY:
+       g_value_set_string (value, geofencefoot->query);
+       //g_value_set_string (value, geofencefoot->query.c_str());
        break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -298,7 +330,7 @@ static GstFlowReturn gst_geofencefoot_transform_frame_ip (GstVideoFilter * filte
   getDetectedPerson(geofencefoot, frame->buffer);
   
   // do algorithm
-  doAlgorithm(geofencefoot, frame->buffer);  
+  doAlgorithm(geofencefoot, frame->buffer, filter->element.sinkpad);  
   
   // draw alert area
   drawArea(geofencefoot);
@@ -331,37 +363,43 @@ static void getDetectedPerson(Gstgeofencefoot *geofencefoot, GstBuffer* buffer)
     geofencefoot->priv->foot_vec.clear();
     geofencefoot->priv->map_vec.clear();
     
-    // image boundry 
-    cv::Rect boundry(0, 0, geofencefoot->srcMat.cols, geofencefoot->srcMat.rows);
-    
-    
-    GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
-    if (meta == NULL)
-        g_message("Adlink metadata is not exist!");
-    else
+    int width = geofencefoot->srcMat.cols;
+    int height = geofencefoot->srcMat.rows;
+                
+    if(geofencefoot->query != "") /*if query is not empty, use metadata version 2*/
     {
-        AdBatch &batch = meta->batch;
-        
-        bool frame_exist = batch.frames.size() > 0 ? true : false;
-        if(frame_exist)
+        // check engineID
+        std::string engineID = std::string(geofencefoot->engineID);
+        if (engineID == "") 
         {
-            VideoFrameData frame_info = batch.frames[0];
-                
-            int detectionBoxResultNumber = frame_info.detection_results.size();
-            int width = geofencefoot->srcMat.cols;
-            int height = geofencefoot->srcMat.rows;
+            gchar *name = gst_element_get_name(geofencefoot);
+            if (engineID == "")
+                name = gst_element_get_name(geofencefoot);
             
-            for(int i = 0 ; i < detectionBoxResultNumber ; ++i)
+            if (name == NULL)
+                engineID = std::string("geofencefoot");
+            else
             {
-                adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
-                
-                int x1 = (int)(width * detection_result.x1);
-                int y1 = (int)(height * detection_result.y1);
-                int x2 = (int)(width * detection_result.x2);
-                int y2 = (int)(height * detection_result.y2);
+                engineID = std::string(name);
+                g_free(name);
+            }
+        }
+        
+        std::vector<QueryResult> results = gst_buffer_adroi_query(buffer, geofencefoot->query);
+        for(unsigned int i = 0; i < results.size(); ++i)
+        {
+            QueryResult queryResult = results[i];
+            for(auto roi: queryResult.rois)
+            {
+                if(roi->category == "box")
+                {
+                    auto box = std::static_pointer_cast<Box>(roi);
                     
-                if(detection_result.obj_label.compare("person") == 0)
-                {    
+                    int x1 = (int)(width * box->x1);
+                    int y1 = (int)(height * box->y1);
+                    int x2 = (int)(width * box->x2);
+                    int y2 = (int)(height * box->y2);
+                    
                     std::vector<cv::Point> personPoint_vec;
                     personPoint_vec.push_back(cv::Point2d(x1, y1));
                     personPoint_vec.push_back(cv::Point2d(x2, y1));
@@ -381,6 +419,7 @@ static void getDetectedPerson(Gstgeofencefoot *geofencefoot, GstBuffer* buffer)
                     upper_personPoint_vec.push_back(cv::Point2d(x2, y1 + (y2-y1+1)/4));
                     upper_personPoint_vec.push_back(cv::Point2d(x1, y1 + (y2-y1+1)/4));
                     
+                    
                     geofencefoot->priv->person_vec.push_back(personPoint_vec);
                     geofencefoot->priv->foot_vec.push_back(footPoint_vec);
                     geofencefoot->priv->upper_person_vec.push_back(upper_personPoint_vec);
@@ -392,26 +431,82 @@ static void getDetectedPerson(Gstgeofencefoot *geofencefoot, GstBuffer* buffer)
                     
                     if(geofencefoot->priv->person_display)
                         cv::rectangle(geofencefoot->srcMat, cv::Point(geofencefoot->priv->person_vec[current_id][0].x, geofencefoot->priv->person_vec[current_id][0].y), cv::Point(geofencefoot->priv->person_vec[current_id][2].x, geofencefoot->priv->person_vec[current_id][2].y), cv::Scalar(0,128,128), 3, cv::LINE_8);
-                }                          
+                }    
+            }
+        }
+    }
+    else /*if query is empty, use metadata version 1*/
+    {
+        // image boundry 
+        cv::Rect boundry(0, 0, geofencefoot->srcMat.cols, geofencefoot->srcMat.rows);
+        
+        
+        GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
+        if (meta == NULL)
+            g_message("Adlink metadata is not exist!");
+        else
+        {
+            AdBatch &batch = meta->batch;
+            
+            bool frame_exist = batch.frames.size() > 0 ? true : false;
+            if(frame_exist)
+            {
+                VideoFrameData frame_info = batch.frames[0];
+                    
+                int detectionBoxResultNumber = frame_info.detection_results.size();
+                
+                for(int i = 0 ; i < detectionBoxResultNumber ; ++i)
+                {
+                    adlink::ai::DetectionBoxResult detection_result = frame_info.detection_results[i];
+                    
+                    int x1 = (int)(width * detection_result.x1);
+                    int y1 = (int)(height * detection_result.y1);
+                    int x2 = (int)(width * detection_result.x2);
+                    int y2 = (int)(height * detection_result.y2);
+                        
+                    if(detection_result.obj_label.compare("person") == 0)
+                    {    
+                        std::vector<cv::Point> personPoint_vec;
+                        personPoint_vec.push_back(cv::Point2d(x1, y1));
+                        personPoint_vec.push_back(cv::Point2d(x2, y1));
+                        personPoint_vec.push_back(cv::Point2d(x2, y2));
+                        personPoint_vec.push_back(cv::Point2d(x1, y2));
+                        
+                        int head2footHeight = (y2 - y1 + 1) * 0.9;
+                        std::vector<cv::Point> footPoint_vec;
+                        footPoint_vec.push_back(cv::Point2d(x1, y1 + head2footHeight));
+                        footPoint_vec.push_back(cv::Point2d(x2, y1 + head2footHeight));
+                        footPoint_vec.push_back(cv::Point2d(x2, y2));
+                        footPoint_vec.push_back(cv::Point2d(x1, y2));
+                        
+                        std::vector<cv::Point> upper_personPoint_vec;
+                        upper_personPoint_vec.push_back(cv::Point2d(x1, y1));
+                        upper_personPoint_vec.push_back(cv::Point2d(x2, y1));
+                        upper_personPoint_vec.push_back(cv::Point2d(x2, y1 + (y2-y1+1)/4));
+                        upper_personPoint_vec.push_back(cv::Point2d(x1, y1 + (y2-y1+1)/4));
+                        
+                        geofencefoot->priv->person_vec.push_back(personPoint_vec);
+                        geofencefoot->priv->foot_vec.push_back(footPoint_vec);
+                        geofencefoot->priv->upper_person_vec.push_back(upper_personPoint_vec);
+                        
+                        // record the mapping index
+                        geofencefoot->priv->map_vec.push_back(i);
+                        
+                        int current_id = geofencefoot->priv->person_vec.size() - 1;
+                        
+                        if(geofencefoot->priv->person_display)
+                            cv::rectangle(geofencefoot->srcMat, cv::Point(geofencefoot->priv->person_vec[current_id][0].x, geofencefoot->priv->person_vec[current_id][0].y), cv::Point(geofencefoot->priv->person_vec[current_id][2].x, geofencefoot->priv->person_vec[current_id][2].y), cv::Scalar(0,128,128), 3, cv::LINE_8);
+                    }                          
+                }
             }
         }
     }
 }
 
-static void doAlgorithm(Gstgeofencefoot *geofencefoot, GstBuffer* buffer)
+static void breakInDetection(Gstgeofencefoot *geofencefoot)
 {
-    // If no region, return directly. Points must larger than 2.
-    if(geofencefoot->priv->area_point_vec.size() <= 2)
-        return;
-    
-    // If metadata does not exist, return directly.
-    GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
-    if (meta == NULL)
-    {
-        g_message("Adlink metadata is not exist!");
-        return;
-    }
-    AdBatch &batch = meta->batch;
+    // Reset break in person index
+    geofencefoot->priv->map_breakin_person_vec.clear();
     
     // Reset region from alarm to normal after 2 seconds.
     if((cv::getTickCount() - geofencefoot->eventTick)/ cv::getTickFrequency() > 2)
@@ -432,17 +527,77 @@ static void doAlgorithm(Gstgeofencefoot *geofencefoot, GstBuffer* buffer)
         int footHeight = geofencefoot->priv->foot_vec[id][2].y - geofencefoot->priv->foot_vec[id][1].y + 1;
         float intersectArea = cv::intersectConvexConvex(geofencefoot->priv->area_point_vec, geofencefoot->priv->foot_vec[id], intersectionPolygon, true);
         float footOverlapRatio = intersectArea/(footWidth * footHeight);
-        geofencefoot->priv->enterArea = footOverlapRatio > 0.7 ? true : false;
-
-        //entering area detected
-        if(geofencefoot->priv->enterArea == true)
+        
+        if(footOverlapRatio > 0.7)
         {
-            // alert message format:",type<time>", must used append.
-            std::string alertMessage = "," + std::string(geofencefoot->priv->alertType) + "<" + return_current_time_and_date() + ">";
-
             geofencefoot->eventTick = cv::getTickCount();
             geofencefoot->priv->alert = true;
-            meta->batch.frames[0].detection_results[geofencefoot->priv->map_vec[id]].meta += alertMessage;
+            geofencefoot->priv->map_breakin_person_vec.push_back(id);
+        }
+    }
+}
+
+static void doAlgorithm(Gstgeofencefoot *geofencefoot, GstBuffer* buffer, GstPad* pad)
+{
+    // If no region, return directly. Points must larger than 2.
+    if(geofencefoot->priv->area_point_vec.size() <= 2)
+        return;
+    
+    // Break in detection
+    breakInDetection(geofencefoot);
+    
+    // alert setting to metadata
+    if(geofencefoot->priv->alert == true)
+    {
+        if(geofencefoot->query != "")
+        {
+            auto *f_meta = gst_buffer_acquire_adroi_frame_meta(buffer, pad);
+            if (f_meta == nullptr) 
+            {
+                GST_ERROR("Can not get adlink ROI frame metadata");
+                return;
+            }
+            
+            auto *b_meta = gst_buffer_acquire_adroi_batch_meta(buffer);
+            if (b_meta == nullptr)
+            {
+                GST_ERROR("Can not acquire adlink ROI batch metadata");
+                return;
+            }
+
+            auto qrs = f_meta->frame->query(geofencefoot->query);
+            if(qrs.size() > 0)
+            {
+                for(int i = 0; i < geofencefoot->priv->map_breakin_person_vec.size(); ++i)
+                {
+                    int id = geofencefoot->priv->map_breakin_person_vec[i];
+                    std::string alertMessage = std::string(geofencefoot->priv->alertType) + "<" + return_current_time_and_date() + ">";
+                    qrs[0].rois[geofencefoot->priv->map_vec[id]]->events.push_back(alertMessage);
+                }
+            }
+        }
+        else
+        {
+            // If metadata does not exist, return directly.
+            GstAdBatchMeta *meta = gst_buffer_get_ad_batch_meta(buffer);
+            if (meta == NULL)
+            {
+                g_message("Adlink metadata is not exist!");
+                return;
+            }
+            AdBatch &batch = meta->batch;
+            bool frame_exist = batch.frames.size() > 0 ? true : false;
+            if(frame_exist)
+            {
+                for(int id = 0; id < geofencefoot->priv->map_breakin_person_vec.size(); ++id)
+                {
+                    // alert message format:",type<time>", must used append.
+                    std::string alertMessage = "," + std::string(geofencefoot->priv->alertType) + "<" + return_current_time_and_date() + ">";
+
+                    //geofencefoot->priv->alert = true;
+                    meta->batch.frames[0].detection_results[geofencefoot->priv->map_vec[id]].meta += alertMessage;
+                }
+            }
         }
     }
 }

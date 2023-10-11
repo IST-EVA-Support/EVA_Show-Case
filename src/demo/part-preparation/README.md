@@ -83,11 +83,6 @@ After installation, execute run.sh for the pipeline command:
 > ./run.sh
 ```
 
-This showcase utilizes the DSSD (Deconvolutional Single Shot Detector) and is trained by NVIDIA TAO. Two models which pruned and without pruned are provided. The default used model is without pruned when running. Use the command below to run pruned model:
-
-```
-> ./run.sh yes
-```
 
 <!---
 
