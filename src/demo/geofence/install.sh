@@ -12,10 +12,19 @@ message_out(){
     echo -e "${LB}=> $1${NC}"
 }
 
+# Check is in ADLINK EVA container
+sudoString="sudo"
+if [ -e "/entrypoint.sh" ]
+then
+    sudoString=" "
+fi
+message_out "sudo String = ${sudoString}"
+
+
 message_out "Start installing..."
 # build required plugin
 message_out "Building geofence plugin..."
-sudo apt -y install libgstreamer-plugins-base1.0-dev
+${sudoString} apt -y install libgstreamer-plugins-base1.0-dev
 ../../plugins/geofence/geofence-build.sh
 # download video
 if [ -e "geo-fencing-demo.mp4" ]
@@ -47,7 +56,7 @@ then
             message_out "Start download model..."
             wget https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/geo_fencing_ssd_v2.zip
             # unzip it, then delete the zip file
-            sudo apt-get -y install unzip
+            ${sudoString} apt-get -y install unzip
             unzip geo_fencing_ssd_v2.zip
             rm geo_fencing_ssd_v2.zip
         fi
@@ -69,7 +78,7 @@ then
             message_out "Start download model..."
             wget https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/adlink-yolov3-geo-fencing.zip
             # unzip it, then delete the zip file
-            sudo apt-get -y install unzip
+            ${sudoString} apt-get -y install unzip
             unzip adlink-yolov3-geo-fencing.zip
             rm adlink-yolov3-geo-fencing.zip
         fi
@@ -108,8 +117,8 @@ message_out "Deploy alert plugin..."
 
 message_out "Install related python package"
 pip3 install -r requirements.txt
-sudo apt -y install gstreamer1.0-libav
-sudo apt-get -y install espeak
+${sudoString} apt -y install gstreamer1.0-libav
+${sudoString} apt-get -y install espeak
 rm ~/.cache/gstreamer-1.0/regi*
 
 message_out "Installation completed, you could run this demo by execute ./run.sh"

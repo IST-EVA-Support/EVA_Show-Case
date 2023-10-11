@@ -21,6 +21,15 @@ get_script_dir () {
     echo "$DIR"
 }
 
+# Check is in ADLINK EVA container
+sudoString="sudo"
+if [ -e "/entrypoint.sh" ]
+then
+    sudoString=" "
+fi
+message_out "sudo String = ${sudoString}"
+
+
 
 # if build folder exist, delete it
 message_out "check ./build folder..."
@@ -49,15 +58,15 @@ message_out "check eva plugings folder..."
 if [ -f "/opt/adlink/eva/plugins/libweardetection.so" ]
 then
     message_out "/opt/adlink/eva/plugins/libweardetection.so exist, will remove it first."
-    sudo rm /opt/adlink/eva/plugins/libweardetection.so
-    message_out "sudo rm /opt/adlink/eva/plugins/libweardetection.so is removed."
+    ${sudoString} rm /opt/adlink/eva/plugins/libweardetection.so
+    message_out "${sudoString} rm /opt/adlink/eva/plugins/libweardetection.so is removed."
 else
     message_out "/opt/adlink/eva/plugins/libweardetection.so does not exist, will copy it"
 fi
 
 # copy built library to eva plugins folder
 message_out "start copying to /opt/adlink/eva/plugins/ ......"
-sudo cp ./build/libweardetection.so /opt/adlink/eva/plugins/.
+${sudoString} cp ./build/libweardetection.so /opt/adlink/eva/plugins/.
 message_out "copy done"
 
 # clear cache of gstreamer
