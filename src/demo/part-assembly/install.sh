@@ -1,5 +1,35 @@
 #!/bin/bash
 
+<<<<<<< HEAD
+=======
+modelPruned="no_pruned"
+
+# GPU architecture checker
+gpuArchChecker="jetson"
+
+# echo "OPTIND starts at $OPTIND"
+while getopts "m:g:?" optname
+  do
+    case "$optname" in
+      "m")
+#         echo "Option $optname is specified"
+        modelPruned=$OPTARG
+        ;;
+      "g")
+#         echo "Option $optname has value $OPTARG"
+        gpuArchChecker=$OPTARG
+        ;;
+      "?")
+        echo "Unknown option $OPTARG"
+        ;;
+    esac
+  done
+
+
+# echo "modelPruned = ${modelPruned}"
+echo "gpuArchChecker = ${gpuArchChecker}"
+
+>>>>>>> tensorrt8-install
 LB='\033[1;33m'
 NC='\033[0m' # No Color
 
@@ -22,6 +52,7 @@ message_out "sudo String = ${sudoString}"
 
 
 message_out "Start installing..."
+
 # build required plugin
 message_out "Building assembly plugin..."
 ${sudoString} apt update
@@ -81,11 +112,12 @@ fi
 
 # download model and label zip file
 if [ -e "yolov4-tiny-608.onnx" ]
-then 
+then
     message_out "onnx model file exists."
 else    
     message_out "Start download model..."
     wget https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase5/model-yolov4.zip
+
     # unzip it, then delete the zip file
     ${sudoString} apt-get -y install unzip
     unzip model-yolov4.zip

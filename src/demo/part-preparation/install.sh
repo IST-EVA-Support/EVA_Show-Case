@@ -60,11 +60,12 @@ fi
 
 # download model and label zip file
 if [ -e "yolov4-tiny-608.onnx" ]
-then 
+then
     message_out "onnx model file exists."
 else    
     message_out "Start download model..."
     wget https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase4/model-yolov4.zip
+
     # unzip it, then delete the zip file
     ${sudoString} apt-get -y install unzip
     unzip model-yolov4.zip
