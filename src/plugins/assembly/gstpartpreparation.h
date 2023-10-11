@@ -34,6 +34,9 @@ struct _GstPartpreparation
   double runningTime;
   
   int emptyCounter;
+  
+  gchar* engineID;
+  gchar* query;
 };
 
 struct _GstPartpreparationClass

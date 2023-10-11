@@ -34,6 +34,9 @@ struct _Gstpartassembly
   
   bool partContainerIsEmpty;
   int lastTotalNumber;
+  
+  gchar* engineID;
+  gchar* query;
 };
 
 struct _GstpartassemblyClass

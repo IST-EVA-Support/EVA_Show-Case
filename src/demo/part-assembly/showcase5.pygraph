@@ -12,29 +12,6 @@
             "uuid": "c2e0bf7d-9ea0-40e7-80e7-fe56e63e79da",
             "inputs": [
                 {
-                    "name": "name",
-                    "package": "PyFlowBase",
-                    "fullName": "filesrc_name",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"filesrc\"",
-                    "uuid": "2e3c6d21-042b-448b-acb8-1edec6da3f96",
-                    "linkedTo": [],
-                    "pinIndex": 1,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "name",
-                        "wires": {}
-                    }
-                },
-                {
                     "name": "location",
                     "package": "PyFlowBase",
                     "fullName": "filesrc_location",
@@ -54,6 +31,29 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "location",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "filesrc_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"filesrc\"",
+                    "uuid": "2e3c6d21-042b-448b-acb8-1edec6da3f96",
+                    "linkedTo": [],
+                    "pinIndex": 1,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
                         "wires": {}
                     }
                 }
@@ -89,10 +89,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "4ff0153b-de69-4655-9dd6-b62684e769a2",
-                                "destinationUUID": "bbf3f08c-cd25-4bd9-9998-1fe41b978be0",
+                                "destinationUUID": "615b1804-aa8b-425f-87a1-d9b21ae6d545",
                                 "sourceName": "filesrc_src",
                                 "destinationName": "decodebin_sink",
-                                "uuid": "a811fc3a-e9d4-464f-8f8e-94499b4deab7",
+                                "uuid": "20a5aa26-ca10-47e9-8f74-121576d6684a",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -167,10 +167,10 @@
                         {
                             "lhsNodeName": "decodebin",
                             "outPinId": 1,
-                            "rhsNodeName": "nvvideoconvert",
+                            "rhsNodeName": "videoconvert",
                             "inPinId": 1,
                             "lhsNodeUid": "26a00780-1108-4399-adde-7f7c96ad8827",
-                            "rhsNodeUid": "9880b6f1-33b9-40a5-a272-80d9318f044f"
+                            "rhsNodeUid": "c485c6fa-b8fc-462c-86e5-748d3dbbe618"
                         }
                     ],
                     "pinIndex": 1,
@@ -187,10 +187,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "55f4ca79-a069-4268-9bca-e0a7eb4a925f",
-                                "destinationUUID": "5cd0c82e-a5ad-4103-8984-33ed3ccf6db7",
+                                "destinationUUID": "65870012-d648-4027-b03c-b4aa6b271899",
                                 "sourceName": "decodebin_src_%u",
-                                "destinationName": "nvvideoconvert_sink",
-                                "uuid": "90f10d87-72a2-4195-be60-038c5228d01e",
+                                "destinationName": "videoconvert_sink",
+                                "uuid": "ecd6d689-bf9c-4c6f-8973-5a40767121ba",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -219,107 +219,6 @@
             },
             "x": -421.2361242005974,
             "y": -284.3829133427995
-        },
-        {
-            "package": "PyFlowGstreamer",
-            "lib": null,
-            "type": "nvvideoconvert",
-            "owningGraphName": "root",
-            "name": "nvvideoconvert",
-            "uuid": "9880b6f1-33b9-40a5-a272-80d9318f044f",
-            "inputs": [
-                {
-                    "name": "name",
-                    "package": "PyFlowBase",
-                    "fullName": "nvvideoconvert_name",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"nvvideoconvert\"",
-                    "uuid": "94e43cd2-bd35-47fb-b49f-14592099cc70",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "name",
-                        "wires": {}
-                    }
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "src",
-                    "package": "PyFlowGstreamer",
-                    "fullName": "nvvideoconvert_src",
-                    "dataType": "",
-                    "direction": 1,
-                    "value": null,
-                    "uuid": "815c7742-c5e1-44cf-98af-96ba82cc031d",
-                    "linkedTo": [
-                        {
-                            "lhsNodeName": "nvvideoconvert",
-                            "outPinId": 1,
-                            "rhsNodeName": "videoconvert",
-                            "inPinId": 1,
-                            "lhsNodeUid": "9880b6f1-33b9-40a5-a272-80d9318f044f",
-                            "rhsNodeUid": "c485c6fa-b8fc-462c-86e5-748d3dbbe618"
-                        }
-                    ],
-                    "pinIndex": 1,
-                    "options": [],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "src",
-                        "wires": {
-                            "1": {
-                                "sourceUUID": "815c7742-c5e1-44cf-98af-96ba82cc031d",
-                                "destinationUUID": "3b6bc3a0-4446-4c56-997f-b5de80de37ef",
-                                "sourceName": "nvvideoconvert_src",
-                                "destinationName": "videoconvert_sink",
-                                "uuid": "093b7430-ce9a-4e56-bbbe-275e8e89de57",
-                                "hOffsetL": "0.0",
-                                "hOffsetR": "0.0",
-                                "hOffsetLSShape": "0.0",
-                                "hOffsetRSShape": "0.0",
-                                "vOffset": "0.0",
-                                "vOffsetSShape": "0.0",
-                                "snapVToFirst": 1,
-                                "snapVToSecond": 0
-                            }
-                        }
-                    }
-                }
-            ],
-            "meta": {
-                "var": {},
-                "label": "nvvideoconvert"
-            },
-            "wrapper": {
-                "resize": {
-                    "w": 156.0,
-                    "h": 203.0
-                },
-                "collapsed": false,
-                "peeped": false,
-                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">nvvideoconvert</p></body></html>",
-                "exposeInputsToCompound": false,
-                "groups": {
-                    "input": {},
-                    "output": {}
-                }
-            },
-            "x": -221.29455372750297,
-            "y": -288.2652739345106
         },
         {
             "package": "PyFlowGstreamer",
@@ -384,10 +283,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "08deff87-c205-4014-a61f-88de939e698a",
-                                "destinationUUID": "d3d7afa4-0c7c-466f-916d-06f52efa730f",
+                                "destinationUUID": "83ef72f9-72a0-48be-a1b5-3347ad5efbf0",
                                 "sourceName": "videoconvert_src",
                                 "destinationName": "adrt_sink",
-                                "uuid": "7634fded-beee-4a9b-8e21-ac5fd6b718c5",
+                                "uuid": "db23de13-b180-46f3-ac7c-f28121d21756",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -419,8 +318,8 @@
                     "output": {}
                 }
             },
-            "x": -28.14711428990169,
-            "y": -287.2946837865827
+            "x": -213.25349726862507,
+            "y": -286.23085399934865
         },
         {
             "package": "PyFlowGstreamer",
@@ -468,8 +367,8 @@
                     "output": {}
                 }
             },
-            "x": 383.38310843141954,
-            "y": -13.588262070987026
+            "x": 91.89374672929186,
+            "y": 111.94365282262993
         },
         {
             "package": "PyFlowGstreamer",
@@ -479,29 +378,6 @@
             "name": "adrt",
             "uuid": "c6914645-d5d7-498f-9790-d1d5a9fdb356",
             "inputs": [
-                {
-                    "name": "name",
-                    "package": "PyFlowBase",
-                    "fullName": "adrt_name",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"adrt\"",
-                    "uuid": "300c433e-a9e8-4f42-a551-738d2db68324",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "name",
-                        "wires": {}
-                    }
-                },
                 {
                     "name": "device",
                     "package": "PyFlowBase",
@@ -526,12 +402,104 @@
                     }
                 },
                 {
+                    "name": "engine-id",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_engine-id",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"adrt\"",
+                    "uuid": "676de4e9-7970-4294-935f-ff4e4a02ff4e",
+                    "linkedTo": [],
+                    "pinIndex": 11,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "engine-id",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "mean",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_mean",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"0 0 0\"",
+                    "uuid": "bf476019-6cea-41d4-b870-a5c2fdeafdc2",
+                    "linkedTo": [],
+                    "pinIndex": 8,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "mean",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"adrt\"",
+                    "uuid": "300c433e-a9e8-4f42-a551-738d2db68324",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "rgbconv",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_rgbconv",
+                    "dataType": "BoolPin",
+                    "direction": 0,
+                    "value": "true",
+                    "uuid": "42def1bd-f032-4cc8-9f84-6aa30ddb52e7",
+                    "linkedTo": [],
+                    "pinIndex": 9,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "rgbconv",
+                        "wires": {}
+                    }
+                },
+                {
                     "name": "model",
                     "package": "PyFlowBase",
                     "fullName": "adrt_model",
                     "dataType": "StringPin",
                     "direction": 0,
-                    "value": "\"./model/dssd_resnet18_epoch_3400_fp32.engine\"",
+                    "value": "\"yolov4-608.engine\"",
                     "uuid": "dfa4421a-da6a-4167-9796-a4f373ad7272",
                     "linkedTo": [],
                     "pinIndex": 4,
@@ -545,6 +513,52 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "model",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "scale",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_scale",
+                    "dataType": "FloatPin",
+                    "direction": 0,
+                    "value": "0.0039",
+                    "uuid": "53475d38-9d4b-4fba-8b74-f201653a8dee",
+                    "linkedTo": [],
+                    "pinIndex": 7,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "scale",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "query",
+                    "package": "PyFlowBase",
+                    "fullName": "adrt_query",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"//\"",
+                    "uuid": "93e9e466-73d6-4887-a039-9db915ca932a",
+                    "linkedTo": [],
+                    "pinIndex": 10,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "query",
                         "wires": {}
                     }
                 }
@@ -562,10 +576,10 @@
                         {
                             "lhsNodeName": "adrt",
                             "outPinId": 1,
-                            "rhsNodeName": "adtrans_ssd",
+                            "rhsNodeName": "adtrans_yolo",
                             "inPinId": 1,
                             "lhsNodeUid": "c6914645-d5d7-498f-9790-d1d5a9fdb356",
-                            "rhsNodeUid": "495d4788-862a-4fa2-a3f0-b41f6fccdcd2"
+                            "rhsNodeUid": "211b83cf-7938-47a4-b622-0ef2e074c89f"
                         }
                     ],
                     "pinIndex": 1,
@@ -580,10 +594,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "820da98d-c542-4ea7-9af8-0e04dcc1c848",
-                                "destinationUUID": "d8d2102f-e930-4673-a727-2690341c2ceb",
+                                "destinationUUID": "7ad02d4b-ffb7-42ea-ab41-e88c6e271a52",
                                 "sourceName": "adrt_src",
-                                "destinationName": "adtrans_ssd_sink",
-                                "uuid": "db8b2c43-aa41-4347-a6a2-278b5702eb7b",
+                                "destinationName": "adtrans_yolo_sink",
+                                "uuid": "d0d1e237-72f4-4d60-b28f-dfb60429ba0c",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -615,178 +629,8 @@
                     "output": {}
                 }
             },
-            "x": 169.85327588733787,
-            "y": -279.52996260316144
-        },
-        {
-            "package": "PyFlowGstreamer",
-            "lib": null,
-            "type": "adtrans_ssd",
-            "owningGraphName": "root",
-            "name": "adtrans_ssd",
-            "uuid": "495d4788-862a-4fa2-a3f0-b41f6fccdcd2",
-            "inputs": [
-                {
-                    "name": "max-count",
-                    "package": "PyFlowBase",
-                    "fullName": "adtrans_ssd_max-count",
-                    "dataType": "IntPin",
-                    "direction": 0,
-                    "value": "50",
-                    "uuid": "3578b7a5-b41a-4347-8a21-35897a49f3f8",
-                    "linkedTo": [],
-                    "pinIndex": 4,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "max-count",
-                        "wires": {}
-                    }
-                },
-                {
-                    "name": "label",
-                    "package": "PyFlowBase",
-                    "fullName": "adtrans_ssd_label",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"./model/SHMC-label.txt\"",
-                    "uuid": "2bc0bbae-b5af-4347-bbfb-6aebee1c0f3a",
-                    "linkedTo": [],
-                    "pinIndex": 6,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "label",
-                        "wires": {}
-                    }
-                },
-                {
-                    "name": "name",
-                    "package": "PyFlowBase",
-                    "fullName": "adtrans_ssd_name",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"adtrans_ssd\"",
-                    "uuid": "955b35e9-2c6b-4f2b-b6fa-9319dd18f42c",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "name",
-                        "wires": {}
-                    }
-                },
-                {
-                    "name": "threshold",
-                    "package": "PyFlowBase",
-                    "fullName": "adtrans_ssd_threshold",
-                    "dataType": "FloatPin",
-                    "direction": 0,
-                    "value": "0.2",
-                    "uuid": "3129939e-8d5e-49ae-b23a-f92ea228fa7d",
-                    "linkedTo": [],
-                    "pinIndex": 5,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "threshold",
-                        "wires": {}
-                    }
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "src",
-                    "package": "PyFlowGstreamer",
-                    "fullName": "adtrans_ssd_src",
-                    "dataType": "",
-                    "direction": 1,
-                    "value": null,
-                    "uuid": "d37a8fe6-3475-407c-a0ec-1d9d66826baf",
-                    "linkedTo": [
-                        {
-                            "lhsNodeName": "adtrans_ssd",
-                            "outPinId": 1,
-                            "rhsNodeName": "partassembly",
-                            "inPinId": 1,
-                            "lhsNodeUid": "495d4788-862a-4fa2-a3f0-b41f6fccdcd2",
-                            "rhsNodeUid": "7195bba1-1d64-467a-95d3-679e7d00405a"
-                        }
-                    ],
-                    "pinIndex": 1,
-                    "options": [],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "src",
-                        "wires": {
-                            "1": {
-                                "sourceUUID": "d37a8fe6-3475-407c-a0ec-1d9d66826baf",
-                                "destinationUUID": "f065c607-92be-4abe-8e79-d64e960d61e5",
-                                "sourceName": "adtrans_ssd_src",
-                                "destinationName": "partassembly_sink",
-                                "uuid": "4660bc97-efa3-497a-bd83-9bd21121776f",
-                                "hOffsetL": "0.0",
-                                "hOffsetR": "0.0",
-                                "hOffsetLSShape": "0.0",
-                                "hOffsetRSShape": "0.0",
-                                "vOffset": "0.0",
-                                "vOffsetSShape": "0.0",
-                                "snapVToFirst": 1,
-                                "snapVToSecond": 0
-                            }
-                        }
-                    }
-                }
-            ],
-            "meta": {
-                "var": {},
-                "label": "adtrans_ssd"
-            },
-            "wrapper": {
-                "resize": {
-                    "w": 103.0,
-                    "h": 128.0
-                },
-                "collapsed": false,
-                "peeped": false,
-                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">adtrans_ssd</p></body></html>",
-                "exposeInputsToCompound": false,
-                "groups": {
-                    "input": {},
-                    "output": {}
-                }
-            },
-            "x": 289.23586408243807,
-            "y": -235.8534059464176
+            "x": -33.33821347436425,
+            "y": -285.9129413265658
         },
         {
             "package": "PyFlowGstreamer",
@@ -796,6 +640,29 @@
             "name": "partassembly",
             "uuid": "7195bba1-1d64-467a-95d3-679e7d00405a",
             "inputs": [
+                {
+                    "name": "query",
+                    "package": "PyFlowBase",
+                    "fullName": "partassembly_query",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"//adrt\"",
+                    "uuid": "830c8552-93b1-4e7c-9a93-292b705a85b9",
+                    "linkedTo": [],
+                    "pinIndex": 10,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "query",
+                        "wires": {}
+                    }
+                },
                 {
                     "name": "name",
                     "package": "PyFlowBase",
@@ -816,6 +683,29 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "name",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "engine-id",
+                    "package": "PyFlowBase",
+                    "fullName": "partassembly_engine-id",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"\"",
+                    "uuid": "a2b0f572-a17b-4793-877c-365f66fb6775",
+                    "linkedTo": [],
+                    "pinIndex": 9,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "engine-id",
                         "wires": {}
                     }
                 }
@@ -851,10 +741,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "df27ec4f-fa9d-4ac8-8dcd-7846d57d607e",
-                                "destinationUUID": "b17a6689-15f9-4862-bcbb-b3739da2e560",
+                                "destinationUUID": "6cbdcde5-bb52-492b-9dda-68b87603566d",
                                 "sourceName": "partassembly_src",
                                 "destinationName": "voice_alert_sink",
-                                "uuid": "bae7c4c2-61cd-4262-a072-e7979e29d068",
+                                "uuid": "2177bd87-f71c-4fd6-b401-043c4ab51f69",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -898,29 +788,6 @@
             "uuid": "9be5092b-f002-4a75-96c7-aa55f13394a3",
             "inputs": [
                 {
-                    "name": "name",
-                    "package": "PyFlowBase",
-                    "fullName": "voice_alert_name",
-                    "dataType": "StringPin",
-                    "direction": 0,
-                    "value": "\"voice_alert\"",
-                    "uuid": "647f4ebc-85f6-4877-ae04-3757e476406b",
-                    "linkedTo": [],
-                    "pinIndex": 2,
-                    "options": [
-                        256
-                    ],
-                    "structure": 0,
-                    "alwaysList": false,
-                    "alwaysSingle": false,
-                    "alwaysDict": false,
-                    "wrapper": {
-                        "bLabelHidden": false,
-                        "displayName": "name",
-                        "wires": {}
-                    }
-                },
-                {
                     "name": "alert-type",
                     "package": "PyFlowBase",
                     "fullName": "voice_alert_alert-type",
@@ -940,6 +807,52 @@
                     "wrapper": {
                         "bLabelHidden": false,
                         "displayName": "alert-type",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "query",
+                    "package": "PyFlowBase",
+                    "fullName": "voice_alert_query",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"//adrt\"",
+                    "uuid": "81b995b1-2f83-427e-bf89-26b9678fa182",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "query",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "name",
+                    "package": "PyFlowBase",
+                    "fullName": "voice_alert_name",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"voice_alert\"",
+                    "uuid": "647f4ebc-85f6-4877-ae04-3757e476406b",
+                    "linkedTo": [],
+                    "pinIndex": 2,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "name",
                         "wires": {}
                     }
                 },
@@ -998,10 +911,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "033ad75d-c4f0-40ab-a8f7-605e5af6109e",
-                                "destinationUUID": "6f509748-271c-43d5-abad-d596c09d2b95",
+                                "destinationUUID": "c284fc82-1b33-45f5-b4f3-99e4b910b32a",
                                 "sourceName": "voice_alert_src",
                                 "destinationName": "videoconvert1_sink",
-                                "uuid": "52cdcab2-7051-4eec-9c11-eec4c024feed",
+                                "uuid": "25850d74-ce2e-4e97-b0ba-3fa1ebf8f94f",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1022,7 +935,7 @@
             "wrapper": {
                 "resize": {
                     "w": 127.0,
-                    "h": 98.0
+                    "h": 137.46808510638294
                 },
                 "collapsed": false,
                 "peeped": false,
@@ -1033,8 +946,8 @@
                     "output": {}
                 }
             },
-            "x": -241.6769468339835,
-            "y": 169.85327588733776
+            "x": -277.84715959994134,
+            "y": 129.42774397244398
         },
         {
             "package": "PyFlowGstreamer",
@@ -1099,10 +1012,10 @@
                         "wires": {
                             "1": {
                                 "sourceUUID": "2d5f8a6b-e421-4233-a3e1-3aa395476b27",
-                                "destinationUUID": "36877482-fac4-412f-8f70-6756dd5998f7",
+                                "destinationUUID": "943f798e-4966-47fc-bada-3a7e0e69ff53",
                                 "sourceName": "videoconvert1_src",
                                 "destinationName": "ximagesink_sink",
-                                "uuid": "0af040ac-cfed-4cee-9867-e64537c7fbe2",
+                                "uuid": "a266488a-a8c4-4f90-bb80-780a704af3ef",
                                 "hOffsetL": "0.0",
                                 "hOffsetR": "0.0",
                                 "hOffsetLSShape": "0.0",
@@ -1134,8 +1047,270 @@
                     "output": {}
                 }
             },
-            "x": -35.911835473322846,
-            "y": 207.70629165651593
+            "x": -96.55013334566328,
+            "y": 121.53607889055851
+        },
+        {
+            "package": "PyFlowGstreamer",
+            "lib": null,
+            "type": "adtrans_yolo",
+            "owningGraphName": "root",
+            "name": "adtrans_yolo",
+            "uuid": "211b83cf-7938-47a4-b622-0ef2e074c89f",
+            "inputs": [
+                {
+                    "name": "anchor",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_yolo_anchor",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"(12,16),(19,36),(40,28),(36,75),(76,55),(72,146),(142,110),(192,243),(459,401)\"",
+                    "uuid": "76e7d901-a11f-4f1c-95ed-5977901e3be6",
+                    "linkedTo": [],
+                    "pinIndex": 7,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "anchor",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "topology",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_yolo_topology",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"yolov4\"",
+                    "uuid": "2823a199-bb34-435e-acef-387a6224c124",
+                    "linkedTo": [],
+                    "pinIndex": 13,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "topology",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "label",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_yolo_label",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"SHMC-label.txt\"",
+                    "uuid": "e0983f67-20e7-4ed6-b844-9cc95ddba0e0",
+                    "linkedTo": [],
+                    "pinIndex": 11,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "label",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "input-height",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_yolo_input-height",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "608",
+                    "uuid": "a948d4fa-cac7-4db7-97c5-e67fd22a0115",
+                    "linkedTo": [],
+                    "pinIndex": 9,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "input-height",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "use-sigmoid",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_yolo_use-sigmoid",
+                    "dataType": "BoolPin",
+                    "direction": 0,
+                    "value": "true",
+                    "uuid": "0a687437-4de4-4d3d-bb31-cc77e03e83fc",
+                    "linkedTo": [],
+                    "pinIndex": 12,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "use-sigmoid",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "class-num",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_yolo_class-num",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "10",
+                    "uuid": "42b56120-d160-4ddb-aa3c-224c37b56197",
+                    "linkedTo": [],
+                    "pinIndex": 4,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "class-num",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "blob-size",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_yolo_blob-size",
+                    "dataType": "StringPin",
+                    "direction": 0,
+                    "value": "\"76,38,19\"",
+                    "uuid": "40d65421-cb0f-408b-b0f4-4b76cc08f5b2",
+                    "linkedTo": [],
+                    "pinIndex": 5,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "blob-size",
+                        "wires": {}
+                    }
+                },
+                {
+                    "name": "input-width",
+                    "package": "PyFlowBase",
+                    "fullName": "adtrans_yolo_input-width",
+                    "dataType": "IntPin",
+                    "direction": 0,
+                    "value": "608",
+                    "uuid": "8f572b17-d5d8-4df3-9505-f371c5c8ff02",
+                    "linkedTo": [],
+                    "pinIndex": 8,
+                    "options": [
+                        256
+                    ],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "input-width",
+                        "wires": {}
+                    }
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "src",
+                    "package": "PyFlowGstreamer",
+                    "fullName": "adtrans_yolo_src",
+                    "dataType": "",
+                    "direction": 1,
+                    "value": null,
+                    "uuid": "c7b7235f-bcdc-43c3-b21a-21c6ee34a7a7",
+                    "linkedTo": [
+                        {
+                            "lhsNodeName": "adtrans_yolo",
+                            "outPinId": 1,
+                            "rhsNodeName": "partassembly",
+                            "inPinId": 1,
+                            "lhsNodeUid": "211b83cf-7938-47a4-b622-0ef2e074c89f",
+                            "rhsNodeUid": "7195bba1-1d64-467a-95d3-679e7d00405a"
+                        }
+                    ],
+                    "pinIndex": 1,
+                    "options": [],
+                    "structure": 0,
+                    "alwaysList": false,
+                    "alwaysSingle": false,
+                    "alwaysDict": false,
+                    "wrapper": {
+                        "bLabelHidden": false,
+                        "displayName": "src",
+                        "wires": {
+                            "1": {
+                                "sourceUUID": "c7b7235f-bcdc-43c3-b21a-21c6ee34a7a7",
+                                "destinationUUID": "a0cbb79f-f438-43de-986c-d440276b001f",
+                                "sourceName": "adtrans_yolo_src",
+                                "destinationName": "partassembly_sink",
+                                "uuid": "6acce329-818b-45f0-8ea9-7354ad3d7612",
+                                "hOffsetL": "0.0",
+                                "hOffsetR": "0.0",
+                                "hOffsetLSShape": "0.0",
+                                "hOffsetRSShape": "0.0",
+                                "vOffset": "0.0",
+                                "vOffsetSShape": "0.0",
+                                "snapVToFirst": 1,
+                                "snapVToSecond": 0
+                            }
+                        }
+                    }
+                }
+            ],
+            "meta": {
+                "var": {},
+                "label": "adtrans_yolo"
+            },
+            "wrapper": {
+                "resize": {
+                    "w": 118.0,
+                    "h": 233.0
+                },
+                "collapsed": false,
+                "peeped": false,
+                "headerHtml": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'Consolas'; font-size:6pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">adtrans_yolo</p></body></html>",
+                "exposeInputsToCompound": false,
+                "groups": {
+                    "input": {},
+                    "output": {}
+                }
+            },
+            "x": 95.74468085106383,
+            "y": -290.4255319148936
         }
     ],
     "depth": 1,

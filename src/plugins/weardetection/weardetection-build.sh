@@ -30,7 +30,6 @@ fi
 message_out "sudo String = ${sudoString}"
 
 
-
 # if build folder exist, delete it
 message_out "check ./build folder..."
 if [ -d "./build" ] 

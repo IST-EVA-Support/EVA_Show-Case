@@ -1,4 +1,5 @@
-protobuf == 3.16.0
-numpy == 1.19.4
+protobuf == 4.22.1
+numpy == 1.24.4
 pyttsx3 == 2.90
-meson == 0.56.2
+meson == 1.0.0
+ninja == 1.11.1
