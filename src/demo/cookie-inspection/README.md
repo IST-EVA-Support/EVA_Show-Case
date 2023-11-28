@@ -79,32 +79,3 @@ https://azurelessons.com/create-azure-free-account/#Create_Azure_Free_Account
 *Creat new project in Custom Vision can be found at the EVA Portal: https://eva-support.adlinktech.com/
 
 <a id="Run-This-Showcase-Through-EVA-IDE"></a>
-
-## Run This Showcase Through EVA IDE(For EVASDK 3.5.2 or later)
-
-In this showcase, you can run the pipeline by execute <a href="#runsh">run.sh</a> but also EVA IDE. Open EVA IDE and make sure your current path is in src/demo/cookie-inspection as root:
-
-```
-> EVA_ROOT/bin/EVA_IDE
-```
-
-EVA_ROOT is the path where the EVA is installed, the default installed path is /opt/adlink/eva/. So directly call EVA_IDE:
-
-```
-> /opt/adlink/eva/bin/EVA_IDE
-```
-
-And you will see the IDE show up as below:
-
-![EVAIDE](../../../figures/EVAIDE.png)
-
-Then select the pygraph you want to run, here for example select showcase3-onnx.pygraph in this showcase folder through File->Load. Then you can see this showcase pipeline:
-
-![showcase3-file-load](../../../figures/showcase3-file-load.png)
-
-![showcase3-pipeline](../../../figures/showcase3-pipeline.png)
-
-Then press the play button ![play-button](../../../figures/play-button.png) and you will see the scenario video start to play.
-
-
-
