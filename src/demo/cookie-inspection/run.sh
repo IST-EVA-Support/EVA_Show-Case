@@ -19,7 +19,7 @@ then
     if [ $translatorplugin == "adtrans_detection_customvision_py" ]
     then
         message_out "using plugin: adtrans_detection_customvision_py"
-		gst-launch-1.0 filesrc location=Cookie_H264.mov ! decodebin ! videoconvert ! adonnx mean="0.0,0.0,0.0" model=Cookie-inspection.onnx rgbconv=True engine-id="adonnx" query="//" ! adtrans_detection_customvision_py class-num=3 input-height=512 input-width=512 label-file=adlink-onnx-cookie-labels.txt threshold=0.1 query="//" ! draw_roi ! videoconvert ! xvimagesink 
+		gst-launch-1.0 filesrc location=Cookie_H264.mov ! decodebin ! nvvidconv ! videoconvert ! adonnx mean="0.0,0.0,0.0" model=Cookie-inspection.onnx rgbconv=True engine-id="adonnx" query="//" ! adtrans_detection_customvision_py class-num=3 input-height=512 input-width=512 label-file=adlink-onnx-cookie-labels.txt threshold=0.1 query="//" ! draw_roi ! videoconvert ! xvimagesink 
     else
         message_out "input invalid translator plugin name."
     fi
