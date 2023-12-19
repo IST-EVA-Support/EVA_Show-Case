@@ -32,14 +32,28 @@ then
     message_out "Demo video exists, skip."
 else
     message_out "Start download demo video..."
-   # wget https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase1/geo-fencing-demo.mp4
+    wget https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase6/bosch.mp4
 fi
 
+if [ ! -d "models" ];
+        then 
+            message_out "Start download directory..."
+            wget https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase6/models.zip
+            sudo apt-get -y install unzip
+            unzip adlink-yolov3-geo-fencing.zip
+            rm models.zip
+fi
+
+ if [ ! -f "models/yolov4-416.engine" ]; 
+ then
+
+  message_out "Start convert onnx model to tensorrt..."
+      /usr/src/tensorrt/bin/trtexec --onnx=./models/yolov4-416.onnx --buildOnly  --saveEngine=./models/yolov4-416.engine        
+  fi  
+
+  
 ../../plugins/toolkit/toolkit-build.sh 
 
-message_out "Start convert onnx model to tensorrt..."
-/usr/src/tensorrt/bin/trtexec --onnx=./models/yolov4-416.onnx --buildOnly  --saveEngine=./models/yolov4-416.engine   
- message_out "Convert Done."
 
 
 message_out "Install related python package"
@@ -47,5 +61,4 @@ pip3 install -r requirements.txt
 ${sudoString} apt -y install gstreamer1.0-libav
 ${sudoString} apt-get -y install espeak
 rm ~/.cache/gstreamer-1.0/regi*
-
 
