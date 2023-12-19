@@ -49,11 +49,7 @@ The mobilenetssdv2 is the default installed, if want to install yolov3, use the 
 > ./install.sh yolov3
 ```
 
-For Windows:
 
-```
-> install-win.bat yolov3
-```
 
 <a id="runsh"></a>
 
@@ -61,24 +57,6 @@ After installation, execute run.sh for the pipeline command:
 
 ```
 > ./run.sh
-```
-
-For Windows:
-
-```
-> run-win.bat
-```
-
-The mobilenetssdv2 is the default run, if yolov3 is installed, use the argument below:
-
-```
-> ./run.sh yolov3
-```
-
-For Windows:
-
-```
-> run-win.bat yolov3
 ```
 
 
