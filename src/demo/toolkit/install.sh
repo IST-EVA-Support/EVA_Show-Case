@@ -25,7 +25,7 @@ ${sudoString} apt -y install libgstreamer-plugins-base1.0-dev
 ${sudoString} apt -y install libopencv-dev python3-opencv
 ${sudoString} apt -y install wget
 ${sudoString} apt -y install libnvinfer-bin
-../../plugins/geofence/geofence-build.sh
+../../plugins/toolkit/toolkit-build.sh
 # download video
 if [ -e "bosch.mp4" ]
 then
@@ -40,7 +40,7 @@ if [ ! -d "models" ];
             message_out "Start download directory..."
             wget https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/showcase6/models.zip
             sudo apt-get -y install unzip
-            unzip adlink-yolov3-geo-fencing.zip
+            unzip models.zip
             rm models.zip
 fi
 
@@ -60,5 +60,5 @@ message_out "Install related python package"
 pip3 install -r requirements.txt
 ${sudoString} apt -y install gstreamer1.0-libav
 ${sudoString} apt-get -y install espeak
-rm ~/.cache/gstreamer-1.0/regi*
+
 
