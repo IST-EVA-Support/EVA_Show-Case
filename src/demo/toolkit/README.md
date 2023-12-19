@@ -23,11 +23,7 @@ Use the path:
 > cd src/demo/toolkit
 ```
 
-For Windows, 
 
-```
-> cd src\demo\toolkit\windows
-```
 
 Run install.sh with root privileges:
 
@@ -35,19 +31,8 @@ Run install.sh with root privileges:
 > ./install.sh
 ```
 
-For Windows:
-
-```
-> install-win.bat
-```
 
 This is required to modify the path to the OpenCV library. If you have installed EVA on a non-ADLINK device, please check the requirements in our EVA portal.
-
-The mobilenetssdv2 is the default installed, if want to install yolov3, use the argument below:
-
-```
-> ./install.sh yolov3
-```
 
 
 
