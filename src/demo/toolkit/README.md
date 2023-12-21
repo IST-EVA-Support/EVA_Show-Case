@@ -55,4 +55,4 @@ Or you can open EVA_IDE and load pygraph then execute, please see the section, [
 
 For Linux, add "+h264parse" in file : /home/USER_ACCOUNT/adlink/eva/IDE/config/element_list.txt. 
 
-For Windows 10, add "+h264parse" in file : C:\ADLINK\eva\IDE\config\element_list.txt
+
