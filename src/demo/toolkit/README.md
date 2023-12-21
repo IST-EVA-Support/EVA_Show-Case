@@ -44,7 +44,14 @@ After installation, execute run.sh for the pipeline command:
 > ./run.sh
 ```
 
-
+This demo shows how to output the inference result of the model. The output labels are the same that are used during training. If the toolkit is missing it is shown on frame where its missing, additionally the missing and corerct positions are also displayed. 
+diplay code meanings:
+  lb -> left bottom
+  lm -> left middle
+  lu -> left upper
+  rb -> right bottom
+  rm -> right middle
+  ru -> right upper
 
 Or you can open EVA_IDE and load pygraph then execute, please see the section, [Run This Showcase Through EVA IDE](#Run-This-Showcase-Through-EVA-IDE).
 
