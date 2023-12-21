@@ -1,10 +1,10 @@
-# Showcase 1: Toolkit
+# Showcase 6: Toolkit
 
 ## Showcase Requirements
 
 Before installing this showcase to the device, please install ADLINK EVASDK and set the EVA environment as necessary.
 
-## Showcase 1 Installation
+## Showcase 6 Installation
 
 The path to the respective demo folder includes install.sh and run.sh for each showcase.
 
