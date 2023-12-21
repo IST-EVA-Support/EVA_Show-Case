@@ -44,7 +44,7 @@ After installation, execute run.sh for the pipeline command:
 > ./run.sh
 ```
 
-This demo shows how to output the inference result of the model. The output labels are the same that are used during training. If the toolkit is missing it is shown on frame where its missing, additionally the missing and corerct positions are also displayed. 
+This demo shows how to output the inference result of the model. The output labels are the same that are used during the training. If the toolkit is missing it is shown on frame where its missing, additionally the missing and corerct positions labels are also displayed. 
 Diplay code meanings:
 ```
   lb -> left bottom
