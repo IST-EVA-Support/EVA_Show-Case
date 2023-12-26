@@ -25,7 +25,14 @@ ${sudoString} apt -y install libgstreamer-plugins-base1.0-dev
 ${sudoString} apt -y install libopencv-dev python3-opencv
 ${sudoString} apt -y install wget
 ${sudoString} apt -y install libnvinfer-bin
+
+message_out "Install related python package"
+pip3 install -r requirements.txt
+${sudoString} apt -y install gstreamer1.0-libav
+${sudoString} apt-get -y install espeak
+
 ../../plugins/toolkit/toolkit-build.sh
+
 # download video
 if [ -e "bosch.mp4" ]
 then
@@ -50,15 +57,3 @@ fi
   message_out "Start convert onnx model to tensorrt..."
       /usr/src/tensorrt/bin/trtexec --onnx=./models/yolov4-416.onnx --buildOnly  --saveEngine=./models/yolov4-416.engine        
   fi  
-
-  
-../../plugins/toolkit/toolkit-build.sh 
-
-
-
-message_out "Install related python package"
-pip3 install -r requirements.txt
-${sudoString} apt -y install gstreamer1.0-libav
-${sudoString} apt-get -y install espeak
-
-
