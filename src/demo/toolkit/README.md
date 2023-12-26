@@ -62,6 +62,7 @@ Or you can open EVA_IDE and load pygraph then execute, please see the section, [
 
 
 
-For Linux, add "+h264parse" in file : /home/USER_ACCOUNT/adlink/eva/IDE/config/element_list.txt. 
+For Linux, add "toolkit" in file : /home/USER_ACCOUNT/adlink/eva/IDE/config/element_list.txt.
+(If you are using docker container instead of native run, path to ~/adlink/eva/IDE/config/element_list.txt)
 
 
