@@ -48,7 +48,7 @@ This demo shows how to output the inference result of the model. The output labe
 
 Or you can open EVA_IDE and load pygraph then execute, please see the section, [Run This Showcase Through EVA IDE](#Run-This-Showcase-Through-EVA-IDE).
 
-Then you will see the pop-up display window of this showcase as in the example below.[ [Remember to add "toolkit" in element_list.txt][#element_list] ]
+Then you will see the pop-up display window of this showcase as in the example below.[ [Remember to add "toolkit" in element_list.txt](#element_list) ]
 
 ![image-showcase1](../../../figures/image-showcase6.png)
 
