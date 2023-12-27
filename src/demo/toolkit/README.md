@@ -70,9 +70,9 @@ Display code meanings:
 
 The training materials can be downloaded with the following links.
 
-Training video: 
+Training video: https://sftp.adlinktech.com/image/EVA/EVA_Show-Case/training/bosch-training.mp4
 
-We labeled this training data through Roboflow. Once the data is annotated. We train this from our prepared training docker, please refer to the ai quick start suite for further information here.
+We labeled this training data through [Roboflow](https://roboflow.com/). Once the data is annotated. We train this from our prepared training docker, please refer to the ai quick start suite for further information [here](https://eva-support.adlinktech.com/docs/training-tool).
 
 <a id="Run-This-Showcase-Through-EVA-IDE"></a>
 
