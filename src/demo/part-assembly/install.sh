@@ -1,7 +1,5 @@
 #!/bin/bash
 
-<<<<<<< HEAD
-=======
 modelPruned="no_pruned"
 
 # GPU architecture checker
@@ -29,7 +27,6 @@ while getopts "m:g:?" optname
 # echo "modelPruned = ${modelPruned}"
 echo "gpuArchChecker = ${gpuArchChecker}"
 
->>>>>>> tensorrt8-install
 LB='\033[1;33m'
 NC='\033[0m' # No Color
 
